@@ -14,7 +14,7 @@ Second in a series. The first — the **[Aperture Forest Operations Manual](http
 
 ## Status — Phases 1–3 (partial)
 
-Built (6 chambers live):
+Built (7 chambers live):
 
 - `index.html` — Facility Directory (navigation hub, card grid)
 - `pages/governor.html` — **The Governor**: speed limiter + **interactive battery pre-flight**
@@ -22,6 +22,7 @@ Built (6 chambers live):
 - `pages/workshop.html` — **The Workshop**: the human operating model
 - `pages/emotionhue.html` — **EmotionHue**: light engine + **interactive customisation console**
 - `pages/letssavefood.html` — **Let's Save Food**: .NET/EF Core food-bank engine + **interactive audit-trail generator**
+- `pages/livingvault.html` — **The Living Vault**: zero-quota self-monitoring pipeline, Mermaid flow diagrams + **interactive knowledge-graph web** (real graph.json data)
 - `pages/philosophy.html` — **The Prime Directive**: the one rule + **interactive radial map**
 - `style.css`, `script.js` — shared component library + behaviour
 
@@ -29,9 +30,13 @@ Built (6 chambers live):
 session), gear switcher (page rewrites its own verbosity), radial convergence map
 (hover-to-light, click-to-travel), EmotionHue console (drive a virtual light room by
 weather + emotional profile + master knob), Let's Save Food audit generator (run real
-inventory operations, watch each one append the exact `AuditLog` row EF Core would write).
+inventory operations, watch each one append the exact `AuditLog` row EF Core would write),
+Living Vault context web (hover the real 420-node graph to trace genuine EXTRACTED/INFERRED
+connections). One scoped exception to the no-library rule: `livingvault.html` loads
+**Mermaid.js** from a CDN (only that page) to render its flow diagrams — mirroring the vault's
+own `concept.py`, which emits Mermaid natively.
 
-Chambers still sealed (future phases): Schrute Library · Graveyard · Living Vault ·
+Chambers still sealed (future phases): Schrute Library · Graveyard ·
 Hardware · Misc Wing · Collaboration.
 
 ---

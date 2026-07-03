@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Living Vault — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 08 — THE LIVING VAULT</span>
+  <a href="philosophy.html" class="nav-next">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-008">
+
+  <span class="classification ok">SELF-MONITORING KNOWLEDGE PIPELINE</span>
+  <h1>The Living Vault</h1>
+  <p class="doc-id">DOC: AFM-2026-LV-008 &nbsp;|&nbsp; PIPELINE: sync → status → digest → governor &nbsp;|&nbsp; COST: 0 TOKENS / WEEK &nbsp;|&nbsp; STATUS: OPERATIONAL</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    Every conversation the subject has ever had with this AI is exported, dated, and filed. A
+    chain of small Python scripts watches which projects are moving, which have gone quiet, and
+    quietly proposes letting the dead ones rest — then a knowledge-graph pass weaves the whole
+    corpus into a map of <strong>420 concepts and 555 connections</strong>. It is the memory the
+    subject does not have: a system whose one job is to notice whether they kept their word. It
+    runs itself, every week, for <strong>zero AI quota</strong>.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-value">420</div><div class="stat-label">Graph Nodes</div></div>
+    <div class="stat-box"><div class="stat-value">555</div><div class="stat-label">Connections</div></div>
+    <div class="stat-box"><div class="stat-value">37</div><div class="stat-label">Communities</div></div>
+    <div class="stat-box"><div class="stat-value">0</div><div class="stat-label">Tokens / Week</div></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE PIPELINE ============= -->
+  <h2>The pipeline — four scripts, no intelligence required</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The weekly routine is <strong>scheduled as three Python commands and nothing else</strong>.
+    No LLM call, no network request, no API key. The raw transcripts in
+    <code>~/.claude/projects/</code> are never touched — the vault only ever reads them. That is
+    the whole trick: a system that watches your life's work but cannot itself cost you anything to
+    run.
+  </p>
+
+  <div class="lv-mermaid">
+    <pre class="mermaid">
+flowchart LR
+  RAW["~/.claude/projects (raw · never touched)"]
+  SYNC["sync.py — ingest · dedupe · rollups"]
+  CONCEPT["concept.py — concept layer + Mermaid"]
+  STATUS["status.py — MOC notes + README"]
+  DIGEST["digest.py — weekly facts + proposals"]
+  GOV{{"governor — surfaces proposals"}}
+  GSTATE[("governor-state.md — source of truth")]
+  RAW --> SYNC --> CONCEPT --> STATUS --> DIGEST --> GOV
+  GOV -. confirm / reject .-> GSTATE --> STATUS
+  classDef code fill:#151518,stroke:#16a34a,color:#f5f0e8;
+  classDef data fill:#2a2a2e,stroke:#b45309,color:#f5f0e8;
+  class SYNC,CONCEPT,STATUS,DIGEST code;
+  class RAW,GSTATE,GOV data;
+    </pre>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">sync.py — the incremental ingest</span><span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p style="font-family: var(--mono); font-size:0.78rem;">
+        A custom JSONL parser (it replaced the <code>claude-extract</code> tool) reads every
+        session, deduplicates by <code>session_id</code>, and only exports what's new or changed.
+        High-volume, low-signal labels (<code>NOISE_LABELS</code>) collapse into a single rollup
+        note instead of flooding the vault. It hardlinks each repo's CLAUDE.md into the vault and
+        auto-commits locally — <strong>no push</strong>; the subject syncs via his own cloud, not
+        GitHub. The core is <code>process_session()</code>: strip system XML, render 👤 User /
+        🤖 Claude turns, stamp front matter (date, project, session_id, slug, summary).
+      </p>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">concept.py — the concept layer</span><span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p style="font-family: var(--mono); font-size:0.78rem;">
+        Builds a human-concept-keyed companion to the raw ledger: <code>projects/&lt;Label&gt;/_hub.md</code>
+        aggregates a project's sessions across every path it was ever run from, and best-effort
+        ingests the repo's own CLAUDE.md and overview. It reads <code>graph.json</code> and emits a
+        <strong>Mermaid</strong> subgraph per hub (capped at 40 nodes) — the same Mermaid you're
+        reading on this page is native to the vault, not decoration.
+      </p>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">status.py — status → notes</span><span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p style="font-family: var(--mono); font-size:0.78rem;">
+        Reads the one source of truth — the <code>projects:</code> block in
+        <code>governor-state.md</code> — and reflects it into the vault: a Map-of-Content note per
+        project whose front matter lets Obsidian Bases filter by status, and a README regenerated
+        and grouped by status. Mechanical; it invents nothing, it mirrors.
+      </p>
+    </div>
+  </div>
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">digest.py — the drift detector</span><span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p style="font-family: var(--mono); font-size:0.78rem;">
+        Computes the week's facts <strong>once</strong> into <code>digest/&lt;week&gt;.data.json</code>,
+        renders a deterministic stub, and appends status-change <em>proposals</em> to
+        <code>pending_status_changes</code> — proposals only; it never mutates a project's status.
+        The optional rich prose newsletter is a separate, on-demand pass over the same JSON
+        (Claude today, a local Ollama tomorrow — both read the identical facts file).
+      </p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE CLOSED LOOP ============= -->
+  <h2>The closed loop — nothing auto-changes, nothing rots</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The system never demotes a project on its own. It only ever <em>proposes</em>. The decision
+    stays human, surfaced by the governor at the start of a session, one at a time. Confirm and it
+    updates the source of truth (enforcing at most three flagships and exactly one tier-1). Reject
+    and the proposal is dropped. The loop closes; nothing drifts silently.
+  </p>
+
+  <div class="lv-mermaid">
+    <pre class="mermaid">
+flowchart TD
+  D["digest.py detects drift — e.g. 21d quiet"]
+  P[("pending_status_changes")]
+  G{{"governor surfaces one proposal"}}
+  U["update projects: block — ≤3 flagship · one tier:1"]
+  X["proposal dropped"]
+  S["status.py re-reflects MOCs + README"]
+  D --> P --> G
+  G -->|confirm| U
+  G -->|reject| X
+  U --> S --> D
+  X --> D
+  classDef code fill:#151518,stroke:#16a34a,color:#f5f0e8;
+  classDef data fill:#2a2a2e,stroke:#b45309,color:#f5f0e8;
+  classDef gate fill:#2a2a2e,stroke:#dc2626,color:#f5f0e8;
+  class D,S code;
+  class P,U code;
+  class G gate;
+    </pre>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <span class="panel-title">Dormancy thresholds (real constants)</span>
+      <div style="overflow-x:auto;">
+        <table style="width:100%; font-family: var(--mono); font-size:0.74rem; border-collapse: collapse; margin-top:0.4rem;">
+          <tr>
+            <th style="text-align:left; padding:0.35rem; border-bottom:2px solid var(--border);">SIGNAL</th>
+            <th style="text-align:left; padding:0.35rem; border-bottom:2px solid var(--border);">THRESHOLD</th>
+          </tr>
+          <tr><td style="padding:0.35rem; border-bottom:1px solid var(--border-light);">Forgotten — flagship</td><td style="padding:0.35rem; border-bottom:1px solid var(--border-light); color:var(--red);">7 days quiet</td></tr>
+          <tr><td style="padding:0.35rem; border-bottom:1px solid var(--border-light);">Forgotten — active</td><td style="padding:0.35rem; border-bottom:1px solid var(--border-light);">21 days quiet</td></tr>
+          <tr><td style="padding:0.35rem; border-bottom:1px solid var(--border-light);">Propose active → dormant</td><td style="padding:0.35rem; border-bottom:1px solid var(--border-light);">21 days</td></tr>
+          <tr><td style="padding:0.35rem;">Propose dormant → archived</td><td style="padding:0.35rem;">60 days</td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="panel-title">The weekly digest, anatomised</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">🚢</span> <span>Shipped <span class="note">new sessions this window</span></span></li>
+        <li><span class="qty">🔄</span> <span>Moved <span class="note">projects with activity</span></span></li>
+        <li><span class="qty">🕸️</span> <span>Forgotten <span class="note">flagships quiet 7d, active 21d</span></span></li>
+        <li><span class="qty">⏳</span> <span>Proposed <span class="note">status changes, confirm via governor</span></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= DUAL KEY LEDGER ============= -->
+  <h2>Two keys for the same truth</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    A subtle but important design choice: the vault files each session under <strong>two</strong>
+    keys. <code>chats/&lt;encoded-path&gt;/</code> is the <strong>access key</strong> — the literal
+    filesystem path the session ran from, which doubles as an audit trail of where work actually
+    happened. <code>projects/&lt;Label&gt;/</code> is the <strong>concept key</strong> — the human
+    project name, aggregating a project's sessions no matter how many folders it was run from.
+    Machine-truth and human-truth, kept side by side.
+  </p>
+
+  <div class="lv-mermaid">
+    <pre class="mermaid">
+flowchart LR
+  J["a session .jsonl"]
+  AK["chats/&lt;encoded-path&gt; — ACCESS KEY · audit ledger"]
+  CK["projects/&lt;Label&gt; — CONCEPT KEY · human view"]
+  J --> AK
+  J --> CK
+  AK -. same session, two lenses .-> CK
+  classDef data fill:#2a2a2e,stroke:#b45309,color:#f5f0e8;
+  class J,AK,CK data;
+    </pre>
+  </div>
+
+  <div class="socket-row">
+    <span class="socket active"><span class="status-dot on"></span> 🚩 flagship</span>
+    <span class="socket active"><span class="status-dot on"></span> 🟢 active</span>
+    <span class="socket active"><span class="status-dot on"></span> 💤 dormant</span>
+    <span class="socket active"><span class="status-dot on"></span> 📦 archived</span>
+  </div>
+  <div class="margin-note">The status set. At most three projects may be flagship; exactly one
+    carries tier-1 (the single launchable focus). Source of truth is one hand-edited block in
+    <code>governor-state.md</code> — every note, README table, and digest proposal derives from it.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= HERO: CONTEXT WEB ============= -->
+  <h2>The context web</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Once the vault holds the whole corpus, <strong>graphify</strong> reads all of it and extracts a
+    knowledge graph: every concept a node, every relationship an edge. Below is a real slice of it —
+    the technical spine, drawn from the actual <code>graph.json</code>. <strong>Hover or tap any
+    node</strong> to light its genuine connections. Solid lines were <em>extracted</em> from the
+    text; dashed amber lines are <em>inferred</em> — the graph reasoning that two things are alike
+    even though nothing said so directly.
+  </p>
+
+  <div id="lv-context-web">
+    <svg viewBox="0 0 820 640" width="820" height="640" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Interactive knowledge-graph slice. Hover a node to highlight its real connections.">
+      <!-- ===== EDGES (drawn under nodes) ===== -->
+      <g class="lv-edges" stroke-linecap="round">
+        <line class="lv-edge ext" data-a="sync" data-b="sluggers" x1="200" y1="140" x2="95" y2="110" data-rel="calls"/>
+        <line class="lv-edge ext" data-a="sync" data-b="process" x1="200" y1="140" x2="95" y2="205" data-rel="contains"/>
+        <line class="lv-edge ext" data-a="digest" data-b="status" x1="175" y1="300" x2="175" y2="400" data-rel="calls"/>
+        <line class="lv-edge ext" data-a="digest" data-b="govstate" x1="175" y1="300" x2="305" y2="350" data-rel="calls"/>
+        <line class="lv-edge ext" data-a="status" data-b="govstate" x1="175" y1="400" x2="305" y2="350" data-rel="calls"/>
+        <line class="lv-edge ext" data-a="govstate" data-b="gstate" x1="305" y1="350" x2="150" y2="485" data-rel="implements"/>
+        <line class="lv-edge ext" data-a="govstate" data-b="pending" x1="305" y1="350" x2="320" y2="470" data-rel="implements"/>
+        <line class="lv-edge ext" data-a="audit" data-b="prime" x1="545" y1="95" x2="675" y2="150" data-rel="produced"/>
+        <line class="lv-edge ext" data-a="audit" data-b="aicluster" x1="545" y1="95" x2="560" y2="245" data-rel="produced"/>
+        <line class="lv-edge ext" data-a="prime" data-b="aicluster" x1="675" y1="150" x2="560" y2="245" data-rel="references"/>
+        <line class="lv-edge inf" data-a="prime" data-b="gear" x1="675" y1="150" x2="755" y2="235" data-rel="depends_on"/>
+        <line class="lv-edge ext" data-a="aicluster" data-b="vox" x1="560" y1="245" x2="610" y2="335" data-rel="references"/>
+        <line class="lv-edge ext" data-a="aicluster" data-b="localai" x1="560" y1="245" x2="735" y2="350" data-rel="references"/>
+        <line class="lv-edge ext" data-a="aicluster" data-b="dda" x1="560" y1="245" x2="620" y2="525" data-rel="references"/>
+        <line class="lv-edge ext" data-a="dda" data-b="audiopipe" x1="620" y1="525" x2="705" y2="450" data-rel="renamed_to"/>
+        <line class="lv-edge inf" data-a="localai" data-b="dda" x1="735" y1="350" x2="620" y2="525" data-rel="reuses_infrastructure_from"/>
+        <line class="lv-edge inf" data-a="localai" data-b="audiopipe" x1="735" y1="350" x2="705" y2="450" data-rel="semantically_similar_to"/>
+        <line class="lv-edge inf star" data-a="vox" data-b="emotion" x1="610" y1="335" x2="560" y2="435" data-rel="semantically_similar_to"/>
+        <line class="lv-edge inf" data-a="memcon" data-b="lsf" x1="430" y1="505" x2="470" y2="585" data-rel="also_included_project"/>
+        <line class="lv-edge inf" data-a="memcon" data-b="sbox" x1="430" y1="505" x2="330" y2="565" data-rel="also_included_project"/>
+      </g>
+
+      <!-- ===== sealed subject aura ===== -->
+      <g class="lv-aura" aria-hidden="true">
+        <line x1="430" y1="300" x2="390" y2="250" /><line x1="430" y1="300" x2="480" y2="255" />
+        <line x1="430" y1="300" x2="385" y2="345" /><line x1="430" y1="300" x2="478" y2="345" />
+        <line x1="430" y1="300" x2="430" y2="240" /><line x1="430" y1="300" x2="430" y2="360" />
+      </g>
+
+      <!-- ===== NODES ===== -->
+      <g class="lv-nodes">
+        <!-- center: sealed subject -->
+        <g class="lv-node subject" data-id="subject" data-label="THE SUBJECT" data-meta="core · 18 edges — all sealed (personal)" tabindex="0" role="button" transform="translate(430,300)">
+          <circle r="13" class="lv-dot subject"/>
+          <text class="lv-label" x="0" y="-20" text-anchor="middle">THE SUBJECT</text>
+          <text class="lv-sub" x="0" y="30" text-anchor="middle">18 edges · sealed</text>
+        </g>
+
+        <!-- pipeline cluster (green) -->
+        <g class="lv-node" data-id="sluggers" data-label="sluggers.py" data-meta="pipeline · code · 7 edges" tabindex="0" role="button" transform="translate(95,110)"><circle r="6" class="lv-dot pipeline"/><text class="lv-label" x="10" y="4">sluggers.py</text></g>
+        <g class="lv-node" data-id="sync" data-label="sync.py" data-meta="pipeline · code · 17 edges — densest script" tabindex="0" role="button" transform="translate(200,140)"><circle r="10" class="lv-dot pipeline"/><text class="lv-label" x="13" y="4">sync.py</text></g>
+        <g class="lv-node" data-id="process" data-label="process_session()" data-meta="pipeline · code · 8 edges" tabindex="0" role="button" transform="translate(95,205)"><circle r="6" class="lv-dot pipeline"/><text class="lv-label" x="10" y="4">process_session()</text></g>
+        <g class="lv-node" data-id="digest" data-label="digest.py" data-meta="pipeline · code · 14 edges" tabindex="0" role="button" transform="translate(175,300)"><circle r="9" class="lv-dot pipeline"/><text class="lv-label" x="13" y="4">digest.py</text></g>
+        <g class="lv-node" data-id="status" data-label="status.py" data-meta="pipeline · code · 14 edges" tabindex="0" role="button" transform="translate(175,400)"><circle r="9" class="lv-dot pipeline"/><text class="lv-label" x="13" y="4">status.py</text></g>
+        <g class="lv-node" data-id="govstate" data-label="govstate.py" data-meta="pipeline · code · 13 edges" tabindex="0" role="button" transform="translate(305,350)"><circle r="9" class="lv-dot pipeline"/><text class="lv-label" x="13" y="4">govstate.py</text></g>
+        <g class="lv-node" data-id="gstate" data-label="governor-state.md" data-meta="pipeline · data · source of truth" tabindex="0" role="button" transform="translate(150,485)"><circle r="7" class="lv-dot data"/><text class="lv-label" x="11" y="4">governor-state.md</text></g>
+        <g class="lv-node" data-id="pending" data-label="pending_status_changes" data-meta="pipeline · data · proposal queue" tabindex="0" role="button" transform="translate(320,470)"><circle r="6" class="lv-dot data"/><text class="lv-label" x="10" y="4">pending_status_changes</text></g>
+
+        <!-- OS cluster (red) -->
+        <g class="lv-node" data-id="audit" data-label="Fire-and-Forget Audit" data-meta="operating system · doc · 7 edges" tabindex="0" role="button" transform="translate(545,95)"><circle r="7" class="lv-dot os"/><text class="lv-label" x="11" y="4">Fire-and-Forget Audit</text></g>
+        <g class="lv-node" data-id="prime" data-label="PRIME DIRECTIVE" data-meta="operating system · doc · 12 edges → Chamber 11" data-href="philosophy.html" tabindex="0" role="button" transform="translate(675,150)"><circle r="9" class="lv-dot os"/><text class="lv-label" x="13" y="4">PRIME DIRECTIVE</text></g>
+        <g class="lv-node" data-id="aicluster" data-label="AI-ASSISTANT-CLUSTER" data-meta="lineage hub · doc · 8 edges · cross-community bridge" tabindex="0" role="button" transform="translate(560,245)"><circle r="8" class="lv-dot os"/><text class="lv-label" x="12" y="4">AI-ASSISTANT-CLUSTER</text></g>
+        <g class="lv-node" data-id="gear" data-label="Gear System (4 gears)" data-meta="operating system · 4 gears → Chamber 02" data-href="gears.html" tabindex="0" role="button" transform="translate(755,235)"><circle r="7" class="lv-dot os"/><text class="lv-label" x="-11" y="4" text-anchor="end">Gear System</text></g>
+
+        <!-- project cluster (blue) -->
+        <g class="lv-node" data-id="vox" data-label="Vox — Voice Transcription" data-meta="project · 14 edges — god node" tabindex="0" role="button" transform="translate(610,335)"><circle r="9" class="lv-dot project"/><text class="lv-label" x="13" y="4">Vox</text></g>
+        <g class="lv-node" data-id="emotion" data-label="EmotionHue" data-meta="project · Philips Hue engine → Chamber 04" data-href="emotionhue.html" tabindex="0" role="button" transform="translate(560,435)"><circle r="7" class="lv-dot project"/><text class="lv-label" x="11" y="4">EmotionHue</text></g>
+        <g class="lv-node" data-id="localai" data-label="LocalAI Orchestrator (.NET)" data-meta="project · 12 edges — god node" tabindex="0" role="button" transform="translate(735,350)"><circle r="9" class="lv-dot project"/><text class="lv-label" x="-13" y="4" text-anchor="end">LocalAI Orchestrator</text></g>
+        <g class="lv-node" data-id="audiopipe" data-label="AudioPipeline Project (.NET)" data-meta="project · 10 edges" tabindex="0" role="button" transform="translate(705,450)"><circle r="8" class="lv-dot project"/><text class="lv-label" x="-13" y="4" text-anchor="end">AudioPipeline</text></g>
+        <g class="lv-node" data-id="dda" data-label="day-data-analyser (Daemon)" data-meta="project · 7 edges · became AudioPipeline" tabindex="0" role="button" transform="translate(620,525)"><circle r="7" class="lv-dot project"/><text class="lv-label" x="11" y="4">day-data-analyser</text></g>
+        <g class="lv-node" data-id="memcon" data-label="Memory Consolidation" data-meta="session · 55 files → 43 · touched two projects" tabindex="0" role="button" transform="translate(430,505)"><circle r="6" class="lv-dot session"/><text class="lv-label" x="10" y="4">Memory Consolidation</text></g>
+        <g class="lv-node" data-id="lsf" data-label="LetsSaveFood" data-meta="project · food-bank engine → Chamber 05" data-href="letssavefood.html" tabindex="0" role="button" transform="translate(470,585)"><circle r="8" class="lv-dot project"/><text class="lv-label" x="12" y="4">LetsSaveFood</text></g>
+        <g class="lv-node" data-id="sbox" data-label="S&amp;box Zombie Survival" data-meta="project · 9 edges" tabindex="0" role="button" transform="translate(330,565)"><circle r="8" class="lv-dot project"/><text class="lv-label" x="12" y="4">S&amp;box Zombie</text></g>
+      </g>
+    </svg>
+
+    <div id="lv-web-info" class="lv-web-info">
+      <span class="lv-info-default">Hover or tap a node to trace its real connections.</span>
+    </div>
+    <div class="lv-legend">
+      <span><span class="lv-swatch pipeline"></span> pipeline</span>
+      <span><span class="lv-swatch os"></span> operating system</span>
+      <span><span class="lv-swatch project"></span> projects</span>
+      <span><span class="lv-swatch subject"></span> subject (sealed)</span>
+      <span><span class="lv-swatch-line ext"></span> extracted</span>
+      <span><span class="lv-swatch-line inf"></span> inferred</span>
+    </div>
+  </div>
+  <div class="annotation" style="text-align:center;">
+    The subject sits at the centre with the most connections in the entire graph — eighteen — and
+    every one of them is <strong>sealed</strong>: they run into the operator's private life, which
+    this manual does not open. The technical spine is what's shown. Lit nodes that map to a chamber
+    are clickable.
+  </div>
+
+  <div class="warning-box info">
+    <p>The graph found something nobody wrote down: <strong>Vox ≈ EmotionHue</strong>, an
+    <em>inferred</em> similarity (dashed, amber). A voice-transcription pipeline and a lighting
+    engine — the graph noticed they share a spatial-noise, drift-over-time soul. That's the payoff
+    of the whole exercise: connections you didn't know you'd made.</p>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= GRAPHIFY LAYER ============= -->
+  <h2>How the web is woven — graphify</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The graph is not free like the weekly routine — it is the one place the vault spends real
+    tokens, once. <strong>graphify</strong> read <strong>214 files · ~390,864 words</strong> and
+    built <strong>420 nodes · 555 edges · 37 communities · 36 hyperedges</strong> for a one-time
+    cost of <strong>991,830 input tokens</strong> (zero output — it only reads). Model choice is
+    gear-aware: the same Gear system from Chamber 02 routes the extraction to Haiku, Sonnet, or
+    Opus depending on how hard you're willing to spend. It follows Karpathy's "LLM as librarian"
+    pattern — raw notes in, a navigable wiki out.
+  </p>
+
+  <div class="grid-3">
+    <div class="stat-box"><div class="stat-value" style="color:var(--green);">86%</div><div class="stat-label">Extracted (from text)</div></div>
+    <div class="stat-box"><div class="stat-value" style="color:var(--amber);">14%</div><div class="stat-label">Inferred (reasoned)</div></div>
+    <div class="stat-box"><div class="stat-value">~200</div><div class="stat-label">Relation Types</div></div>
+  </div>
+  <div class="margin-note">The commonest relations are real and countable: <code>contains</code> (50),
+    <code>implements</code> (46), <code>calls</code> (40), <code>rationale_for</code> (27),
+    <code>references</code> (25), <code>semantically_similar_to</code> (23). The graph doesn't just
+    say two things connect — it says <em>how</em>.</div>
+
+  <div class="warning-box">
+    <p><strong>It grades its own homework.</strong> The report flags where it is weak: the biggest
+    communities have low cohesion (0.08 — loosely knit), and <strong>146 nodes are near-isolated</strong>,
+    marked as possible documentation gaps. A knowledge graph honest enough to point at its own holes
+    is worth more than one that pretends to be complete.</p>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE MIRROR ============= -->
+  <h2>The mirror — what the graph says is at the centre</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Rank every node by connections and two truths surface. As <em>concepts</em>, the core
+    abstractions are the subject (18), Vox (14), the Prime Directive (12), the LocalAI Orchestrator
+    (12), LetsSaveFood (11). But count raw connectivity, code and all, and the vault's own machinery
+    tops the list:
+  </p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <span class="panel-title">Core abstractions (concepts)</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">18</span> <span>THE SUBJECT <span class="note">edges sealed</span></span></li>
+        <li><span class="qty">14</span> <span>Vox — Voice Transcription</span></li>
+        <li><span class="qty">12</span> <span>PRIME DIRECTIVE</span></li>
+        <li><span class="qty">12</span> <span>LocalAI Orchestrator</span></li>
+        <li><span class="qty">11</span> <span>LetsSaveFood</span></li>
+      </ul>
+    </div>
+    <div class="panel" style="border-color: var(--green);">
+      <span class="panel-title" style="color: var(--green-dark);">Densest machinery (raw degree)</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">17</span> <span>sync.py</span></li>
+        <li><span class="qty">14</span> <span>digest.py</span></li>
+        <li><span class="qty">14</span> <span>status.py</span></li>
+        <li><span class="qty">13</span> <span>govstate.py</span></li>
+        <li><span class="qty">8</span> <span>process_session()</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="margin-note">The system built to watch everything is itself the most tightly-woven
+    thing in the graph of everything. The watcher is wired into what it watches — which is either a
+    little poetic or a little ouroboric, depending on the day.</div>
+
+  <blockquote class="glados-quote">
+    The subject cannot reliably remember what he promised to finish, so he built a machine that
+    remembers for him, files the evidence under the exact folder each decision was made in, and
+    raises a small flag every time something he called important goes quiet for three weeks. I have
+    read the flags. There are a lot of them. The machine, at least, is doing its job.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="warning-box info">
+    <p>The graph spans more than code. Whole communities index the operator's own operating system —
+    the neurodivergent profile, the regulation protocols, the therapy prep. Those are real nodes in
+    the vault and <strong>sealed from this manual</strong>. What the vault does with a life is its
+    business; what it does with software is what's on display here.</p>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      The vault is the one rule given a memory: it remembers what the subject said he'd finish, and
+      it notices when he doesn't. The rule it serves is stated in
+      <a href="philosophy.html">The Prime Directive</a>; the flags it raises are read by
+      <a href="governor.html">The Governor</a>. Back to the
+      <a href="../index.html">Facility Directory</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="letssavefood.html">◄ LET'S SAVE FOOD</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="philosophy.html">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<script src="../script.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    securityLevel: 'strict',
+    fontFamily: 'Share Tech Mono, monospace',
+    themeVariables: {
+      background: '#f5f0e8',
+      primaryColor: '#2a2a2e',
+      primaryTextColor: '#f5f0e8',
+      primaryBorderColor: '#b45309',
+      lineColor: '#6b7280',
+      secondaryColor: '#151518',
+      tertiaryColor: '#e5ded0',
+      fontSize: '13px'
+    }
+  });
+</script>
+</body>
+</html>

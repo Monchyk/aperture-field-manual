@@ -1282,6 +1282,71 @@ a.section-card:hover {
 .lsf-null { color: #6b7280; font-style: italic; }
 .lsf-meta { display: block; margin-top: 0.25rem; font-size: 0.64rem; color: #6b7280; }
 
+/* ---- Living Vault: mermaid containers ---- */
+.lv-mermaid {
+  background: var(--bg-page); border: 2px solid var(--border);
+  padding: 0.8rem; margin: 1rem 0; overflow-x: auto; text-align: center;
+}
+.lv-mermaid pre.mermaid {
+  margin: 0; font-family: var(--mono); font-size: 0.72rem; color: var(--text-light);
+  white-space: pre-wrap; text-align: left;
+}
+/* once mermaid renders, it swaps <pre> content for an <svg> */
+.lv-mermaid pre.mermaid svg { max-width: 100%; height: auto; }
+
+/* ---- Living Vault: interactive context web ---- */
+#lv-context-web { border: 2px solid var(--border); background: #151518; margin: 1rem 0; padding: 0.5rem; }
+#lv-context-web svg { width: 100%; height: auto; display: block; }
+.lv-edge { stroke: #6b7280; stroke-width: 1.3; transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s; }
+.lv-edge.inf { stroke: #b45309; stroke-dasharray: 5 4; }
+.lv-aura line { stroke: #6b7280; stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.5; }
+.lv-node { cursor: default; }
+.lv-node.lv-linked { cursor: pointer; }
+.lv-dot { stroke: #151518; stroke-width: 1.5; transition: r 0.15s, filter 0.15s; }
+.lv-dot.pipeline { fill: #16a34a; }
+.lv-dot.data     { fill: #64748b; }
+.lv-dot.os       { fill: #dc2626; }
+.lv-dot.project  { fill: #2563eb; }
+.lv-dot.session  { fill: #9ca3af; }
+.lv-dot.subject  { fill: #2a2a2e; stroke: #b45309; stroke-width: 2.5; stroke-dasharray: 3 2; }
+.lv-label { font-family: var(--mono); font-size: 10px; fill: #d8d2c6; pointer-events: none; }
+.lv-node.subject .lv-label { fill: #f59e0b; font-weight: 700; font-size: 11px; }
+.lv-sub { font-family: var(--mono); font-size: 8px; fill: #9ca3af; pointer-events: none; }
+/* focus/hover dimming */
+.lv-focused .lv-edge { opacity: 0.12; }
+.lv-focused .lv-node { opacity: 0.3; }
+.lv-focused .lv-edge.lit { opacity: 1; stroke-width: 2.4; }
+.lv-focused .lv-edge.lit:not(.inf) { stroke: #f5f0e8; }
+.lv-focused .lv-edge.lit.inf { stroke: #f59e0b; }
+.lv-focused .lv-node.lit { opacity: 1; }
+.lv-focused .lv-node.lit .lv-dot { filter: drop-shadow(0 0 5px currentColor); }
+.lv-node:focus { outline: none; }
+.lv-node:focus .lv-dot { stroke: #f59e0b; stroke-width: 2.5; }
+/* info readout + legend */
+.lv-web-info {
+  border-top: 2px solid var(--border); margin-top: 0.4rem; padding: 0.6rem 0.5rem 0.2rem;
+  font-family: var(--mono); font-size: 0.74rem; color: var(--text-light); min-height: 3.4rem;
+}
+.lv-info-default { color: var(--border-light); }
+.lv-info-label { display: block; color: var(--amber); font-weight: 700; font-size: 0.82rem; }
+.lv-info-meta { display: block; color: #9ca3af; font-size: 0.68rem; margin-bottom: 0.3rem; }
+.lv-info-rel { display: inline-block; margin: 0.1rem 0.5rem 0.1rem 0; color: #d8d2c6; }
+.lv-info-rel.inf { color: var(--amber-dark); }
+.lv-legend {
+  display: flex; flex-wrap: wrap; gap: 0.4rem 0.9rem; padding: 0.5rem;
+  font-family: var(--mono); font-size: 0.66rem; color: #9ca3af;
+  border-top: 1px solid var(--border);
+}
+.lv-legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.lv-swatch { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.lv-swatch.pipeline { background: #16a34a; }
+.lv-swatch.os { background: #dc2626; }
+.lv-swatch.project { background: #2563eb; }
+.lv-swatch.subject { background: #2a2a2e; border: 1.5px dashed #b45309; }
+.lv-swatch-line { width: 16px; height: 0; display: inline-block; }
+.lv-swatch-line.ext { border-top: 2px solid #9ca3af; }
+.lv-swatch-line.inf { border-top: 2px dashed #b45309; }
+
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 600px) {

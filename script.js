@@ -470,6 +470,82 @@ function initLsfAuditDemo() {
   paint();
 }
 
+// --- LIVING VAULT: interactive knowledge-graph slice ---
+// Hover/focus a node → light its real neighbours + incident edges; click a node
+// with data-href → travel to that chamber. Edges/adjacency are read from the DOM,
+// so every highlighted link is one of the genuine graph edges drawn in the SVG.
+function initLvContextWeb() {
+  const root = document.getElementById('lv-context-web');
+  if (!root) return;
+  const svg = root.querySelector('svg');
+  const info = root.querySelector('#lv-web-info');
+  const nodes = [...root.querySelectorAll('.lv-node')];
+  const edges = [...root.querySelectorAll('.lv-edge')];
+
+  // adjacency: id -> [{other, rel, inferred}]
+  const adj = {};
+  edges.forEach(e => {
+    const a = e.dataset.a, b = e.dataset.b, rel = e.dataset.rel;
+    const inf = e.classList.contains('inf');
+    (adj[a] = adj[a] || []).push({ other: b, rel, inf });
+    (adj[b] = adj[b] || []).push({ other: a, rel, inf });
+  });
+  const nodeById = {};
+  nodes.forEach(n => { nodeById[n.dataset.id] = n; });
+
+  function labelOf(id) {
+    const n = nodeById[id];
+    return n ? (n.dataset.label || id) : id;
+  }
+
+  function highlight(id) {
+    const node = nodeById[id];
+    if (!node) return;
+    svg.classList.add('lv-focused');
+    const neighbours = new Set([id]);
+    (adj[id] || []).forEach(x => neighbours.add(x.other));
+    nodes.forEach(n => n.classList.toggle('lit', neighbours.has(n.dataset.id)));
+    edges.forEach(e => e.classList.toggle('lit', e.dataset.a === id || e.dataset.b === id));
+
+    const conns = adj[id] || [];
+    let html = `<span class="lv-info-label">${node.dataset.label}</span>` +
+               `<span class="lv-info-meta">${node.dataset.meta || ''}</span>`;
+    if (id === 'subject') {
+      html += `<span class="lv-info-rel">↯ 18 connections — sealed (personal domains)</span>`;
+    } else if (conns.length) {
+      html += conns.map(c =>
+        `<span class="lv-info-rel${c.inf ? ' inf' : ''}">` +
+        `${c.inf ? '⇢ (inferred) ' : '→ '}${c.rel} · ${labelOf(c.other)}</span>`
+      ).join('');
+    } else {
+      html += `<span class="lv-info-rel">no edges in this slice</span>`;
+    }
+    info.innerHTML = html;
+  }
+
+  function clear() {
+    svg.classList.remove('lv-focused');
+    nodes.forEach(n => n.classList.remove('lit'));
+    edges.forEach(e => e.classList.remove('lit'));
+    info.innerHTML = '<span class="lv-info-default">Hover or tap a node to trace its real connections.</span>';
+  }
+
+  nodes.forEach(n => {
+    const id = n.dataset.id;
+    n.addEventListener('mouseenter', () => highlight(id));
+    n.addEventListener('mouseleave', clear);
+    n.addEventListener('focus', () => highlight(id));
+    n.addEventListener('blur', clear);
+    const href = n.dataset.href;
+    const go = () => { if (href) window.location.href = href; };
+    n.addEventListener('click', go);
+    n.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && href) { e.preventDefault(); go(); }
+    });
+    if (href) n.classList.add('lv-linked');
+  });
+}
+
 function initPages() {
   initGovernorBattery();   // gates on #governor-battery-form
   initGearSwitcher();      // gates on #gear-switcher
@@ -477,6 +553,7 @@ function initPages() {
   initHueConsole();        // gates on #hue-canvas
   initNoiseCanvas();       // gates on #noise-canvas
   initLsfAuditDemo();      // gates on #lsf-audit-demo
+  initLvContextWeb();      // gates on #lv-context-web
 }
 
 // ============================================

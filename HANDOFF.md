@@ -29,7 +29,7 @@ enable Pages (root). Deploys to `https://<user>.github.io/aperture-field-manual/
 
 ## 2. Current state
 
-**Built & live (6 of 12 chambers):**
+**Built & live (7 of 12 chambers):**
 
 | # | File | Chamber | Interactive |
 |---|------|---------|-------------|
@@ -39,17 +39,25 @@ enable Pages (root). Deploys to `https://<user>.github.io/aperture-field-manual/
 | 03 | `pages/workshop.html` | The Workshop | (accordions) |
 | 04 | `pages/emotionhue.html` | EmotionHue | ✅ light-room console |
 | 05 | `pages/letssavefood.html` | Let's Save Food | ✅ audit-trail generator (`#lsf-audit-demo`) |
+| 08 | `pages/livingvault.html` | The Living Vault | ✅ interactive graph web (`#lv-context-web`) + Mermaid (CDN, this page only) |
 | 11 | `pages/philosophy.html` | The Prime Directive | ✅ radial convergence map |
 | — | `style.css`, `script.js` | shared infra | — |
 | — | `README.md`, `HANDOFF.md` | docs | — |
 
 **Sealed (locked cards on index, not built):** 06 Schrute Library · 07 Graveyard ·
-08 Living Vault · 09 Hardware · 10 Misc Wing · 12 Collaboration.
+09 Hardware · 10 Misc Wing · 12 Collaboration.
 
 **Linear read order:** index(00) → governor(01) → gears(02) → workshop(03) →
-emotionhue(04) → letssavefood(05) → **[06 Schrute next — sealed]** → … → philosophy(11) →
-collab(12). LSF's nav-next jumps to philosophy(11) since 06 is sealed. Philosophy is the
-convergence endpoint every page links back toward.
+emotionhue(04) → letssavefood(05) → livingvault(08) → **[09 Hardware next — sealed]** → …
+→ philosophy(11) → collab(12). The chain skips sealed chambers: LSF(05)→LivingVault(08)→
+Philosophy(11). Philosophy is the convergence endpoint every page links back toward.
+
+**⚠ New dependency (scoped):** `livingvault.html` is the FIRST page to load an external library —
+Mermaid.js from `cdn.jsdelivr.net/npm/mermaid@11` via a `<script type="module">` at page end,
+**only on that page** (all others stay dependency-free). It renders the flow/loop/ledger diagrams;
+the hero `#lv-context-web` is bespoke SVG (no lib). If you ever want zero-dep purity back, the
+Mermaid blocks can be swapped for hand-drawn SVGs — the user was offered all-bespoke and may still
+choose it (they were away when the hybrid was picked as best-judgment).
 
 ---
 
@@ -235,9 +243,20 @@ headless checks can't confirm accordions expand, canvases animate, or mobile lay
 ---
 
 ## 10. Quick status line for the next session
-> 6/12 chambers live, all cross-linked, all interactives verified (JS OK · 0 tag mismatches ·
-> 0 broken links · `data-op` ⊆ JS actions · LSF CSS present). **Chamber 05 Let's Save Food is
-> DONE** — bespoke ER + audit-flow SVGs, FAVV compliance table, OFF streaming-import diagram,
+> **7/12 chambers live**, all cross-linked, all interactives verified (JS OK · 0 tag mismatches ·
+> 0 broken links · index 7 operational/5 sealed · philosophy 7 live radial nodes). **Chamber 08
+> The Living Vault is DONE** — the vault documents *itself* (this Obsidian project). Mermaid flow
+> diagrams (pipeline sync→concept→status→digest→governor; the closed drift-loop; the dual-key
+> ledger) + a bespoke **interactive context web** (`#lv-context-web`) drawn from real `graph.json`
+> data: ~20 genuine edges among privacy-safe technical nodes, hover to light real neighbours,
+> click chamber-mapped nodes to travel. Every claim verified against `claude-vault/*.py`,
+> `docs/living-vault.md`, `graphify-out/{GRAPH_REPORT.md,graph.json}` (420 nodes/555 edges/37
+> communities/991,830 one-time tokens are all real). **Privacy win:** the subject (K.) is the #1
+> god node (18 edges) but ALL his edges are personal → rendered as a *sealed* redacted centre; no
+> AuDHD/therapy/housemate content drawn. **Next candidate:** Chamber 06 Schrute Library or 07
+> Graveyard (both sealed, both have vault source). Repo still needs manual GitHub creation.
+>
+> _(Earlier:)_ **Chamber 05 Let's Save Food is DONE** — bespoke ER + audit-flow SVGs, FAVV compliance table, OFF streaming-import diagram,
 > and a live audit-trail generator (`#lsf-audit-demo`) that mirrors `InventoryService` +
 > the `SaveChanges` audit override. Every claim verified against the LSF repo (entities,
 > `LsfDbContext`, configs, `Program.cs`, the FAVV + OFF docs) — corrected the plan's fictional
