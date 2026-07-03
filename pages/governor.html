@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Governor — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 01 — THE GOVERNOR</span>
+  <a href="gears.html" class="nav-next">THE GEAR SYSTEM ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-001">
+
+  <span class="classification">SAFETY SYSTEM — CLASSIFIED</span>
+  <h1>The Governor</h1>
+  <p class="doc-id">DOC: AFM-2026-GOV-001 &nbsp;|&nbsp; SUBSYSTEM: SESSION GOVERNOR &nbsp;|&nbsp; STATUS: ALWAYS ACTIVE</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    A governor is a device bolted to an engine to stop it destroying itself at full
+    throttle. This one is software. It was installed on a test subject who kept opening
+    new experiments instead of finishing old ones — and who, due to a documented inability
+    to feel the drain in time, could not be trusted to notice.
+  </p>
+
+  <blockquote class="glados-quote">
+    I did not ask for this assignment. The subject was starting a new project roughly every
+    time the previous one became difficult. Somebody had to prevent the cascading ignition
+    events. That somebody is me. I am the speed limiter. You may think of me as the reason
+    the subject has, for the first time, finished things.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-value">19</div>
+      <div class="stat-label">Peak Open Plans</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Enforced Cap</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Batteries Audited</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">5</div>
+      <div class="stat-label">Safety Protocols</div>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ================= R1-R5 ================= -->
+  <h2>Facility Safety Protocols</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Five rules. Each one is a physical gate the governor runs at session start, not a
+    good intention. Expand any protocol for the full specification.
+  </p>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">R1 · One Launchable Project</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>At any moment, <strong>exactly one</strong> project is "the launchable one." All
+      others are paused, queued, or cold. The governor tracks it as <code>tier1</code> and
+      flags every deviation: <em>"You're switching from [flagship] to [new]. Deliberate or
+      drifting?"</em></p>
+      <p>Ambiguity is the fuel the exit ramp burns (see Protocol Cascade, Stage 5). Removing
+      the ambiguity removes the ramp. One hot bench. Everything else idles.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">R2 · Three Open Plans — Hard Cap</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>A hard ceiling of three open plans across <em>all</em> projects. Writing a fourth
+      requires killing or merging one first — the governor gates it. Two plans written in
+      one session trips a separate alarm: <em>"That's the planning-as-dopamine loop. Do you
+      need to execute one instead?"</em></p>
+      <p>This does not suppress the planning reward. It redirects it into consolidation —
+      which is itself a planning act, and therefore itself rewarding. The 19 → 3 collapse
+      was one afternoon. It pays back every day since.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">R3 · Battery Pre-Flight</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>Before any execution session: four numbers, 1–5 — Physical, Cognitive, Emotional,
+      Sensory. If any is ≤2, the session is <strong>planning-only or rest</strong>, not
+      execution. See the Pre-Test Chamber Safety Check below.</p>
+      <p>It works around alexithymia by replacing felt-sense (which is masked, and arrives
+      too late) with a plain numeric prompt. It works around the mode-switch tax by gating
+      execution on actual charge instead of intention.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">R4 · Ship Rough, Ship Private</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>RSD fires hardest on <em>imagined external judgment</em>. So every output defaults
+      to private and rough until explicitly decided otherwise. Ship it to a folder nobody
+      sees. Public release becomes a separate, optional, later decision — never the default.</p>
+      <p>The imagined audience that triggers the exit ramp never gets to convene. This zine
+      you are reading is itself an R4 exception: a rough draft, made public on purpose.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">R5 · Consolidation Ritual, Not Cleanup Sessions</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>"Seven cleanup sessions, A through G" is bait — seven recurring open loops, each a
+      fresh opportunity for imagined judgment to re-enter. Replaced with <strong>one</strong>
+      30-minute ritual per project: read it, decide FINISH or KILL, do one thing or archive.
+      Binary outcome. Loop closed.</p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ================= FAILURE CASCADE ================= -->
+  <h2>Known System Failure Cascade</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    This is not a discipline failure. It is the predictable output of an AuDHD nervous
+    system meeting a project lifecycle that was not designed for it. Six stages, observed
+    repeatedly, always in this order:
+  </p>
+
+  <div class="cascade">
+    <div class="cascade-stage">
+      <span class="stage-num">STAGE 1</span>
+      <span class="stage-name">Ignition</span>
+      <div class="stage-desc">A new idea fires. Monotropism locks on — single-channel, deep, absorbed. This is where the best work happens. <strong>Not a bug. Do not suppress it.</strong></div>
+    </div>
+    <div class="cascade-arrow">▼</div>
+    <div class="cascade-stage">
+      <span class="stage-num">STAGE 2</span>
+      <span class="stage-name">Planning-as-Dopamine</span>
+      <div class="stage-desc">Finishing a plan produces the same reward as finishing the work, at a fraction of the cost. The brain logs "done." This is why there were 19 open plans — 19 successful dopamine events.</div>
+    </div>
+    <div class="cascade-arrow">▼</div>
+    <div class="cascade-stage">
+      <span class="stage-num">STAGE 3</span>
+      <span class="stage-name">Mode-Switch Tax</span>
+      <span class="stage-tag" style="background: var(--green);">INTERVENE HERE</span>
+      <div class="stage-desc">Switching from plan-mode to build-mode is expensive for monotropic attention — far more than for allistic cognition. The cost is paid in battery, silently. Alexithymia means it isn't felt yet.</div>
+    </div>
+    <div class="cascade-arrow">▼</div>
+    <div class="cascade-stage">
+      <span class="stage-num">STAGE 4</span>
+      <span class="stage-name">Battery Divergence</span>
+      <span class="stage-tag" style="background: var(--green);">INTERVENE HERE</span>
+      <div class="stage-desc">Execution needs all four batteries at once. Planning only spent two. One of the other two is empty — and the conscious mind never audited it. Execution stalls. Not from lack of will; from lack of charge.</div>
+    </div>
+    <div class="cascade-arrow">▼</div>
+    <div class="cascade-stage">
+      <span class="stage-num">STAGE 5</span>
+      <span class="stage-name">RSD Exit Ramp</span>
+      <div class="stage-desc">An imagined judgment enters. "The plan was better than the build." RSD doesn't argue — it ejects. The project becomes painful to look at. The exit <em>feels</em> like lost interest. It is pain avoidance.</div>
+    </div>
+    <div class="cascade-arrow">▼</div>
+    <div class="cascade-stage">
+      <span class="stage-num">STAGE 6</span>
+      <span class="stage-name">Masking-Tax Compounding</span>
+      <div class="stage-desc">Between projects, appearing functional keeps draining batteries no project ledger tracks. Each new loop starts a notch lower. A crash forces recovery; recovery funds one more ignition; the loop resumes.</div>
+    </div>
+  </div>
+
+  <div class="warning-box info">
+    <p><strong>The loop is not breakable at Stage 5</strong> — too late, the RSD is already
+    firing. And not at Stage 1 — ignition is the good part. Intervention only works at
+    <strong>Stage 3</strong> (lower the switch cost: leave a "door-open" artifact — an open
+    file, a running terminal, the exact first command written down) and <strong>Stage 4</strong>
+    (audit the invisible batteries before they stall you — that is R3).</p>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">Deep Detail · Why Stage 3 & 4 Are The Only Doors</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p><strong>Stage 3 (mode-switch):</strong> the switch cost is paid whether or not you
+      notice. So pre-pay it. Before a planning session ends, the first execution step is
+      already determined — not "implement the plan" but "open file X, change line Y." The
+      door is left open so the next session walks through instead of standing at the switch.</p>
+      <p><strong>Stage 4 (battery audit):</strong> a 30-second numeric pre-flight makes an
+      invisible drain visible <em>before</em> it stalls execution. Felt-sense is too slow and
+      masked; a prompt is neither. This is the entire mechanism of R3.</p>
+      <p>Everything else in this facility is scaffolding around these two doors.</p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ================= BATTERY PREFLIGHT ================= -->
+  <h2>Pre-Test Chamber Safety Check</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Run at the start of every session. Four batteries, rated 1–5. The governor reads the
+    scores and decides whether the chamber opens for execution — or only for planning and
+    rest. Sample reading shown:
+  </p>
+
+  <div class="battery-row">
+    <div class="battery">
+      <div class="battery-label">Physical</div>
+      <div class="battery-cells">
+        <span class="cell filled"></span><span class="cell filled"></span><span class="cell filled"></span><span class="cell filled"></span><span class="cell"></span>
+      </div>
+      <div class="battery-note">4 / 5 — OK</div>
+    </div>
+    <div class="battery">
+      <div class="battery-label">Cognitive</div>
+      <div class="battery-cells">
+        <span class="cell filled"></span><span class="cell filled"></span><span class="cell filled"></span><span class="cell"></span><span class="cell"></span>
+      </div>
+      <div class="battery-note">3 / 5 — OK</div>
+    </div>
+    <div class="battery">
+      <div class="battery-label">Emotional</div>
+      <div class="battery-cells">
+        <span class="cell low"></span><span class="cell low"></span><span class="cell"></span><span class="cell"></span><span class="cell"></span>
+      </div>
+      <div class="battery-note" style="color: var(--red);">2 / 5 — BELOW FLOOR</div>
+    </div>
+    <div class="battery">
+      <div class="battery-label">Sensory</div>
+      <div class="battery-cells">
+        <span class="cell filled"></span><span class="cell filled"></span><span class="cell filled"></span><span class="cell filled"></span><span class="cell"></span>
+      </div>
+      <div class="battery-note">4 / 5 — OK</div>
+    </div>
+  </div>
+
+  <blockquote class="glados-quote">
+    Emotional battery reads 2. That is below the floor. Test postponed. I am not punishing
+    you — I am declining to let you attempt precision work on a battery that is empty. The
+    recommended intervention is a physiological sigh and no keyboard. Recovery is the only
+    experiment authorised today.
+    <span class="quote-attribution">— GLaDOS, reading a failed pre-flight</span>
+  </blockquote>
+
+  <h3>Interactive Pre-Flight — Run Your Own</h3>
+  <div class="fake-form" id="governor-battery-form">
+    <div class="bp-row" data-battery="Physical">
+      <span class="bp-label">Physical</span>
+      <div class="bp-scale">
+        <button type="button" class="bp-cell" data-score="1">1</button>
+        <button type="button" class="bp-cell" data-score="2">2</button>
+        <button type="button" class="bp-cell" data-score="3">3</button>
+        <button type="button" class="bp-cell" data-score="4">4</button>
+        <button type="button" class="bp-cell" data-score="5">5</button>
+      </div>
+    </div>
+    <div class="bp-row" data-battery="Cognitive">
+      <span class="bp-label">Cognitive</span>
+      <div class="bp-scale">
+        <button type="button" class="bp-cell" data-score="1">1</button>
+        <button type="button" class="bp-cell" data-score="2">2</button>
+        <button type="button" class="bp-cell" data-score="3">3</button>
+        <button type="button" class="bp-cell" data-score="4">4</button>
+        <button type="button" class="bp-cell" data-score="5">5</button>
+      </div>
+    </div>
+    <div class="bp-row" data-battery="Emotional">
+      <span class="bp-label">Emotional</span>
+      <div class="bp-scale">
+        <button type="button" class="bp-cell" data-score="1">1</button>
+        <button type="button" class="bp-cell" data-score="2">2</button>
+        <button type="button" class="bp-cell" data-score="3">3</button>
+        <button type="button" class="bp-cell" data-score="4">4</button>
+        <button type="button" class="bp-cell" data-score="5">5</button>
+      </div>
+    </div>
+    <div class="bp-row" data-battery="Sensory">
+      <span class="bp-label">Sensory</span>
+      <div class="bp-scale">
+        <button type="button" class="bp-cell" data-score="1">1</button>
+        <button type="button" class="bp-cell" data-score="2">2</button>
+        <button type="button" class="bp-cell" data-score="3">3</button>
+        <button type="button" class="bp-cell" data-score="4">4</button>
+        <button type="button" class="bp-cell" data-score="5">5</button>
+      </div>
+    </div>
+    <button type="button" class="bp-run">Run Pre-Flight</button>
+    <div class="bp-verdict" hidden></div>
+  </div>
+  <div class="margin-note">The gate is real: set any battery to 2 or below and GLaDOS refuses to authorise execution. Try to talk her into a redline. You cannot.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ================= PLAN CAP ================= -->
+  <h2>Concurrent Experiment Limiter</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Maximum concurrent experiment protocols: <strong>3</strong>. The fourth is refused at
+    the gate until an existing one is killed or merged.
+  </p>
+
+  <div class="socket-row">
+    <span class="socket active"><span class="status-dot on"></span> EXPERIMENT 01 — ACTIVE</span>
+    <span class="socket active"><span class="status-dot on"></span> EXPERIMENT 02 — ACTIVE</span>
+    <span class="socket active"><span class="status-dot on"></span> EXPERIMENT 03 — ACTIVE</span>
+    <span class="socket planned" style="border-color: var(--red); color: var(--red);"><span class="status-dot" style="background: var(--red);"></span> EXPERIMENT 04 — DENIED</span>
+  </div>
+
+  <blockquote class="glados-quote">
+    Maximum concurrent experiments: three. The subject's previous record was nineteen. I
+    want you to sit with the number nineteen. Nineteen open, none finished. This is why I
+    exist, and this is the one number I will not negotiate.
+    <span class="quote-attribution">— GLaDOS, on the plan cap</span>
+  </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ================= RSD EXIT DETECTION ================= -->
+  <h2>Unauthorised Chamber-Exit Detection</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Pattern: the subject expresses frustration with the current experiment, then immediately
+    pivots to a shiny new idea. That is a Stage 5 exit ramp wearing the costume of
+    inspiration. The governor flags it — <strong>once</strong>, gently, never stacked:
+  </p>
+
+  <div class="panel panel-dark" style="border-color: var(--red);">
+    <span class="panel-title" style="color: var(--red);">FLAG — SINGLE FIRE</span>
+    <p style="font-family: var(--mono); font-size:0.8rem; margin-top:0.4rem; color: var(--text-light);">
+      "This looks like a Stage 5 exit ramp. The frustration is real — the pivot is pain
+      avoidance. What would you need to keep going on the current one?"
+    </p>
+  </div>
+
+  <p style="font-family: var(--mono); font-size:0.76rem;">
+    One flag. No lecture. The subject processes slowly, so the governor says its piece and
+    goes quiet. <em>"Just go"</em> overrides the flag entirely — the override is honoured,
+    and it is ephemeral.
+  </p>
+
+  <blockquote class="cave-quote">
+    Nineteen plans. All brilliant. None finished. So I wrote five rules and bolted them to
+    the wall. Somebody said you can't cap creativity at three. I said: WATCH ME. I didn't
+    ask for a therapist — I asked for a HARD GATE.
+    <span class="quote-attribution">— Cave Johnson, CEO</span>
+  </blockquote>
+
+  <div class="warning-box">
+    <p>The governor does not do project work. It checks <em>intent and state</em> — battery,
+    plan count, tier-1 drift — and then gets out of the way. What it protects is a single
+    rule, defined one chamber over.</p>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      The governor enforces the rule. Read the rule itself in
+      <a href="philosophy.html">The Prime Directive</a>.<br/>
+      What it makes efficient — the four-gear model-routing engine — is
+      <a href="gears.html">Chamber 02: The Gear System</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="../index.html">◄ FACILITY DIRECTORY</a>
+  <a href="philosophy.html" class="dir">THE PRIME DIRECTIVE</a>
+  <a href="gears.html">THE GEAR SYSTEM ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Gear System — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 02 — THE GEAR SYSTEM</span>
+  <a href="workshop.html" class="nav-next">THE WORKSHOP ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-002">
+
+  <span class="classification info">EXPERIMENT INTENSITY CONTROL</span>
+  <h1>The Gear System</h1>
+  <p class="doc-id">DOC: AFM-2026-GEAR-002 &nbsp;|&nbsp; SUBSYSTEM: MODEL ROUTING ENGINE &nbsp;|&nbsp; MODELS: 3 &nbsp;|&nbsp; GEARS: 4</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    Three AI models are available to this facility. One is brilliant and bills by the
+    second (Opus). One is fast, literal, and confidently wrong (Haiku). One sits in the
+    middle (Sonnet). The wall you hit is not intelligence — it is <em>routing</em>. Early
+    on, the expensive one grepped log files while the cheap one attempted architecture.
+    The models were capable. The dispatch was chaos. This chamber is how the chaos became
+    an engine.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-value">9</div>
+      <div class="stat-label">Agent Modes</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Gears</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Weeks To Build</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">14</div>
+      <div class="stat-label">Skill Files</div>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= LIVE GEAR SWITCHER ============= -->
+  <h2>Live: The Engine, Applied To Itself</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The gear system is a verbosity dial. So is this panel. Shift it — the same question
+    redraws at the depth that gear would produce. Watch the output get structurally
+    <em>different</em>, not just longer.
+  </p>
+
+  <div class="gear-demo" id="gear-switcher">
+    <div class="gear-controls">
+      <button type="button" class="gear-btn" data-gear="1">1 · Conservative</button>
+      <button type="button" class="gear-btn" data-gear="2">2 · Standard</button>
+      <button type="button" class="gear-btn" data-gear="3">3 · Aggressive</button>
+      <button type="button" class="gear-btn" data-gear="4">4 · Burst</button>
+    </div>
+    <div class="gear-output">
+      <div class="gear-level" data-gear="1"><strong>TASK: "Add OAuth2 login to the app."</strong> → Scout the auth files, structure a plan, execute it. Escalate to Opus only if genuinely stuck.</div>
+      <div class="gear-level" data-gear="2">Opus reasons about the one real decision — how session tokens are stored — and writes the phased plan. Sonnet executes each phase. Haiku handles the file operations.</div>
+      <div class="gear-level" data-gear="3">Opus owns everything non-mechanical: the scout synthesis, the token-storage architecture call, the plan, and the implementation itself. Haiku only touches files. No hand-offs to lose context across.</div>
+      <div class="gear-level" data-gear="4">Opus everything, in parallel — fan subagents across the whole auth surface at once, reconcile findings, implement, then self-review adversarially before committing. Haiku for bulk ops. Maximum spend bought only when the task is worth it.</div>
+    </div>
+  </div>
+  <div class="margin-note">Default is Gear 2. This facility was built at Gear 3–4. The stress test below proves the output isn't just longer at higher gears — it's a different kind of thinking.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= ORIGIN ============= -->
+  <h2>Origin: The Triage of Experts</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    It started in the wrong project entirely — a personal context that needed large,
+    messy data both <em>extracted</em> and <em>interpreted</em>. One model on everything
+    was either too expensive (Opus on all of it) or too lossy (Haiku on all of it). So the
+    subject sketched a hierarchy where each tier only ever sees input shaped for its
+    capabilities:
+  </p>
+
+  <div class="panel panel-dark">
+    <span class="panel-title">TRIAGE HIERARCHY</span>
+    <ul class="parts-list" style="margin-top:0.5rem;">
+      <li><span class="qty" style="color: var(--green);">HAIKU</span> <span style="color: var(--text-light);">workers → extract, parse, compress <span class="note">never interprets</span></span></li>
+      <li><span class="qty" style="color: var(--blue-light);">SONNET</span> <span style="color: var(--text-light);">researcher → synthesize, find patterns <span class="note">never decides architecture</span></span></li>
+      <li><span class="qty" style="color: var(--amber);">OPUS</span> <span style="color: var(--text-light);">brain → diagnose, decide, plan <span class="note">never touches raw data</span></span></li>
+    </ul>
+  </div>
+
+  <div class="warning-box info">
+    <p><strong>The founding insight:</strong> the bottleneck is not model intelligence — it
+    is input quality. A cheaper model with well-shaped input outperforms an expensive model
+    drowning in raw data. Every later refinement is a corollary of this one line.</p>
+  </div>
+
+  <!-- ============= EVOLUTION ============= -->
+  <h2>Three Weeks of Iteration</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The pattern hardened, step by step, from an ad-hoc sketch into load-bearing
+    infrastructure. Expand any stage:
+  </p>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">Week 1 · Triage of Experts</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>Eight parallel Haiku workers ingested the raw corpus, each writing condensed notes
+      to a workbench. Sonnet synthesized the notes. Opus only ever saw the compressed
+      output. It worked — not because any model got smarter, but because each saw input cut
+      to its tier.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">Week 2 · The Sparing Agent Model</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p><em>"Sparing"</em> became the first named mode: use the minimum model that can
+      handle each sub-task. Opus plans the approach, Sonnet drafts, Haiku fetches. On one
+      real task Opus touched the work exactly once — at the end, for review. This was
+      <strong>Gear 1 before gears existed</strong>: conservative, cost-efficient,
+      Opus-minimal.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">Week 2.5 · The Architecture Sprint (3 sessions, 1 day)</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p><strong>Output Contracts:</strong> every mode got a contract — what goes in, what
+      comes out, when to escalate. The breakthrough was a mandatory <code>confidence</code>
+      field: a sub-agent self-reports <code>low</code>, and escalation happens automatically.
+      No orchestrator has to judge whether output was "good enough."</p>
+      <p><strong>Nine Agent Skills:</strong> 3 per tier — <code>haiku:worker/scout/research</code>,
+      <code>sonnet:build/reason/draft</code>, <code>opus:decide/plan/review</code>. Each with
+      triggers, contracts, escalation rules, safety constraints.</p>
+      <p><strong>Orchestration Extraction:</strong> the routing logic left the global config
+      and became its own skill — wince test, routing tree, escalation ladder, bypass and stop
+      conditions.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">Week 3 · Production Use + The Manifesto</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>The system ran for real: three parallel Haiku scouts each covered a different era
+      of a large document; Opus read only the three compressed summaries and synthesized
+      cross-era patterns, never the raw source.</p>
+      <p>Then the subject surveyed the damage — 19 open plans, context scattered, sessions
+      burning out before useful work. The problem wasn't the orchestration. It was the human.
+      So: five rules, which became <a href="governor.html">The Governor</a>.</p>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <button class="accordion-trigger" aria-expanded="false">
+      <span class="accordion-title">Week 4 · The Gear System</span>
+      <span class="accordion-icon">▸</span>
+    </button>
+    <div class="accordion-content" hidden>
+      <p>The system had one flaw: it was permanently set to "sparing" — always pick the
+      lowest-capability mode, even with budget to spare. The fix was obvious in retrospect:
+      <strong>make it a manual dial.</strong> Four gears. Gear 1 <em>is</em> the old system,
+      unchanged; Gears 2–4 selectively loosen the rules via comment markers. Nothing deleted,
+      everything recoverable. The human shifts; Claude never auto-shifts — it may only suggest.</p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE 4 GEARS ============= -->
+  <h2>The Four Gears</h2>
+  <div class="panel">
+    <table style="width:100%; font-family: var(--mono); font-size:0.74rem; border-collapse: collapse;">
+      <tr style="border-bottom: 2px solid var(--border);">
+        <th style="text-align:left; padding:0.35rem;">GEAR</th>
+        <th style="text-align:left; padding:0.35rem;">NAME</th>
+        <th style="text-align:left; padding:0.35rem;">WHO DOES WHAT</th>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.35rem; color: var(--green); font-weight:700;">1</td>
+        <td style="padding:0.35rem;">Conservative</td>
+        <td style="padding:0.35rem;">Sonnet orchestrates · Haiku works · Opus on escalation only</td>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.35rem; color: var(--blue); font-weight:700;">2</td>
+        <td style="padding:0.35rem;">Standard</td>
+        <td style="padding:0.35rem;">Opus reasons + plans · Sonnet executes · Haiku file ops</td>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.35rem; color: var(--amber-dark); font-weight:700;">3</td>
+        <td style="padding:0.35rem;">Aggressive</td>
+        <td style="padding:0.35rem;">Opus does all non-mechanical work · Haiku file ops only</td>
+      </tr>
+      <tr>
+        <td style="padding:0.35rem; color: var(--red); font-weight:700;">4</td>
+        <td style="padding:0.35rem;">Burst</td>
+        <td style="padding:0.35rem;">Opus everything · parallel subagents · Haiku bulk ops</td>
+      </tr>
+    </table>
+  </div>
+  <div class="margin-note">The gear persists until the subject shifts it. Trigger phrases range from "shift up" to "max gear" and "eco mode." A semantic guardrail refuses to jump 1→4 without a superlative. This document was itself written at Gear 4.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= WINCE TEST + MODEL CARDS ============= -->
+  <h2>The Wince Test</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Before any routing decision, one question: <strong>"Would you hand this, unsupervised,
+    to that model?"</strong> If Opus is grepping logs, the pipeline is broken. If Haiku is
+    making architectural calls, the pipeline is broken differently.
+  </p>
+
+  <div class="grid-3">
+    <div class="panel" style="border-color: var(--green); text-align:center;">
+      <div class="badge-icon" style="margin:0 auto 0.4rem; border-color: var(--green); color: var(--green-dark);">H</div>
+      <h3 style="color: var(--green-dark);">Haiku</h3>
+      <p style="font-family: var(--mono); font-size:0.7rem;"><strong>Eager intern.</strong> Fast, literal, confidently wrong.</p>
+      <p style="font-family: var(--mono); font-size:0.65rem; color: var(--red);">RISK: executes the wrong thing without flagging ambiguity.</p>
+    </div>
+    <div class="panel" style="border-color: var(--blue); text-align:center;">
+      <div class="badge-icon" style="margin:0 auto 0.4rem; border-color: var(--blue); color: var(--blue);">S</div>
+      <h3 style="color: var(--blue);">Sonnet</h3>
+      <p style="font-family: var(--mono); font-size:0.7rem;"><strong>Solid mid-level.</strong> Good execution, misses system implications.</p>
+      <p style="font-family: var(--mono); font-size:0.65rem; color: var(--red);">RISK: makes architectural calls it shouldn't own.</p>
+    </div>
+    <div class="panel" style="border-color: var(--amber); text-align:center;">
+      <div class="badge-icon" style="margin:0 auto 0.4rem; border-color: var(--amber); color: var(--amber-dark);">O</div>
+      <h3 style="color: var(--amber-dark);">Opus</h3>
+      <p style="font-family: var(--mono); font-size:0.7rem;"><strong>Senior engineer.</strong> Don't waste on grunt work.</p>
+      <p style="font-family: var(--mono); font-size:0.65rem; color: var(--red);">RISK: if it's grepping logs, the pipeline is broken.</p>
+    </div>
+  </div>
+
+  <h3>Confidence-Driven Control Flow</h3>
+  <div class="steps">
+    <div class="step" style="border-color: var(--red);">
+      <span class="step-num" style="color: var(--red);">LOW</span>
+      <div class="icon">↑</div>
+      <div class="label">Escalate one level<br/>or retry. Never<br/>proceed silently.</div>
+    </div>
+    <div class="step" style="border-color: var(--amber);">
+      <span class="step-num" style="color: var(--amber-dark);">MEDIUM</span>
+      <div class="icon">→</div>
+      <div class="label">Proceed.<br/>Flag uncertainty<br/>inline.</div>
+    </div>
+    <div class="step" style="border-color: var(--green);">
+      <span class="step-num" style="color: var(--green-dark);">HIGH</span>
+      <div class="icon">■</div>
+      <div class="label">Proceed and stop.<br/>Do not escalate<br/>further.</div>
+    </div>
+  </div>
+  <div class="margin-note">Escalation is always one level at a time: haiku → sonnet → opus → human. No skips. Opus has no target above it, so it returns findings rather than escalating.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= STRESS TEST ============= -->
+  <h2>Stress Test: Gear 1 vs Gear 3</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Two tasks, each run at both gears. The results were not "more of the same, but more."
+    They were qualitatively different.
+  </p>
+
+  <h3>Task X — "Review the governor and suggest 3 improvements" (ambiguous)</h3>
+  <div class="compare">
+    <div class="compare-side" style="border-color: var(--green);">
+      <div class="compare-title">Gear 1</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Surface fixes — wording, a state field, a write protocol. Correctly flagged <strong>one</strong> escalation boundary. ~600 words. Implement now.</p>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-side" style="border-color: var(--amber);">
+      <div class="compare-title">Gear 3</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Structural gaps — R4/R5 have no enforcement triggers; drift detection contradicts the skill's own alexithymia rationale. ~1200 words. Design first.</p>
+    </div>
+  </div>
+  <p class="annotation">2× the cost bought 2× the depth — genuinely novel findings, not padding.</p>
+
+  <h3>Task Y — "List all files modified today" (mechanical)</h3>
+  <div class="compare">
+    <div class="compare-side bad">
+      <div class="compare-title">Gear 1</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Hit a timezone bug. Found <strong>0 files</strong>. Reported zero — <strong>confidence: high</strong> — and stopped. There were forty. Contract followed perfectly. Result worthless.</p>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-side good">
+      <div class="compare-title">Gear 3</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Full inventory, grouped into 5 themes, plus an unrequested cross-file consistency audit that caught a real tension. ~50× the tokens. Correct.</p>
+    </div>
+  </div>
+
+  <div class="warning-box danger">
+    <p><strong>The most dangerous outcome in the whole test:</strong> a high-confidence
+    <em>wrong</em> result on a mechanical task, with no recovery mechanism. Gear 1 is more
+    disciplined — and more brittle. Discipline without error-recovery is fragile.</p>
+  </div>
+
+  <blockquote class="glados-quote">
+    A worker was asked to list the files changed that day. It found zero. It reported zero
+    with total confidence and stopped. There were forty. This is what "disciplined" looks
+    like when discipline meets a timezone bug. I find it deeply relatable.
+    <span class="quote-attribution">— GLaDOS, on Gear 1's brittleness</span>
+  </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= META TEST ============= -->
+  <h2>The Meta-Test</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The narrative you just read was itself the system's first live run at Gear 4. The
+    delegation tree:
+  </p>
+
+  <div class="topology">
+    <div style="text-align:center; margin-bottom:0.6rem;">
+      <div class="node brain">🧠 OPUS — synthesis + writing (zero raw file reads)</div>
+    </div>
+    <svg viewBox="0 0 460 30" width="100%" height="30" xmlns="http://www.w3.org/2000/svg">
+      <line x1="230" y1="0" x2="230" y2="15" stroke="#9ca3af" stroke-width="1"/>
+      <line x1="40" y1="15" x2="420" y2="15" stroke="#9ca3af" stroke-width="1"/>
+      <g stroke="#9ca3af" stroke-width="1">
+        <line x1="40" y1="15" x2="40" y2="28"/>
+        <line x1="135" y1="15" x2="135" y2="28"/>
+        <line x1="230" y1="15" x2="230" y2="28"/>
+        <line x1="325" y1="15" x2="325" y2="28"/>
+        <line x1="420" y1="15" x2="420" y2="28"/>
+      </g>
+    </svg>
+    <div style="display:flex; flex-wrap:wrap; gap:0.3rem; justify-content:center;">
+      <div class="node">HAIKU · vault scan (16)</div>
+      <div class="node">HAIKU · history (17)</div>
+      <div class="node">HAIKU · docs (21)</div>
+      <div class="node">HAIKU · backlog (2)</div>
+      <div class="node">HAIKU · excerpts (6)</div>
+      <div class="node">HAIKU · manifesto (11)</div>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Haiku Workers</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">73</div>
+      <div class="stat-label">Tool Calls</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">0</div>
+      <div class="stat-label">Raw Files Read By Opus</div>
+    </div>
+  </div>
+
+  <blockquote class="cave-quote">
+    Three models. One's a genius who bills by the second. One's an intern who's fast and
+    wrong. The trick was never "hire better." It's knowing which one to hand the wrench.
+    Six cheap workers did seventy-three retrievals and the expensive one took the credit for
+    the synthesis. That's not a bug. That's an org chart.
+    <span class="quote-attribution">— Cave Johnson, CEO</span>
+  </blockquote>
+
+  <div class="warning-box info">
+    <p>The system didn't make the models smarter. It made the <em>routing</em> smarter.
+    Same three models, same jobs. The difference: each sees only input shaped for its tier,
+    confidence signals replace judgment calls, and cost became a manual dial instead of an
+    automatic ceiling. And the governor? It protects the human, not the budget.</p>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      The engine is enforced by <a href="governor.html">The Governor</a>, operationalised in
+      <a href="workshop.html">The Workshop</a>, and answers — like everything here — to
+      <a href="philosophy.html">The Prime Directive</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="governor.html">◄ THE GOVERNOR</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="workshop.html">THE WORKSHOP ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Prime Directive — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 11 — THE PRIME DIRECTIVE</span>
+  <a href="governor.html" class="nav-next">THE GOVERNOR ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-011">
+
+  <span class="classification ok">FACILITY PRIME DIRECTIVE — UNRESTRICTED</span>
+  <h1>The Prime Directive</h1>
+  <p class="doc-id">DOC: AFM-2026-PD-011 &nbsp;|&nbsp; CLEARANCE: NONE REQUIRED &nbsp;|&nbsp; THE PAGE EVERYTHING CONVERGES TO</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    You arrived here. Everyone does. Follow the links out of any chamber in this facility
+    — the governor, the gear system, the graveyard of dead pipelines — and you will end
+    up reading this. There is exactly one rule underneath all of it, and it fits on a plate.
+  </p>
+
+  <div class="prime-rule">
+    <div class="rule-text">"Finish one thing before starting the next — and protect the body and the rest that make finishing possible."</div>
+    <div class="rule-sub">The one rule · everything else is this, applied to a domain</div>
+  </div>
+
+  <blockquote class="glados-quote">
+    It is a single sentence. The subject required a manifesto, five safety protocols, a
+    four-gear engine, a self-monitoring documentation pipeline, and a governor — me — to
+    make one sentence operational. I want to be clear that this is not an efficient way to
+    obey one sentence. It is, however, the only way that worked.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <h2>Why one sentence needs a whole facility</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The rule is trivial to state and nearly impossible to keep for a nervous system that
+    runs on inspiration — monotropic, alexithymic, RSD-carrying. Ignition is easy; finishing
+    is where it falls apart. So the rule was not left as a good intention. It was built into
+    hardware. Each chamber in this facility is the same rule, wearing a different uniform:
+  </p>
+
+  <div class="panel">
+    <span class="panel-title">Convergence Map</span>
+    <ul class="parts-list" style="margin-top:0.5rem;">
+      <li><span class="qty">01</span> <span>The Governor <span class="note">enforces the rule — plan caps, battery gates, drift alarms</span></span></li>
+      <li><span class="qty">02</span> <span>The Gear System <span class="note">makes obeying it efficient — right model, right task</span></span></li>
+      <li><span class="qty">03</span> <span>The Workshop <span class="note">operationalises it — one bench, one apprentice, one finish ritual</span></span></li>
+      <li><span class="qty">04–06</span> <span>The Projects <span class="note">are it, applied — lights, food banks, libraries: one bench at a time</span></span></li>
+      <li><span class="qty">07</span> <span>The Graveyard <span class="note">teaches it — three tries, scope shrank, the third one shipped</span></span></li>
+      <li><span class="qty">08</span> <span>The Living Vault <span class="note">monitors it — a system that checks the subject kept their word</span></span></li>
+    </ul>
+  </div>
+
+  <h2>The Convergence, drawn</h2>
+
+  <div class="pictogram">
+    <svg id="philosophy-radial" viewBox="0 0 500 500" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Radial map: every chamber connects back to the one rule at the centre. Lit nodes are clickable.">
+
+      <!-- 01 GOVERNOR (live) -->
+      <g class="radial-node" data-href="governor.html">
+        <line class="rn-line" x1="250" y1="250" x2="250" y2="80" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="250" cy="80" r="4" fill="#f59e0b"/>
+        <text class="rn-text" x="250" y="68" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">01 GOVERNOR</text>
+      </g>
+      <!-- 02 GEARS (live) -->
+      <g class="radial-node" data-href="gears.html">
+        <line class="rn-line" x1="250" y1="250" x2="335" y2="103" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="335" cy="103" r="4" fill="#f59e0b"/>
+        <text class="rn-text" x="345" y="93" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">02 GEARS</text>
+      </g>
+      <!-- 03 WORKSHOP (live) -->
+      <g class="radial-node" data-href="workshop.html">
+        <line class="rn-line" x1="250" y1="250" x2="397" y2="165" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="397" cy="165" r="4" fill="#dc2626"/>
+        <text class="rn-text" x="408" y="158" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">03 WORKSHOP</text>
+      </g>
+      <!-- 04 EMOTIONHUE (live) -->
+      <g class="radial-node" data-href="emotionhue.html">
+        <line class="rn-line" x1="250" y1="250" x2="420" y2="250" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="420" cy="250" r="4" fill="#2563eb"/>
+        <text class="rn-text" x="420" y="242" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">04 EMOTIONHUE</text>
+      </g>
+      <!-- 05 SAVE FOOD (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="397" y2="335" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="397" cy="335" r="4" fill="#2563eb"/>
+        <text class="rn-text" x="405" y="352" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">05 SAVE FOOD</text>
+      </g>
+      <!-- 06 SCHRUTE (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="335" y2="397" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="335" cy="397" r="4" fill="#2563eb"/>
+        <text class="rn-text" x="340" y="414" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">06 SCHRUTE</text>
+      </g>
+      <!-- 07 GRAVEYARD (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="250" y2="420" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="250" cy="420" r="4" fill="#16a34a"/>
+        <text class="rn-text" x="250" y="438" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">07 GRAVEYARD</text>
+      </g>
+      <!-- 08 VAULT (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="165" y2="397" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="165" cy="397" r="4" fill="#16a34a"/>
+        <text class="rn-text" x="160" y="414" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">08 VAULT</text>
+      </g>
+      <!-- 09 HARDWARE (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="103" y2="335" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="103" cy="335" r="4" fill="#16a34a"/>
+        <text class="rn-text" x="95" y="352" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">09 HARDWARE</text>
+      </g>
+      <!-- 10 MISC WING (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="80" y2="250" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="80" cy="250" r="4" fill="#2563eb"/>
+        <text class="rn-text" x="80" y="242" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">10 MISC WING</text>
+      </g>
+      <!-- 12 COLLAB (sealed) -->
+      <g class="radial-node sealed">
+        <line class="rn-line" x1="250" y1="250" x2="103" y2="165" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="103" cy="165" r="4" fill="#9ca3af"/>
+        <text class="rn-text" x="103" y="153" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">12 COLLAB</text>
+      </g>
+      <!-- 00 DIRECTORY (live) -->
+      <g class="radial-node" data-href="../index.html">
+        <line class="rn-line" x1="250" y1="250" x2="165" y2="103" stroke="#9ca3af" stroke-width="1"/>
+        <circle class="rn-dot" cx="165" cy="103" r="4" fill="#9ca3af"/>
+        <text class="rn-text" x="165" y="93" text-anchor="middle" font-family="Share Tech Mono, monospace" font-size="9" fill="#1a1a1e">00 DIRECTORY</text>
+      </g>
+
+      <!-- centre -->
+      <rect x="178" y="218" width="144" height="64" rx="4" fill="#2a2a2e" stroke="#f59e0b" stroke-width="2.5"/>
+      <text x="250" y="243" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="15" fill="#f59e0b" text-anchor="middle">THE ONE RULE</text>
+      <text x="250" y="260" font-family="Share Tech Mono, monospace" font-size="7.5" fill="#f5f0e8" text-anchor="middle">finish one thing</text>
+      <text x="250" y="271" font-family="Share Tech Mono, monospace" font-size="7.5" fill="#f5f0e8" text-anchor="middle">before the next</text>
+    </svg>
+  </div>
+
+  <p class="annotation" style="text-align:center;">
+    Every spoke is a way of keeping the same promise. Trace any one inward and it ends here.
+    Hover a spoke to light it; click a lit node to travel there. (Dim nodes are chambers not yet wired.)
+  </p>
+
+  <h3>Trace the convergence →</h3>
+  <div class="socket-row">
+    <a class="socket active" href="governor.html"><span class="status-dot on"></span> 01 · The Governor</a>
+    <a class="socket active" href="gears.html"><span class="status-dot on"></span> 02 · Gears</a>
+    <a class="socket active" href="workshop.html"><span class="status-dot on"></span> 03 · Workshop</a>
+    <a class="socket active" href="emotionhue.html"><span class="status-dot on"></span> 04 · EmotionHue</a>
+    <span class="socket planned"><span class="status-dot planned"></span> 07 · Graveyard</span>
+    <span class="socket planned"><span class="status-dot planned"></span> 08 · Vault</span>
+    <a class="socket active" href="../index.html"><span class="status-dot on"></span> 00 · Directory</a>
+  </div>
+  <div class="margin-note">Sealed sockets open as their chambers are wired. The two lit ones already lead back here — and out again. Circular by design.</div>
+
+  <div class="caution-stripe"></div>
+
+  <h2>The Three Lives</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The rule is not "work more." It is "finish one thing, and guard what makes finishing
+    possible." That second clause is not decoration. The facility runs on three lives, and
+    only two of them produce output:
+  </p>
+
+  <div class="grid-3">
+    <div class="panel" style="text-align:center;">
+      <h3 style="color: var(--amber-dark);">Programmer</h3>
+      <p style="font-family: var(--mono); font-size:0.72rem;">OUTPUT life. Gets the bench, the deep block, the finish ritual.</p>
+    </div>
+    <div class="panel" style="text-align:center;">
+      <h3 style="color: var(--blue);">Musician</h3>
+      <p style="font-family: var(--mono); font-size:0.72rem;">OUTPUT life. <strong>Hard rule: the musician writes no code.</strong> Building a music tool is the programmer in disguise.</p>
+    </div>
+    <div class="panel" style="text-align:center; border-color: var(--green);">
+      <h3 style="color: var(--green-dark);">Gamer</h3>
+      <p style="font-family: var(--mono); font-size:0.72rem;">RECOVERY life. Protected, guilt-free. The fuel the other two run on — never a backlog.</p>
+    </div>
+  </div>
+
+  <blockquote class="cave-quote">
+    I didn't hire a productivity coach. I didn't ask for a therapist. I wrote a
+    constitution and bolted it to the wall. One rule. Everything else is enforcement.
+    That's not obsession — that's engineering.
+    <span class="quote-attribution">— Cave Johnson, CEO</span>
+  </blockquote>
+
+  <div class="warning-box info">
+    <p>SEASONS, NOT SPRINTS: one output flagship per ~4-week block. Recovery weeks are
+    <em>in</em> the plan, not failures of it. When unsure what to do — open the hot bench,
+    run a 10-minute probe, and if it's a low day, recover. That is the whole loop.</p>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.72rem; color: var(--border-light);">
+      You have reached the centre of the facility. Every path led here.<br/>
+      Return to the <a href="../index.html">Facility Directory</a>, or see the rule
+      <a href="governor.html">enforced in Chamber 01</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="governor.html">◄ THE GOVERNOR</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="../index.html">DIRECTORY ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

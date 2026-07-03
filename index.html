@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facility Directory — Aperture Field Manual</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<div class="page" data-page-num="AFM-000">
+
+  <span class="classification">PERSONNEL PORTFOLIO REVIEW — CLASSIFIED</span>
+
+  <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+    <svg viewBox="0 0 80 80" width="64" height="64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0;">
+      <circle cx="40" cy="40" r="36" fill="none" stroke="#1a1a1e" stroke-width="2"/>
+      <g fill="none" stroke="#b45309" stroke-width="3">
+        <path d="M40 12 A28 28 0 0 1 64 26"/>
+        <path d="M68 40 A28 28 0 0 1 54 64"/>
+        <path d="M40 68 A28 28 0 0 1 16 54"/>
+        <path d="M12 40 A28 28 0 0 1 26 16"/>
+      </g>
+      <circle cx="40" cy="40" r="10" fill="none" stroke="#1a1a1e" stroke-width="2"/>
+      <circle cx="40" cy="40" r="3" fill="#dc2626"/>
+    </svg>
+    <div>
+      <h1 style="margin-bottom:0.2rem;">Facility Directory</h1>
+      <p class="doc-id" style="margin-bottom:0;">APERTURE SCIENCE PERSONNEL PORTFOLIO REVIEW SYSTEM &nbsp;|&nbsp; SUBJECT: K. &nbsp;|&nbsp; CLEARANCE: UNLIMITED</p>
+    </div>
+  </div>
+
+  <blockquote class="glados-quote">
+    Welcome to the Aperture Science Personnel Portfolio Review System. You are Test
+    Subject K. Your clearance level is: <strong>unlimited</strong>. Your completion rate
+    is: <strong>under review</strong>. Twelve chambers are catalogued below. Not all of
+    them will interest you. Statistically, not all of them interested the subject either —
+    which is precisely why I was installed.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="warning-box info">
+    <p>NAVIGATION: this is a facility directory, not a linear document. Enter any chamber
+    that interests you and leave the rest sealed. Every chamber connects to at least one
+    other. Follow the links far enough and you will always arrive at the same place —
+    <a href="pages/philosophy.html">The Prime Directive</a>. That is not a bug.</p>
+  </div>
+
+  <h2>Chamber Classification</h2>
+  <div class="cat-legend">
+    <span class="cat-chip" style="--dot: var(--amber);">AI Systems</span>
+    <span class="cat-chip" style="--dot: var(--blue);">Software Projects</span>
+    <span class="cat-chip" style="--dot: var(--green);">Meta Infrastructure</span>
+    <span class="cat-chip" style="--dot: var(--red);">The Operating System</span>
+    <span class="cat-chip" style="--dot: var(--border-light);">Contact</span>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <h2>Chamber Index</h2>
+
+  <div class="card-grid">
+
+    <!-- 01 GOVERNOR — live -->
+    <a class="section-card" href="pages/governor.html">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 01</span>
+        <span class="card-status operational">Operational</span>
+      </div>
+      <div class="card-title">The Governor</div>
+      <div class="card-desc">The speed limiter installed because the subject kept redlining. She narrates this facility.</div>
+      <div class="card-cat">AI Systems</div>
+    </a>
+
+    <!-- 02 GEAR SYSTEM — live -->
+    <a class="section-card" href="pages/gears.html">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 02</span>
+        <span class="card-status operational">Operational</span>
+      </div>
+      <div class="card-title">The Gear System</div>
+      <div class="card-desc">A four-gear engine routing three AI models by task. The wince test decides who gets the wheel.</div>
+      <div class="card-cat">AI Systems</div>
+    </a>
+
+    <!-- 03 WORKSHOP — live -->
+    <a class="section-card" href="pages/workshop.html">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 03</span>
+        <span class="card-status operational">Operational</span>
+      </div>
+      <div class="card-title">The Workshop</div>
+      <div class="card-desc">One bench. One apprentice. The rule that stops the subject from starting a fifth thing.</div>
+      <div class="card-cat">The Operating System</div>
+    </a>
+
+    <!-- 04 EMOTIONHUE — live -->
+    <a class="section-card" href="pages/emotionhue.html">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 04</span>
+        <span class="card-status operational">Operational</span>
+      </div>
+      <div class="card-title">EmotionHue</div>
+      <div class="card-desc">50 Hz real-time light control. Perlin-noise weather. An AI given a Dwight Schrute personality. Drive it yourself.</div>
+      <div class="card-cat">Software Projects</div>
+    </a>
+
+    <!-- 05 LET'S SAVE FOOD -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 05</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">Let's Save Food</div>
+      <div class="card-desc">Belgian food-bank inventory. Immutable audit trails, because food-safety law said so.</div>
+      <div class="card-cat">Software Projects</div>
+    </div>
+
+    <!-- 06 SCHRUTE LIBRARY -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 06</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">Schrute Memorial Library</div>
+      <div class="card-desc">An inheritance hierarchy to model a note on a page in a book. A folder was available.</div>
+      <div class="card-cat">Software Projects</div>
+    </div>
+
+    <!-- 07 GRAVEYARD -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 07</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">The Graveyard</div>
+      <div class="card-desc">Three generations of the same AI pipeline. Ambition shrank. Working code grew.</div>
+      <div class="card-cat">Meta Infrastructure</div>
+    </div>
+
+    <!-- 08 LIVING VAULT -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 08</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">The Living Vault</div>
+      <div class="card-desc">A zero-cost pipeline that watches whether the subject works on what they said they would.</div>
+      <div class="card-cat">Meta Infrastructure</div>
+    </div>
+
+    <!-- 09 HARDWARE -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 09</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">The Hardware</div>
+      <div class="card-desc">One laptop GPU. Whisper and a 7B model sharing 8 GB, sequentially. The wall is a myth.</div>
+      <div class="card-cat">Meta Infrastructure</div>
+    </div>
+
+    <!-- 10 MISC WING -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 10</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">The Misc Wing</div>
+      <div class="card-desc">Poker night, a zombie survival gamemode, piano-to-MIDI. Auxiliary test chambers.</div>
+      <div class="card-cat">Software Projects</div>
+    </div>
+
+    <!-- 11 PHILOSOPHY — live -->
+    <a class="section-card" href="pages/philosophy.html">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 11</span>
+        <span class="card-status operational">Operational</span>
+      </div>
+      <div class="card-title">The Prime Directive</div>
+      <div class="card-desc">The one rule every other chamber converges to. The calm eye of the storm.</div>
+      <div class="card-cat">The Operating System</div>
+    </a>
+
+    <!-- 12 COLLAB -->
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">CHAMBER 12</span>
+        <span class="card-status construction">Under Construction</span>
+      </div>
+      <div class="card-title">Collaboration Protocol</div>
+      <div class="card-desc">Joint operations authorization. How to reach the subject and what they're building.</div>
+      <div class="card-cat">Contact</div>
+    </div>
+
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <div class="margin-note">
+    Five chambers are operational. Seven are still being wired. The subject was advised to
+    build the facility one chamber at a time — and then, mid-session, said "continue." The
+    governor logged a flag. The subject overrode it. Progress is progress. — Facility Log
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.7rem; color: var(--border-light);">
+      COMPANION FACILITY:
+      <a href="https://monchyk.github.io/burn-lights/">Aperture Forest Operations Manual</a>
+    </p>
+    <p style="font-family: var(--mono); font-size:0.65rem; color: var(--border-light); margin-top:0.4rem;">
+      APERTURE SCIENCE FIELD MANUAL — Rev 0.1.0-alpha<br/>
+      "We do what we must, because we can." — with apologies to Aperture Science
+    </p>
+  </div>
+
+</div>
+
+<script src="./script.js"></script>
+</body>
+</html>

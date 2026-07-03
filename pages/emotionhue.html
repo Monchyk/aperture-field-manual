@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmotionHue — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 04 — EMOTIONHUE</span>
+  <a href="philosophy.html" class="nav-next">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-004">
+
+  <span class="classification">CHROMATIC ENVIRONMENT MANIPULATION ENGINE</span>
+  <h1>EmotionHue</h1>
+  <p class="doc-id">DOC: AFM-2026-HUE-004 &nbsp;|&nbsp; SUBSYSTEM: EMOTIONHUE &nbsp;|&nbsp; RUNTIME: .NET 9.0 &nbsp;|&nbsp; STATUS: OPERATIONAL</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    A real-time engine that drives Philips Hue bulbs like weather. Every light has an
+    x/y/z coordinate; a Perlin noise field drifts across them so the room breathes and
+    never repeats. Layers composite by priority, a slew limiter smooths the output, and the
+    whole thing streams over DTLS. Below is a virtualisation of that pipeline —
+    <strong>you drive it.</strong>
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-value">35</div><div class="stat-label">Effect Layers</div></div>
+    <div class="stat-box"><div class="stat-value">50</div><div class="stat-label">Hz · DTLS Stream</div></div>
+    <div class="stat-box"><div class="stat-value">∞</div><div class="stat-label">Never Repeats (fBm)</div></div>
+    <div class="stat-box"><div class="stat-value">1</div><div class="stat-label">Calm↔Energy Knob</div></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= INTERACTIVE CONSOLE ============= -->
+  <h2>Live: The Customisation Console</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Pick a generative scene. Pick an emotional profile. Twist the master knob from calm to
+    energy. The virtual room responds in real time — same Perlin field that drives the real
+    bulbs. Scene names below are the actual scenes in the codebase.
+  </p>
+
+  <div id="hue-console">
+    <canvas id="hue-canvas" width="720" height="360"></canvas>
+    <div class="hue-controls">
+      <div class="hue-group">
+        <span class="hue-group-label">Generative Scene</span>
+        <button type="button" class="hue-btn active" data-weather="Moving Clouds">Moving Clouds</button>
+        <button type="button" class="hue-btn" data-weather="Rainy Day">Rainy Day</button>
+        <button type="button" class="hue-btn" data-weather="Sunset Drift">Sunset Drift</button>
+        <button type="button" class="hue-btn" data-weather="Calm Tide">Calm Tide</button>
+        <button type="button" class="hue-btn" data-weather="Fireplace">Fireplace</button>
+        <button type="button" class="hue-btn" data-weather="Glow">Glow</button>
+      </div>
+      <div class="hue-group">
+        <span class="hue-group-label">Emotional Profile</span>
+        <button type="button" class="hue-btn active" data-mood="Calm">Calm</button>
+        <button type="button" class="hue-btn" data-mood="Energised">Energised</button>
+        <button type="button" class="hue-btn" data-mood="Focused">Focused</button>
+        <button type="button" class="hue-btn" data-mood="Unresolved">Unresolved</button>
+      </div>
+      <div class="hue-group">
+        <span class="hue-group-label">Calm ↔ Energy · Master Knob</span>
+        <div class="hue-slider-row">
+          <span>CALM</span>
+          <input type="range" id="hue-energy" min="0" max="100" value="40" aria-label="Calm to energy master knob">
+          <span>ENERGY</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <blockquote class="glados-quote">
+    This is a virtualisation. The real engine pushes the same field to physical bulbs over
+    DTLS, roughly fifty times a second, sub-twenty-millisecond latency. The lights genuinely
+    do not know they are on your screen instead of in a living room. Neither, frankly, do
+    most test subjects.
+    <span class="quote-attribution">— GLaDOS, on the console</span>
+  </blockquote>
+
+  <div class="warning-box info">
+    <p>Push the <strong>master knob toward Energy</strong> and the room quickens. In the real
+    engine a global <strong>slew limiter</strong> still caps how fast any bulb may physically
+    change each frame — and the rate ceiling scales with this exact knob, so even the strobe
+    layer stays tame at low energy. DTLS streaming can't use the bridge's own smoothing, so
+    the calm is computed in the render path. Safety by math, not by hoping.</p>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= PIPELINE ============= -->
+  <h2>The Pipeline</h2>
+  <div class="steps">
+    <div class="step"><span class="step-num">1</span><div class="icon">🌊</div><div class="label">Perlin fBm Field<br/>(Noise.cs)</div></div>
+    <div class="step"><span class="step-num">2</span><div class="icon">🎚</div><div class="label">Field Layers<br/>(priority stack)</div></div>
+    <div class="step"><span class="step-num">3</span><div class="icon">🧩</div><div class="label">SceneRenderer<br/>+ slew limiter</div></div>
+    <div class="step"><span class="step-num">4</span><div class="icon">🔁</div><div class="label">AnimationLoop<br/>(~30 FPS)</div></div>
+    <div class="step"><span class="step-num">5</span><div class="icon">📡</div><div class="label">DTLS Stream<br/>→ Bridge (50 Hz)</div></div>
+  </div>
+  <div class="margin-note">Layers composite by priority — drifting-cloud ambient at the bottom, effects above, alerts on top, the slew limiter last so nothing snaps. Every layer reads the same spatial noise field, so they drift together instead of fighting. (`ARCHITECTURE.md`, verbatim architecture.)</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= MOOD & CHECK-IN (real) ============= -->
+  <h2>Mood &amp; Check-In</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Instead of asking you to name a colour, the engine asks how you feel on two axes —
+    <strong>valence</strong> (unpleasant ↔ pleasant) and <strong>arousal</strong> (calm ↔
+    activated) — and <code>CheckIn.Suggest(valence, arousal)</code> returns a stabilising
+    scene. When nobody asks, <code>AutoMoodScheduler</code> drifts the room by time of day.
+  </p>
+
+  <div class="pictogram">
+    <svg viewBox="0 0 320 250" width="320" height="250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Valence-arousal quadrant mapping affect to a stabilising scene.">
+      <line x1="30" y1="125" x2="295" y2="125" stroke="#9ca3af" stroke-width="1"/>
+      <line x1="162" y1="20" x2="162" y2="230" stroke="#9ca3af" stroke-width="1"/>
+      <text x="162" y="14" font-family="Share Tech Mono, monospace" font-size="8" fill="#9ca3af" text-anchor="middle">▲ AROUSAL</text>
+      <text x="162" y="245" font-family="Share Tech Mono, monospace" font-size="8" fill="#9ca3af" text-anchor="middle">CALM ▼</text>
+      <text x="292" y="138" font-family="Share Tech Mono, monospace" font-size="8" fill="#9ca3af" text-anchor="end">PLEASANT ►</text>
+      <text x="34" y="138" font-family="Share Tech Mono, monospace" font-size="8" fill="#9ca3af">◄ UNPLEASANT</text>
+      <text x="228" y="72" font-family="Share Tech Mono, monospace" font-size="9" fill="#b45309" text-anchor="middle">Sunset Drift</text>
+      <text x="228" y="185" font-family="Share Tech Mono, monospace" font-size="9" fill="#0e7490" text-anchor="middle">Calm Tide</text>
+      <text x="96" y="72" font-family="Share Tech Mono, monospace" font-size="9" fill="#475569" text-anchor="middle">Rainy Day</text>
+      <text x="96" y="185" font-family="Share Tech Mono, monospace" font-size="9" fill="#b91c1c" text-anchor="middle">Fireplace</text>
+      <text x="162" y="128" font-family="Share Tech Mono, monospace" font-size="7" fill="#1a1a1e" text-anchor="middle">◉</text>
+    </svg>
+  </div>
+  <div class="annotation" style="text-align:center;">Example affect → scene mapping. Feeling low and wired routes you to a meditative monochrome, not a party.</div>
+
+  <h3>What's actually in the repo</h3>
+  <div class="socket-row">
+    <span class="socket active"><span class="status-dot on"></span> MoodCatalog (intent → scene)</span>
+    <span class="socket active"><span class="status-dot on"></span> CheckIn.Suggest(valence, arousal)</span>
+    <span class="socket active"><span class="status-dot on"></span> AutoMoodScheduler (time-of-day drift)</span>
+    <span class="socket active"><span class="status-dot on"></span> /api/checkin · /api/energy</span>
+  </div>
+  <div class="margin-note">These are real types and endpoints — Moods.cs, SceneRenderer.GlobalEnergy, the browser Moods tab. Verified against the repository, not the brochure.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= OUTPUT ABSTRACTION ============= -->
+  <h2>One Interface, Any Light</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The engine drives an <code>ILightOutput</code> interface, not a specific bulb — the same
+    contract for the REST controller and the Entertainment stream. Implement it for other
+    hardware and the effect layers work unchanged.
+  </p>
+  <div class="socket-row">
+    <span class="socket active"><span class="status-dot on"></span> Philips Hue (REST + DTLS) — ACTIVE</span>
+    <span class="socket planned"><span class="status-dot planned"></span> WLED / ESP32</span>
+    <span class="socket planned"><span class="status-dot planned"></span> Art-Net / DMX</span>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= DWIGHT ============= -->
+  <h2>Personnel Note: The Instructor</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The subject configured this project's AI assistant to operate, permanently, as a Dwight
+    K. Schrute teaching persona — a drill instructor with a textbook who refuses to write the
+    student's code for them. Verbatim from the project's operational guide:
+  </p>
+
+  <div class="panel panel-dark" style="border-color: var(--green);">
+    <span class="panel-title" style="color: var(--green);">CLAUDE.md — DWIGHT MODE (ALWAYS ACTIVE)</span>
+    <p style="font-family: var(--mono); font-size:0.8rem; margin-top:0.4rem; color: var(--text-light);">
+      "I do not write your code. I write your curriculum. There is a difference. A beet does
+      not grow itself — you plant it, water it, and pull the weeds."<br/><br/>
+      "Writing stable animation loops is like beet farming: consistency beats excitement."<br/><br/>
+      "Speed is the enemy of mastery. Precision beats enthusiasm. Always."
+    </p>
+    <span class="quote-attribution" style="color: var(--green);">— the Hue program's CLAUDE.md, verbatim</span>
+  </div>
+
+  <blockquote class="glados-quote">
+    The subject gave their lighting engine's AI assistant a Dwight Schrute personality. It
+    delivers C# lessons through beet-farming analogies and refuses to just hand over the
+    answer. I want to be clear: this was a deliberate choice, made by an adult, and committed
+    to a file. I want you to sit with that.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="warning-box info">
+    <p>The festival-scale version of this vision — a whole forest of interactive lights for
+    a burn — lives in a companion facility:
+    <a href="https://monchyk.github.io/burn-lights/">the Aperture Forest Operations Manual</a>.
+    Same spatial-lighting instinct. Bigger room. Fewer walls.</p>
+  </div>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      A project is the one rule applied to a domain — this one, to light. Back to
+      <a href="philosophy.html">The Prime Directive</a>, or the
+      <a href="../index.html">Facility Directory</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="workshop.html">◄ THE WORKSHOP</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="philosophy.html">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>
