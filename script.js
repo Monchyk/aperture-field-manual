@@ -351,12 +351,132 @@ function initHueConsole() {
   }
 }
 
+// --- LET'S SAVE FOOD: audit-trail generator ---
+// Mirrors InventoryService + the LsfDbContext.SaveChanges() audit override.
+// Every persisted mutation appends one AuditLog row; empties become soft-deletes
+// (UPDATE, never DELETE); domain failures return Result.Fail with no audit row.
+function initLsfAuditDemo() {
+  const root = document.getElementById('lsf-audit-demo');
+  if (!root) return;
+
+  const ledger = root.querySelector('#lsf-ledger');
+  const qtyEl = root.querySelector('#lsf-qty');
+  const delEl = root.querySelector('#lsf-deleted');
+  const reasonEl = root.querySelector('#lsf-reason');
+  const ops = root.querySelectorAll('.lsf-op');
+
+  const VOL = 'Sam · Distributor';           // fictional demo volunteer
+  const newGuid = () =>
+    (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+      : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+          const r = Math.floor(Math.random() * 16), v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+
+  // state = the tracked InventoryItem row
+  let state = null;   // { id, qty, deleted, reason }
+
+  function stamp() {
+    // browser clock is fine here (this is page JS, not a workflow script)
+    return new Date().toISOString().replace('T', ' ').slice(0, 19) + 'Z';
+  }
+  function fmtVals(obj) {
+    if (obj === null) return '<span class="lsf-null">null</span>';
+    return '{ ' + Object.entries(obj)
+      .map(([k, v]) => `${k}: ${typeof v === 'string' ? '"' + v + '"' : v}`)
+      .join(', ') + ' <span class="lsf-null">…</span> }';
+  }
+  function paint() {
+    if (!state) { qtyEl.textContent = '—'; delEl.textContent = '—'; reasonEl.textContent = 'null'; }
+    else {
+      qtyEl.textContent = state.qty;
+      delEl.textContent = String(state.deleted);
+      delEl.style.color = state.deleted ? 'var(--red)' : 'var(--green-dark)';
+      reasonEl.textContent = state.reason ? '"' + state.reason + '"' : 'null';
+    }
+    ops.forEach(b => {
+      const op = b.dataset.op;
+      if (op === 'reset') return;
+      const alive = state && !state.deleted;
+      b.disabled = op === 'receive' ? !!alive : !alive;
+    });
+  }
+  function addRow({ action, old, neu, kind }) {
+    const row = document.createElement('div');
+    row.className = 'lsf-audit-row ' + (kind || action.toLowerCase());
+    if (kind === 'fail') {
+      row.innerHTML =
+        `<span class="lsf-a">Result.Fail</span> — ${old}` +
+        `<span class="lsf-meta">no AuditLog row · SaveChanges() never called</span>`;
+    } else {
+      row.innerHTML =
+        `<span class="lsf-a">${action}</span> ` +
+        `<span class="lsf-t">InventoryItem</span> · RecordId ${state.id.slice(0, 8)}…` +
+        `<div class="lsf-kv">OldValues: ${old === null ? '<span class="lsf-null">null</span>' : fmtVals(old)}</div>` +
+        `<div class="lsf-kv">NewValues: ${neu === null ? '<span class="lsf-null">null</span>' : fmtVals(neu)}</div>` +
+        `<span class="lsf-meta">ChangedBy ${VOL} · ${stamp()}</span>`;
+    }
+    ledger.appendChild(row);
+    ledger.scrollTop = ledger.scrollHeight;
+  }
+
+  const actions = {
+    receive() {
+      state = { id: newGuid(), qty: 10, deleted: false, reason: null };
+      addRow({ action: 'INSERT', old: null,
+        neu: { QuantityOnHand: 10, IsDeleted: false, Condition: 'Good', SourceStore: 'Delhaize Gent' } });
+    },
+    distribute() {
+      const req = 5;
+      if (state.qty < req) {                       // InventoryService guard
+        addRow({ kind: 'fail',
+          old: `Not enough stock. Have ${state.qty}, tried to distribute ${req}.` });
+        return;
+      }
+      const before = state.qty;
+      state.qty -= req;
+      const neu = { QuantityOnHand: state.qty };
+      if (state.qty === 0) { state.deleted = true; state.reason = 'DISTRIBUTED';
+        neu.IsDeleted = true; neu.DeleteReason = 'DISTRIBUTED'; }
+      addRow({ action: 'UPDATE', old: { QuantityOnHand: before, IsDeleted: false }, neu });
+    },
+    waste() {
+      const req = 2;
+      const before = state.qty;
+      state.qty -= req;                            // WasteItemAsync has no stock guard
+      const neu = { QuantityOnHand: Math.max(state.qty, 0) };
+      if (state.qty <= 0) { state.qty = 0; state.deleted = true; state.reason = 'DAMAGED';
+        neu.QuantityOnHand = 0; neu.IsDeleted = true; neu.DeleteReason = 'DAMAGED'; }
+      addRow({ action: 'UPDATE', old: { QuantityOnHand: before, IsDeleted: false }, neu });
+    },
+    adjust() {
+      const before = state.qty;
+      state.qty = 0; state.deleted = true; state.reason = 'STOCKTAKE ADJUSTMENT';
+      addRow({ action: 'UPDATE',
+        old: { QuantityOnHand: before, IsDeleted: false },
+        neu: { QuantityOnHand: 0, IsDeleted: true, DeleteReason: 'STOCKTAKE ADJUSTMENT' } });
+    },
+    reset() { state = null; ledger.innerHTML = ''; }
+  };
+
+  ops.forEach(b => b.addEventListener('click', () => {
+    const fn = actions[b.dataset.op];
+    if (!fn) return;
+    if (b.dataset.op !== 'receive' && b.dataset.op !== 'reset' && (!state || state.deleted)) return;
+    fn();
+    paint();
+  }));
+
+  paint();
+}
+
 function initPages() {
   initGovernorBattery();   // gates on #governor-battery-form
   initGearSwitcher();      // gates on #gear-switcher
   initPhilosophyRadial();  // gates on #philosophy-radial
   initHueConsole();        // gates on #hue-canvas
   initNoiseCanvas();       // gates on #noise-canvas
+  initLsfAuditDemo();      // gates on #lsf-audit-demo
 }
 
 // ============================================

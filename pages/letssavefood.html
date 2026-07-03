@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let's Save Food — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 05 — LET'S SAVE FOOD</span>
+  <a href="philosophy.html" class="nav-next">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-005">
+
+  <span class="classification info">REGULATED INVENTORY &amp; TRACEABILITY ENGINE</span>
+  <h1>Let's Save Food</h1>
+  <p class="doc-id">DOC: AFM-2026-LSF-005 &nbsp;|&nbsp; STACK: C# 13 · .NET 10 · EF CORE 10 · POSTGRESQL &nbsp;|&nbsp; STATUS: FIELD-TESTING</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    A food-rescue non-profit in Ghent collects surplus from supermarkets — Delhaize, Colruyt,
+    Albert Heijn — and redistributes it at community points. Volunteers are non-technical and
+    working from phones. Belgian food-safety law (FAVV) makes every one of those movements
+    legally traceable. This is the inventory engine that keeps the books an inspector will
+    accept. It is the one chamber in this facility that ships regulated software to real users.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-value">4</div><div class="stat-label">Core Entities</div></div>
+    <div class="stat-box"><div class="stat-value">100%</div><div class="stat-label">Writes Audited</div></div>
+    <div class="stat-box"><div class="stat-value">0</div><div class="stat-label">Hard Deletes (FAVV)</div></div>
+    <div class="stat-box"><div class="stat-value">4.55M</div><div class="stat-label">OFF Catalogue Streamed</div></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE DECISION ============= -->
+  <h2>The decision that shaped everything: CRUD or events?</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Before a line was written, one question decided the whole data model: model inventory as
+    <strong>state</strong> — a live <code>InventoryItems</code> table you increment and
+    decrement — or as <strong>events</strong> — an immutable log of donations and
+    distributions, with current stock as a derived projection? Both satisfy FAVV. They
+    trade against each other on complexity, auditability, and offline-sync conflicts.
+  </p>
+
+  <div class="grid-2">
+    <div class="panel">
+      <span class="panel-title" style="color: var(--green-dark);">APPROACH A — State CRUD &nbsp;·&nbsp; SHIPPED</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        One <code>InventoryItems</code> row per batch, mutated in place. A separate
+        <code>AuditLog</code> records every change. <strong>"What's in stock now?"</strong> is a
+        plain <code>SELECT</code>. Razor PageModels stay thin. Non-technical volunteers, simple
+        forms, fast queries. Audit is the safety net under the mutation.
+      </p>
+      <p style="font-family: var(--mono); font-size:0.72rem; color: var(--text-light);">
+        Cost: audit is a bolt-on. If the audit path fails silently, traceability is lost — so
+        it is welded to <code>SaveChanges</code>, not left to callers (see below).
+      </p>
+    </div>
+    <div class="panel" style="opacity:0.9;">
+      <span class="panel-title" style="color: var(--blue);">APPROACH B — Event-Sourced &nbsp;·&nbsp; DOCUMENTED UPGRADE</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        Every action is an immutable event; stock is <code>SUM(QuantityDelta)</code> or a
+        rebuilt snapshot. The audit trail <em>is</em> the data. Natural offline-merge, full
+        point-in-time replay ("what was in stock last Tuesday?").
+      </p>
+      <p style="font-family: var(--mono); font-size:0.72rem; color: var(--text-light);">
+        Cost: heavier queries, steeper model, likely overkill for a volunteer-run org today.
+        Kept in the design docs as the migration target for when batch-recall or offline sync
+        forces the issue.
+      </p>
+    </div>
+  </div>
+  <div class="margin-note">Both approaches were fully designed before choosing. Shipping A with a
+    bulletproof audit — rather than B for its own sake — is the whole point: match the
+    architecture to the team that has to run it, and write down the exit. The event-sourced
+    design isn't abandoned; it's the documented upgrade path.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= ER DIAGRAM ============= -->
+  <h2>The data model, drawn</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Four entities. <code>Product</code> is the catalogue (from Open Food Facts).
+    <code>InventoryItem</code> is a physical batch on a shelf. <code>Volunteer</code> is who
+    touched it. <code>AuditLog</code> sits underneath everything — it is written automatically
+    and points at any table by name, not by a foreign key.
+  </p>
+
+  <div class="pictogram">
+    <svg viewBox="0 0 760 470" width="760" height="470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Entity-relationship diagram: Product one-to-many InventoryItem, Volunteer one-to-many InventoryItem, Volunteer one-to-many AuditLog, and AuditLog polymorphically referencing any table by TableName plus RecordId.">
+      <defs>
+        <marker id="lsf-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/>
+        </marker>
+      </defs>
+
+      <!-- relationship lines (drawn first, under boxes) -->
+      <!-- Product 1 --< InventoryItem -->
+      <line x1="220" y1="150" x2="288" y2="150" stroke="#6b7280" stroke-width="1.5" marker-end="url(#lsf-arrow)"/>
+      <text x="254" y="142" font-family="Share Tech Mono, monospace" font-size="8" fill="#6b7280" text-anchor="middle">1 ─&lt; ∞</text>
+      <!-- Volunteer 1 --< InventoryItem -->
+      <line x1="560" y1="150" x2="472" y2="150" stroke="#6b7280" stroke-width="1.5" marker-end="url(#lsf-arrow)"/>
+      <text x="516" y="142" font-family="Share Tech Mono, monospace" font-size="8" fill="#6b7280" text-anchor="middle">1 ─&lt; ∞</text>
+      <!-- Volunteer 1 --< AuditLog -->
+      <path d="M620 230 L620 400 L495 400" fill="none" stroke="#6b7280" stroke-width="1.5" marker-end="url(#lsf-arrow)"/>
+      <text x="628" y="330" font-family="Share Tech Mono, monospace" font-size="8" fill="#6b7280">ChangedBy</text>
+      <text x="628" y="341" font-family="Share Tech Mono, monospace" font-size="8" fill="#6b7280">(nullable)</text>
+      <!-- AuditLog ..> polymorphic to the item cluster -->
+      <path d="M380 388 L380 250" fill="none" stroke="#b45309" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#lsf-arrow)"/>
+      <text x="388" y="320" font-family="Share Tech Mono, monospace" font-size="8" fill="#b45309">(TableName,</text>
+      <text x="388" y="331" font-family="Share Tech Mono, monospace" font-size="8" fill="#b45309">RecordId)</text>
+      <text x="388" y="342" font-family="Share Tech Mono, monospace" font-size="8" fill="#b45309">polymorphic</text>
+
+      <!-- PRODUCT box -->
+      <g>
+        <rect x="30" y="70" width="190" height="168" rx="4" fill="#f5f0e8" stroke="#1a1a1e" stroke-width="1.5"/>
+        <rect x="30" y="70" width="190" height="20" rx="4" fill="#2563eb"/>
+        <text x="125" y="84" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="12" fill="#fff" text-anchor="middle">PRODUCT</text>
+        <text x="40" y="106" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">🔑 Id : Guid</text>
+        <text x="40" y="120" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Barcode ★ unique</text>
+        <text x="40" y="134" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Name · Brand</text>
+        <text x="40" y="148" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Allergens  → jsonb</text>
+        <text x="40" y="162" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Nutrition  → jsonb</text>
+        <text x="40" y="176" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">StorageRequirement</text>
+        <text x="40" y="190" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">NutriScore · ImageUrl</text>
+        <text x="40" y="204" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">SourcedFromOpenFoodFacts</text>
+        <text x="40" y="224" font-family="Share Tech Mono, monospace" font-size="7.5" fill="#6b7280">catalogue · 1 per barcode</text>
+      </g>
+
+      <!-- INVENTORYITEM box (hub) -->
+      <g>
+        <rect x="288" y="60" width="186" height="188" rx="4" fill="#f5f0e8" stroke="#1a1a1e" stroke-width="2"/>
+        <rect x="288" y="60" width="186" height="20" rx="4" fill="#b45309"/>
+        <text x="381" y="74" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="12" fill="#fff" text-anchor="middle">INVENTORYITEM</text>
+        <text x="298" y="96" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">🔑 Id : Guid</text>
+        <text x="298" y="110" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">ProductId → FK</text>
+        <text x="298" y="124" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">QuantityOnHand : int</text>
+        <text x="298" y="138" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">ExpiryDate : DateOnly?</text>
+        <text x="298" y="152" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">StorageLocation</text>
+        <text x="298" y="166" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Condition (enum→str)</text>
+        <text x="298" y="180" font-family="Share Tech Mono, monospace" font-size="8" fill="#b91c1c">SourceStore 🔒 private</text>
+        <text x="298" y="194" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">ReceivedByVolunteerId → FK</text>
+        <text x="298" y="208" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">ReceivedAt</text>
+        <text x="298" y="224" font-family="Share Tech Mono, monospace" font-size="8" fill="#16a34a">IsDeleted · DeletedAt</text>
+        <text x="298" y="238" font-family="Share Tech Mono, monospace" font-size="8" fill="#16a34a">DeleteReason (soft-delete)</text>
+      </g>
+
+      <!-- VOLUNTEER box -->
+      <g>
+        <rect x="560" y="70" width="170" height="160" rx="4" fill="#f5f0e8" stroke="#1a1a1e" stroke-width="1.5"/>
+        <rect x="560" y="70" width="170" height="20" rx="4" fill="#16a34a"/>
+        <text x="645" y="84" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="12" fill="#fff" text-anchor="middle">VOLUNTEER</text>
+        <text x="570" y="106" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">🔑 Id : Guid</text>
+        <text x="570" y="120" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Name · Email? · Phone?</text>
+        <text x="570" y="134" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">Role : enum</text>
+        <text x="570" y="148" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">  Volunteer · Picker</text>
+        <text x="570" y="162" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">  Sorter · Distributor</text>
+        <text x="570" y="176" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">  Admin</text>
+        <text x="570" y="190" font-family="Share Tech Mono, monospace" font-size="8" fill="#1a1a1e">IsActive · LastActiveAt</text>
+        <text x="570" y="212" font-family="Share Tech Mono, monospace" font-size="7.5" fill="#6b7280">tap-your-name login</text>
+      </g>
+
+      <!-- AUDITLOG box -->
+      <g>
+        <rect x="270" y="388" width="222" height="72" rx="4" fill="#2a2a2e" stroke="#b45309" stroke-width="2"/>
+        <rect x="270" y="388" width="222" height="20" rx="4" fill="#b45309"/>
+        <text x="381" y="402" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="12" fill="#fff" text-anchor="middle">AUDITLOG</text>
+        <text x="280" y="424" font-family="Share Tech Mono, monospace" font-size="8" fill="#f5f0e8">🔑 Id : long (bigserial)  ·  Action</text>
+        <text x="280" y="437" font-family="Share Tech Mono, monospace" font-size="8" fill="#f5f0e8">TableName · RecordId · ChangedAt</text>
+        <text x="280" y="450" font-family="Share Tech Mono, monospace" font-size="8" fill="#f5f0e8">OldValues / NewValues → jsonb</text>
+      </g>
+    </svg>
+  </div>
+  <div class="annotation" style="text-align:center;">
+    Solid arrows are real foreign keys with <code>OnDelete: Restrict</code> — you cannot delete a
+    product or volunteer out from under an item. The dashed amber arrow is the audit trail: it
+    references <em>any</em> row by <code>(TableName, RecordId)</code>, so one table logs the
+    history of all of them.
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= AUDIT MECHANISM (HERO) ============= -->
+  <h2>The audit trail is welded to the database, not the code</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    FAVV's core question is <em>"where did this come from and where did it go?"</em> — every
+    change has to be traceable to a person and a time. The naive answer is "remember to write an
+    audit row in every service method." That is exactly the thing that gets forgotten. Instead,
+    <code>LsfDbContext</code> overrides <code>SaveChanges</code> / <code>SaveChangesAsync</code>
+    so the audit is physically unavoidable: you cannot persist a mutation without generating its
+    audit row.
+  </p>
+
+  <div class="steps">
+    <div class="step"><span class="step-num">1</span><div class="icon">✍️</div><div class="label">Service mutates<br/>an entity</div></div>
+    <div class="step"><span class="step-num">2</span><div class="icon">💾</div><div class="label">SaveChanges()<br/>override</div></div>
+    <div class="step"><span class="step-num">3</span><div class="icon">🕒</div><div class="label">SetTimestamps()<br/>CreatedAt / UpdatedAt</div></div>
+    <div class="step"><span class="step-num">4</span><div class="icon">🧾</div><div class="label">WriteAuditLogs()<br/>diff ChangeTracker</div></div>
+    <div class="step"><span class="step-num">5</span><div class="icon">🔒</div><div class="label">base.SaveChanges()<br/>item + audit, one txn</div></div>
+  </div>
+  <div class="margin-note">
+    <code>WriteAuditLogs()</code> walks <code>ChangeTracker.Entries()</code>, skips the
+    <code>AuditLog</code> entity itself (no auditing the audit), and for every Added / Modified /
+    Deleted entry emits a row: <code>TableName</code>, primary key, <code>Action</code>
+    (INSERT / UPDATE / DELETE), the before/after state as JSON, the timestamp, and the current
+    volunteer's id from <code>ICurrentVolunteerService</code>. Item and audit row commit in the
+    same transaction — they cannot drift apart.
+  </div>
+
+  <div class="warning-box info">
+    <p>One deliberate exception: the Open Food Facts bulk import sets a
+    <code>SuppressAuditLog</code> flag on the context, so importing ~100–200 k catalogue products
+    doesn't generate ~100–200 k meaningless audit rows. Operational writes — receiving,
+    distributing, wasting — always audit. The suppression is scoped to the one job that has no
+    business being in an inspection log.</p>
+  </div>
+
+  <!-- ============= INTERACTIVE: AUDIT GENERATOR ============= -->
+  <h2>Live: generate the audit trail yourself</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Run the real operations against one inventory batch. Each button calls the matching
+    <code>InventoryService</code> method; the ledger below shows the exact <code>AuditLog</code>
+    row that <code>SaveChanges</code> would append. Watch a distribution that empties the batch
+    turn into a <strong>soft delete</strong> — an <code>UPDATE</code>, never a
+    <code>DELETE</code>. Values are illustrative; the real column stores the full row as jsonb.
+  </p>
+
+  <div id="lsf-audit-demo">
+    <div class="lsf-state">
+      <span class="lsf-state-label">TRACKED INVENTORYITEM</span>
+      <div class="lsf-state-line">Alpro Soya Drink 1L &nbsp;·&nbsp; barcode 5411188110163 &nbsp;·&nbsp; source: <span style="color:var(--red);">Delhaize Gent 🔒</span></div>
+      <div class="lsf-state-line">QuantityOnHand: <span id="lsf-qty" class="lsf-hl">—</span> &nbsp;·&nbsp; IsDeleted: <span id="lsf-deleted" class="lsf-hl">—</span> &nbsp;·&nbsp; DeleteReason: <span id="lsf-reason" class="lsf-hl">null</span></div>
+    </div>
+    <div class="lsf-ops">
+      <button type="button" class="lsf-op" data-op="receive">＋ Receive batch ×10</button>
+      <button type="button" class="lsf-op" data-op="distribute">→ Distribute ×5</button>
+      <button type="button" class="lsf-op" data-op="waste">✗ Waste ×2 (damaged)</button>
+      <button type="button" class="lsf-op" data-op="adjust">≡ Adjust → 0</button>
+      <button type="button" class="lsf-op lsf-reset" data-op="reset">↺ Reset ledger</button>
+    </div>
+    <div class="lsf-ledger-head">AuditLogs &nbsp;— &nbsp;<span>appended by SaveChanges(), newest last</span></div>
+    <div id="lsf-ledger" class="lsf-ledger" aria-live="polite"></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= SOFT DELETE / QUERY FILTER ============= -->
+  <h2>Nothing is ever deleted — soft delete + a named query filter</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    FAVV compliance means no data loss: distributed and wasted items must stay on the books.
+    So there are no hard deletes. Emptying a batch flips <code>IsDeleted = true</code> with a
+    <code>DeleteReason</code> (<code>"DISTRIBUTED"</code>, a waste reason, or a stock-correction
+    note) and stamps <code>DeletedAt</code>. A single EF Core 10 <strong>named</strong> query
+    filter hides those rows from every day-to-day query:
+  </p>
+
+  <div class="panel panel-dark">
+    <span class="panel-title" style="color: var(--amber);">InventoryItemConfiguration.cs — verbatim</span>
+    <p style="font-family: var(--mono); font-size:0.8rem; margin-top:0.4rem; color: var(--text-light);">
+      builder.HasQueryFilter(<span style="color:var(--amber)">"SoftDelete"</span>, i =&gt; !i.IsDeleted);
+    </p>
+  </div>
+
+  <div class="compare">
+    <div class="compare-side good">
+      <div class="compare-title">Daily operations</div>
+      <p style="font-family: var(--mono); font-size:0.74rem;">
+        <code>db.InventoryItems.ToListAsync()</code><br/><br/>
+        Soft-deleted rows are invisible. Volunteers only ever see live stock. No
+        <code>WHERE IsDeleted = false</code> to forget.
+      </p>
+    </div>
+    <div class="compare-vs">then</div>
+    <div class="compare-side">
+      <div class="compare-title" style="color: var(--blue);">FAVV inspection</div>
+      <p style="font-family: var(--mono); font-size:0.74rem;">
+        <code>.IgnoreQueryFilters(["SoftDelete"])</code><br/><br/>
+        The inspector's view — everything, including distributed and wasted items, with their
+        full audit timeline. Naming the filter means you can lift <em>just</em> soft-delete and
+        keep any other filter (e.g. future multi-tenancy) intact.
+      </p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= FAVV COMPLIANCE TABLE ============= -->
+  <h2>What FAVV requires, and where it lives in the code</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    FAVV — the <em>Federaal Agentschap voor de Veiligheid van de Voedselketen</em>, Belgium's
+    food-safety regulator — enforces EU traceability law (Reg. 178/2002) even for non-profits
+    redistributing surplus. The requirement is "one step back, one step forward": who gave you
+    this, and where did it go. Every clause maps to a concrete field or mechanism.
+  </p>
+
+  <div class="panel">
+    <div style="overflow-x:auto;">
+      <table style="width:100%; font-family: var(--mono); font-size:0.72rem; border-collapse: collapse; min-width:520px;">
+        <tr>
+          <th style="text-align:left; padding:0.4rem; border-bottom:2px solid var(--border);">REQUIREMENT</th>
+          <th style="text-align:left; padding:0.4rem; border-bottom:2px solid var(--border);">IMPLEMENTED BY</th>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">One step back (source)</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);"><code>InventoryItem.SourceStore</code> + <code>ReceivedByVolunteer</code> + <code>ReceivedAt</code></td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">One step forward (destination)</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);"><code>DeleteReason</code> ("DISTRIBUTED") + the AuditLog timeline</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Allergen communication (Reg. 1169/2011)</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);"><code>Product.Allergens</code> — 14 EU allergens as jsonb, from OFF</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Best-before / use-by tracking</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);"><code>ExpiryDate : DateOnly?</code> + expiring-soon query</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Cold-chain awareness</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);"><code>Product.StorageRequirement</code> — Ambient / Chilled / Frozen</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Audit trail (who / what / when)</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);"><code>AuditLog</code> via the <code>SaveChanges</code> override</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">No data loss</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Soft delete + named <code>"SoftDelete"</code> query filter</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem;">Donor privacy</td>
+          <td style="padding:0.4rem;"><code>SourceStore</code> excluded from every public DTO — inspectors only</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="margin-note">Donor privacy is a real tension in the law: an inspector <em>may</em> ask
+    where food came from, but public dashboards must not out the donor store. So
+    <code>InventoryItemDto</code> simply has no <code>SourceStore</code> field — the private
+    provenance never leaves the service layer except through an authorised inspection query.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= OFF IMPORT PIPELINE ============= -->
+  <h2>Feeding the catalogue: 4.55 million products, ~100 MB of memory</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Barcodes have to resolve instantly on a volunteer's phone, so the product catalogue is
+    pre-loaded from Open Food Facts' nightly dump rather than hit per-scan. The importer streams
+    a 7–10 GB gzipped JSONL file line by line — never loading it whole — filters to Belgian and
+    Dutch products, and upserts them in batches of 1,000.
+  </p>
+
+  <div class="steps">
+    <div class="step"><span class="step-num">1</span><div class="icon">📦</div><div class="label">.jsonl.gz<br/>(~4.55 M lines)</div></div>
+    <div class="step"><span class="step-num">2</span><div class="icon">🗜️</div><div class="label">GZipStream →<br/>StreamReader</div></div>
+    <div class="step"><span class="step-num">3</span><div class="icon">🇧🇪</div><div class="label">Filter countries<br/>belgium / netherlands</div></div>
+    <div class="step"><span class="step-num">4</span><div class="icon">📥</div><div class="label">Batch 1000 →<br/>upsert by barcode</div></div>
+    <div class="step"><span class="step-num">5</span><div class="icon">🗃️</div><div class="label">PostgreSQL<br/>SuppressAuditLog</div></div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-value">~4.55M</div><div class="stat-label">Lines Streamed</div></div>
+    <div class="stat-box"><div class="stat-value">50–200k</div><div class="stat-label">BE/NL Products Kept</div></div>
+    <div class="stat-box"><div class="stat-value">~100MB</div><div class="stat-label">Constant Memory</div></div>
+    <div class="stat-box"><div class="stat-value">1000</div><div class="stat-label">Rows / SaveChanges</div></div>
+  </div>
+  <div class="margin-note">
+    Re-runnable and idempotent — new barcodes insert, known ones update, a unique index on
+    <code>Barcode</code> blocks duplicates. A malformed line is skipped and counted; a failed
+    batch falls back to saving rows individually to isolate the bad record. Barcodes not found
+    locally still fall back to a single-product API lookup via <code>ProductLookupService</code>.
+    Data is ODbL-licensed, so the app carries the required Open Food Facts attribution.
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= PATTERNS / STACK ============= -->
+  <h2>The patterns underneath</h2>
+  <div class="grid-2">
+    <div class="panel">
+      <span class="panel-title">Result&lt;T&gt; over exceptions</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        Domain failures — "not enough stock", "product not found" — return
+        <code>Result.Fail(message)</code>, not thrown exceptions. The PageModel checks
+        <code>IsSuccess</code> and shows the message. Exceptions are reserved for the genuinely
+        exceptional. Waste the batch below five, then hit <strong>Distribute ×5</strong> in the
+        demo above — the service returns a failure instead of an audit row, because
+        <code>SaveChanges</code> is never reached.
+      </p>
+    </div>
+    <div class="panel">
+      <span class="panel-title">Immutable command records</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        Every operation takes a C# <code>record</code> with <code>required init</code> members —
+        <code>ReceiveItemCommand</code>, <code>DistributeItemCommand</code>,
+        <code>WasteItemCommand</code>, <code>AdjustStockCommand</code>. The service is a pure
+        function of its command; nothing mutates the request mid-flight.
+      </p>
+    </div>
+    <div class="panel">
+      <span class="panel-title">Cookie auth · volunteer picker</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        Login is a list of names — tap yours, no password. It issues a cookie carrying a
+        <code>VolunteerId</code> claim, which <code>ICurrentVolunteerService</code> reads to stamp
+        every audit row. Deliberately frictionless for non-technical volunteers on a shared phone;
+        hardening real identity is a known, listed gap — not an oversight.
+      </p>
+    </div>
+    <div class="panel">
+      <span class="panel-title">Thin PageModels · service layer</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        Razor PageModels bind a form and call one <code>IInventoryService</code> method. All
+        logic lives in the service; complex types (<code>Allergens</code>, <code>Nutrition</code>)
+        map to jsonb via EF Core 10 <code>ComplexProperty(...).ToJson()</code>. The
+        <code>AuditLog</code> key is a Postgres identity-always <code>bigserial</code>.
+      </p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= STATUS ============= -->
+  <h2>Shipped, and honestly, still open</h2>
+  <div class="grid-2">
+    <div class="panel" style="border-color: var(--green);">
+      <span class="panel-title" style="color: var(--green-dark);">Field-ready</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">✓</span> <span>Dashboard, Receive, Stock, Distribute, Waste</span></li>
+        <li><span class="qty">✓</span> <span>Audit-log page <span class="note">full item history</span></span></li>
+        <li><span class="qty">✓</span> <span>OFF API lookup + bulk import</span></li>
+        <li><span class="qty">✓</span> <span>Daily report <span class="note">"Dagoverzicht"</span></span></li>
+        <li><span class="qty">◐</span> <span>Barcode camera scanning <span class="note">in field-testing</span></span></li>
+      </ul>
+    </div>
+    <div class="panel">
+      <span class="panel-title" style="color: var(--amber-dark);">Known gaps (documented, not hidden)</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">○</span> <span>Dedicated FAVV inspection page</span></li>
+        <li><span class="qty">○</span> <span>NL + EN internationalisation</span></li>
+        <li><span class="qty">○</span> <span>Hardened auth / identity</span></li>
+        <li><span class="qty">○</span> <span>Automated tests</span></li>
+        <li><span class="qty">○</span> <span>CI/CD</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <blockquote class="cave-quote">
+    We're not building a startup. We're feeding people. That audit trail isn't for investors —
+    it's for an inspector who can padlock the door if the paperwork's wrong. So you build it like
+    someone's dinner depends on it. Because it does.
+    <span class="quote-attribution">— Cave Johnson, on regulated software</span>
+  </blockquote>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      One bench: a regulated inventory system, finished before the next thing was allowed to
+      start. That is the rule, applied to food safety. See it stated plainly in
+      <a href="philosophy.html">The Prime Directive</a>, or return to the
+      <a href="../index.html">Facility Directory</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="emotionhue.html">◄ EMOTIONHUE</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="philosophy.html">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

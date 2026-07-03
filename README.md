@@ -14,23 +14,25 @@ Second in a series. The first — the **[Aperture Forest Operations Manual](http
 
 ## Status — Phases 1–3 (partial)
 
-Built (5 chambers live):
+Built (6 chambers live):
 
 - `index.html` — Facility Directory (navigation hub, card grid)
 - `pages/governor.html` — **The Governor**: speed limiter + **interactive battery pre-flight**
 - `pages/gears.html` — **The Gear System**: 4-gear engine, stress test + **live gear switcher**
 - `pages/workshop.html` — **The Workshop**: the human operating model
 - `pages/emotionhue.html` — **EmotionHue**: light engine + **interactive customisation console**
+- `pages/letssavefood.html` — **Let's Save Food**: .NET/EF Core food-bank engine + **interactive audit-trail generator**
 - `pages/philosophy.html` — **The Prime Directive**: the one rule + **interactive radial map**
 - `style.css`, `script.js` — shared component library + behaviour
 
 **Interactive elements (all plain JS, no libraries):** battery pre-flight (GLaDOS gates the
 session), gear switcher (page rewrites its own verbosity), radial convergence map
 (hover-to-light, click-to-travel), EmotionHue console (drive a virtual light room by
-weather + emotional profile + master knob).
+weather + emotional profile + master knob), Let's Save Food audit generator (run real
+inventory operations, watch each one append the exact `AuditLog` row EF Core would write).
 
-Chambers still sealed (future phases): Let's Save Food · Schrute Library · Graveyard ·
-Living Vault · Hardware · Misc Wing · Collaboration.
+Chambers still sealed (future phases): Schrute Library · Graveyard · Living Vault ·
+Hardware · Misc Wing · Collaboration.
 
 ---
 

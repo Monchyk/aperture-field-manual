@@ -1233,6 +1233,55 @@ a.section-card:hover {
 .hue-slider-row span { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; }
 #hue-energy { flex: 1; accent-color: var(--amber); height: 6px; }
 
+/* ---- Audit-trail generator (Let's Save Food) ---- */
+#lsf-audit-demo { border: 2px solid var(--border); background: var(--bg-panel); margin: 1rem 0; padding: 0.9rem; }
+.lsf-state { background: var(--bg-dark-panel); border-left: 4px solid var(--amber); padding: 0.7rem 0.9rem; margin-bottom: 0.8rem; }
+.lsf-state-label {
+  font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--amber-dark); display: block; margin-bottom: 0.4rem;
+}
+.lsf-state-line { font-family: var(--mono); font-size: 0.76rem; color: var(--text-light); line-height: 1.7; }
+.lsf-hl { color: var(--amber); font-weight: 700; }
+.lsf-ops { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.8rem; }
+.lsf-op {
+  background: var(--bg-page); border: 2px solid var(--border);
+  padding: 0.4rem 0.7rem; font-family: var(--mono); font-size: 0.72rem;
+  cursor: pointer; transition: background 0.12s, border-color 0.12s;
+}
+.lsf-op:hover:not(:disabled) { border-color: var(--amber); }
+.lsf-op:disabled { opacity: 0.35; cursor: not-allowed; }
+.lsf-op.lsf-reset { margin-left: auto; color: var(--text-light); }
+.lsf-ledger-head {
+  font-family: var(--mono); font-size: 0.66rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--amber-dark); margin-bottom: 0.4rem;
+}
+.lsf-ledger-head span { text-transform: none; letter-spacing: 0; color: var(--border-light); }
+.lsf-ledger {
+  background: #151518; border: 1px solid var(--border);
+  max-height: 320px; overflow-y: auto; padding: 0.3rem;
+}
+.lsf-ledger:empty::after {
+  content: "— empty. Click Receive to create the item. —";
+  display: block; font-family: var(--mono); font-size: 0.72rem;
+  color: var(--border-light); padding: 0.8rem; text-align: center;
+}
+.lsf-audit-row {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--text-light);
+  background: var(--bg-dark-panel); border-left: 3px solid var(--border-light);
+  padding: 0.5rem 0.7rem; margin: 0.3rem 0; line-height: 1.5; word-break: break-word;
+}
+.lsf-audit-row.insert { border-left-color: var(--green); }
+.lsf-audit-row.update { border-left-color: var(--amber); }
+.lsf-audit-row.delete { border-left-color: var(--red); }
+.lsf-audit-row.fail { border-left-color: var(--red); border-left-style: dashed; color: #f0b9b9; }
+.lsf-audit-row .lsf-a { font-weight: 700; color: var(--amber); }
+.lsf-audit-row.insert .lsf-a { color: var(--green); }
+.lsf-audit-row.fail .lsf-a { color: var(--red); }
+.lsf-audit-row .lsf-t { color: var(--blue); }
+.lsf-kv { padding-left: 0.6rem; color: var(--border-light); font-size: 0.68rem; }
+.lsf-null { color: #6b7280; font-style: italic; }
+.lsf-meta { display: block; margin-top: 0.25rem; font-size: 0.64rem; color: #6b7280; }
+
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 600px) {
