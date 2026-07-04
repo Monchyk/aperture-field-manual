@@ -33,13 +33,14 @@ Deploy: from branch (main, / root) — no Actions workflow needed
 ## Active phase
 
 Current phase: Phase 4 (Graveyard + Hardware) — Phase 3 complete
-7 of 12 chambers operational. 5 sealed.
+8 of 12 chambers operational. 4 sealed.
 
 Checklist state:
 - [x] Phase 1: Shared CSS/JS + Index + Philosophy + Governor
 - [x] Phase 2: Gear System + Workshop + EmotionHue
-- [x] Phase 3: Let's Save Food + Living Vault (Schrute Library deferred)
-- [ ] Phase 4: Graveyard + Hardware (+ Schrute Library)
+- [x] Phase 3: Let's Save Food + Living Vault
+- [x] Schrute Library (Charity Poker book) — landed ahead of schedule, out of order
+- [ ] Phase 4: Graveyard + Hardware
 - [ ] Phase 5: Misc Wing + Collaboration Protocol
 - [ ] Phase 6: Cross-linking pass + voice consistency
 

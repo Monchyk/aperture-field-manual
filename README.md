@@ -14,7 +14,7 @@ Second in a series. The first — the **[Aperture Forest Operations Manual](http
 
 ## Status — Phases 1–3 (partial)
 
-Built (7 chambers live):
+Built (9 chambers live):
 
 - `index.html` — Facility Directory (navigation hub, card grid)
 - `pages/governor.html` — **The Governor**: speed limiter + **interactive battery pre-flight**
@@ -22,7 +22,9 @@ Built (7 chambers live):
 - `pages/workshop.html` — **The Workshop**: the human operating model
 - `pages/emotionhue.html` — **EmotionHue**: light engine + **interactive customisation console**
 - `pages/letssavefood.html` — **Let's Save Food**: .NET/EF Core food-bank engine + **interactive audit-trail generator**
+- `pages/schrutelibrary.html` — **The Schrute Memorial Library**: an over-engineered class hierarchy (LibraryItem > Shelf > Book > Chapter > Page > Note) that turns out to be load-bearing + **interactive Charity Poker book** — pick a real effective-giving cause, watch a simulated poker night, see the pot split 60/25/15
 - `pages/livingvault.html` — **The Living Vault**: zero-quota self-monitoring pipeline, Mermaid flow diagrams + **two interactive graphs** (a curated "process spine" and a colour-by-community "constellation", both from real graph.json) + verbatim `graphify explain`/`path` output
+- `pages/miscwing.html` — **The Misc Wing**: auxiliary test chambers, starting with a **draggable ER/schema explorer** (drag entities, toggle visibility, cycle cardinality) + live DDL/Mermaid output + copy-to-clipboard, patrolled by three animated spy flies
 - `pages/philosophy.html` — **The Prime Directive**: the one rule + **interactive radial map**
 - `style.css`, `script.js` — shared component library + behaviour
 
@@ -36,8 +38,12 @@ connections). One scoped exception to the no-library rule: `livingvault.html` lo
 **Mermaid.js** from a CDN (only that page) to render its flow diagrams — mirroring the vault's
 own `concept.py`, which emits Mermaid natively.
 
-Chambers still sealed (future phases): Schrute Library · Graveyard ·
-Hardware · Misc Wing · Collaboration.
+Chambers still sealed (future phases): Graveyard · Hardware · Collaboration.
+
+**Point of Origin** (hidden, site-wide): six small Stargate-style chevrons are tucked into the
+six live chambers below — find them all, then interact with the sealed subject node on the
+Living Vault page to open the dial. The seventh glyph can only be completed by tracing it by
+hand; no click can substitute. Reward is not documented here on purpose.
 
 ---
 

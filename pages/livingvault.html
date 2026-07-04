@@ -11,7 +11,7 @@
 <nav class="nav-bar">
   <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
   <span class="nav-title">CHAMBER 08 — THE LIVING VAULT</span>
-  <a href="philosophy.html" class="nav-next">THE PRIME DIRECTIVE ►</a>
+  <a href="miscwing.html" class="nav-next">THE MISC WING ►</a>
 </nav>
 
 <div class="page" data-page-num="AFM-008">
@@ -37,7 +37,9 @@
   </div>
 
   <div class="panel">
-    <span class="panel-title">Three layers, one vault — keep them straight</span>
+    <span class="panel-title">Three layers, one vault — keep them straight
+      <span class="chev-slot" data-slot="livingvault-2" style="margin-left:4px;"></span>
+    </span>
     <ul class="parts-list" style="margin-top:0.5rem;">
       <li><span class="qty">1</span> <span><strong>The Obsidian vault</strong> <span class="note">the notes themselves — 164 threaded chat sessions, project MOCs, weekly digests, wired together by <code>[[wikilinks]]</code>. The thing you actually open and read.</span></span></li>
       <li><span class="qty">2</span> <span><strong>The pipeline</strong> <span class="note">four Python scripts that fill and maintain that vault. Mechanical, weekly, zero quota. (Next.)</span></span></li>
@@ -170,7 +172,9 @@ flowchart TD
 
   <div class="grid-2">
     <div class="panel">
-      <span class="panel-title">Dormancy thresholds (real constants)</span>
+      <span class="panel-title">Dormancy thresholds (real constants)
+        <span class="chev-slot" data-slot="livingvault-3" style="margin-left:4px;"></span>
+      </span>
       <div style="overflow-x:auto;">
         <table style="width:100%; font-family: var(--mono); font-size:0.74rem; border-collapse: collapse; margin-top:0.4rem;">
           <tr>
@@ -230,7 +234,8 @@ flowchart LR
   </div>
   <div class="margin-note">The status set. At most three projects may be flagship; exactly one
     carries tier-1 (the single launchable focus). Source of truth is one hand-edited block in
-    <code>governor-state.md</code> — every note, README table, and digest proposal derives from it.</div>
+    <code>governor-state.md</code> — every note, README table, and digest proposal derives from it.
+    <span class="chev-slot" data-slot="livingvault-4"></span></div>
 
   <div class="caution-stripe"></div>
 
@@ -326,6 +331,11 @@ flowchart LR
       <span><span class="lv-swatch subject"></span> subject (sealed)</span>
       <span><span class="lv-swatch-line ext"></span> extracted</span>
       <span><span class="lv-swatch-line inf"></span> inferred</span>
+      <span style="margin-left: auto;">
+        <span class="chev-slot" data-slot="livingvault-1" data-style="on-dark"
+              style="width: 12px; height: 12px;"
+              title="Programmer · Musician · Gamer — three lives, one rule"></span>
+      </span>
     </div>
   </div>
   <div class="annotation" style="text-align:center;">
@@ -363,7 +373,7 @@ flowchart LR
     <div class="stat-box"><div class="stat-value" style="color:var(--amber);">14%</div><div class="stat-label">Inferred (reasoned)</div></div>
     <div class="stat-box"><div class="stat-value">~200</div><div class="stat-label">Relation Types</div></div>
   </div>
-  <div class="margin-note">The commonest relations are real and countable: <code>contains</code> (50),
+  <div class="margin-note"><span class="chev-slot" data-slot="livingvault-6"></span> The commonest relations are real and countable: <code>contains</code> (50),
     <code>implements</code> (46), <code>calls</code> (40), <code>rationale_for</code> (27),
     <code>references</code> (25), <code>semantically_similar_to</code> (23). The graph doesn't just
     say two things connect — it says <em>how</em>.</div>
@@ -566,7 +576,9 @@ flowchart LR
 
   <div class="grid-2">
     <div class="panel">
-      <span class="panel-title">Core abstractions (concepts)</span>
+      <span class="panel-title">Core abstractions (concepts)
+        <span class="chev-slot" data-slot="livingvault-5" style="margin-left:4px;"></span>
+      </span>
       <ul class="parts-list" style="margin-top:0.4rem;">
         <li><span class="qty">18</span> <span>THE SUBJECT <span class="note">edges sealed</span></span></li>
         <li><span class="qty">14</span> <span>Vox — Voice Transcription</span></li>
@@ -615,10 +627,42 @@ flowchart LR
     </p>
   </div>
 
+  <div id="origin-overlay" role="dialog" aria-modal="true" aria-label="The Dial">
+    <div class="panel panel-dark oo-panel">
+      <span class="panel-title">THE DIAL</span>
+      <button type="button" class="oo-close" aria-label="Close">✕</button>
+
+      <div class="oo-stage" id="oo-stage-dial">
+        <div class="oo-ring" id="oo-ring"></div>
+        <div class="oo-trace" id="oo-trace"></div>
+        <p class="oo-caption" id="oo-caption">TRACE THE GLYPH TO CONFIRM ORIGIN. MACHINES CANNOT DO THIS. (STATISTICALLY.)</p>
+      </div>
+
+      <div class="oo-stage" id="oo-stage-kawoosh" hidden>
+        <div class="oo-kawoosh">
+          <span class="oo-ring-burst r1"></span>
+          <span class="oo-ring-burst r2"></span>
+          <span class="oo-ring-burst r3"></span>
+        </div>
+      </div>
+
+      <div class="oo-stage" id="oo-stage-cake" hidden>
+        <div class="oo-cake-wrap" id="oo-cake"></div>
+        <p class="oo-cake-caption">THE CAKE IS NOT A LIE</p>
+        <button type="button" class="oo-audio-toggle" id="oo-audio-toggle">AUDIO: OFF</button>
+      </div>
+
+      <div class="oo-stage oo-closing" id="oo-stage-closing" hidden>
+        <p>Every diagram in this facility was generated. The hand that drew that glyph was not.</p>
+        <a class="classification info" href="philosophy.html">→ SEE ALSO: THE ONE RULE — PHILOSOPHY, §11</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <nav class="page-footer-nav">
-  <a href="letssavefood.html">◄ LET'S SAVE FOOD</a>
+  <a href="schrutelibrary.html">◄ SCHRUTE LIBRARY</a>
   <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
   <a href="philosophy.html">THE PRIME DIRECTIVE ►</a>
 </nav>

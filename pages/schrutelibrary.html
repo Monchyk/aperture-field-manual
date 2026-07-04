@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Schrute Memorial Library — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 06 — THE SCHRUTE MEMORIAL LIBRARY</span>
+  <a href="livingvault.html" class="nav-next">LIVING VAULT ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-006">
+
+  <span class="classification info">MISC HOLDINGS — CATALOGUED UNDER PROTEST</span>
+  <h1>The Schrute Memorial Library</h1>
+  <p class="doc-id">DOC: AFM-2026-SL-006 &nbsp;|&nbsp; SUBSYSTEM: AUXILIARY PROJECTS &nbsp;|&nbsp; CLASSIFICATION SCHEME: OVER-ENGINEERED</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    Somewhere in the subject's project history there is a class hierarchy built to model
+    <em>a note, on a page, in a book</em>. A folder was available. It was not used. This
+    chamber is what happens when that impulse is given a whole library instead of one
+    side project: every miscellaneous thing that doesn't get its own chamber lives here,
+    catalogued through the same needlessly formal lens.
+  </p>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE HIERARCHY ============= -->
+  <h2>The Hierarchy</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Six classes to describe "a book has pages." Everything on the shelf below is an
+    instance of this, whether it wanted to be or not:
+  </p>
+
+  <div class="topology">
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:0.5rem;">
+      <div class="node brain">LibraryItem «abstract»</div>
+      <span style="color:var(--border-light); font-family:var(--mono); font-size:0.85rem;">→</span>
+      <div class="node">Shelf</div>
+      <span style="color:var(--border-light); font-family:var(--mono); font-size:0.85rem;">→</span>
+      <div class="node">Book</div>
+      <span style="color:var(--border-light); font-family:var(--mono); font-size:0.85rem;">→</span>
+      <div class="node">Chapter</div>
+      <span style="color:var(--border-light); font-family:var(--mono); font-size:0.85rem;">→</span>
+      <div class="node">Page</div>
+      <span style="color:var(--border-light); font-family:var(--mono); font-size:0.85rem;">→</span>
+      <div class="node output">Note</div>
+    </div>
+  </div>
+
+  <blockquote class="glados-quote">
+    A Shelf holds Books. A Book holds Chapters. A Chapter holds Pages. A Page holds Notes.
+    Somewhere beneath all of it is a single boolean that says whether the folder has been
+    read. I have counted the interfaces. There are more interfaces than facts.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE SHELF ============= -->
+  <h2>The Shelf</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Three holdings, catalogued. Only one has been checked out and read to completion —
+    the others remain shelved.
+  </p>
+
+  <div class="card-grid">
+
+    <a class="section-card" href="#poker-book">
+      <div class="card-head">
+        <span class="card-num">SHELF 06-A</span>
+        <span class="card-status operational">Checked Out</span>
+      </div>
+      <div class="card-title">Charity Poker: a Book on Giving</div>
+      <div class="card-desc">Guests donate, play a hand, and the top three finishers direct the pot to their chosen cause. Read it below — the story is generated live, one Chapter at a time.</div>
+      <div class="card-cat">Software Projects</div>
+    </a>
+
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">SHELF 06-B</span>
+        <span class="card-status construction">Shelved</span>
+      </div>
+      <div class="card-title">S&amp;Box Zombie Survival Gamemode</div>
+      <div class="card-desc">An HL2-style survival gamemode. Its Book has chapters; none are open to visitors yet.</div>
+      <div class="card-cat">Software Projects</div>
+    </div>
+
+    <div class="section-card locked">
+      <div class="card-head">
+        <span class="card-num">SHELF 06-C</span>
+        <span class="card-status construction">Shelved</span>
+      </div>
+      <div class="card-title">Piano-to-MIDI</div>
+      <div class="card-desc">An audio transcription pipeline. Also a Book. Also unread by the public, for now.</div>
+      <div class="card-cat">Software Projects</div>
+    </div>
+
+  </div>
+
+  <div class="caution-stripe" style="position: relative;">
+    <span class="chev-slot" data-slot="schrutelibrary-1" data-style="on-dark"
+          style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);"></span>
+  </div>
+
+  <!-- ============= THE POKER BOOK ============= -->
+  <h2>Opening the Book: Charity Poker</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Pick the cause you're backing. Eight players sit down, chips donated by real guests.
+    Six Chapters play out. Whoever's chip-stack survives to the top three directs the
+    largest share of the pot — 60/25/15 — to their chosen cause.
+  </p>
+
+  <div id="poker-book">
+
+    <div class="pb-stage active" id="pb-stage-pick">
+      <div class="card-grid" id="pb-cards"></div>
+    </div>
+
+    <div class="pb-stage" id="pb-stage-table">
+      <div class="pb-round-badge" id="pb-round-badge">Shuffling…</div>
+      <ul class="pb-standings" id="pb-standings"></ul>
+      <div class="pb-note" id="pb-note"></div>
+    </div>
+
+    <div class="pb-stage" id="pb-stage-reveal">
+      <h3 id="pb-reveal-title">Colophon — where the pot went</h3>
+      <div class="grid-3" id="pb-podium"></div>
+      <p class="doc-id" style="margin:0.7rem 0;">TOP 3 DIRECT 60% · 25% · 15% OF THE POT TO THEIR CHOSEN CAUSE</p>
+      <div class="pb-pools" id="pb-pools"></div>
+      <div class="pb-verdict" id="pb-verdict"></div>
+      <button class="pb-again" id="pb-again">Read again ↺</button>
+    </div>
+
+  </div>
+
+  <div class="margin-note">
+    Every run is simulated client-side — no server, no accounts, no real money. The
+    charity categories and organisations are real; the poker night is not.
+  </div>
+
+  <blockquote class="cave-quote">
+    We didn't build a donation platform. We built a folder that thinks it's a library
+    that thinks it's a poker table. Ship the folder.
+    <span class="quote-attribution">— Cave Johnson, CEO</span>
+  </blockquote>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.72rem; color: var(--border-light);">
+      Every chamber in this facility is one bench, finished. This one just insisted on an
+      inheritance hierarchy first. Continue to
+      <a href="livingvault.html">The Living Vault</a>, or return to the
+      <a href="../index.html">Facility Directory</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="letssavefood.html">◄ LET'S SAVE FOOD</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="livingvault.html">LIVING VAULT ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

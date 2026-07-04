@@ -11,7 +11,7 @@
 <nav class="nav-bar">
   <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
   <span class="nav-title">CHAMBER 05 — LET'S SAVE FOOD</span>
-  <a href="livingvault.html" class="nav-next">THE LIVING VAULT ►</a>
+  <a href="schrutelibrary.html" class="nav-next">SCHRUTE LIBRARY ►</a>
 </nav>
 
 <div class="page" data-page-num="AFM-005">
@@ -49,7 +49,9 @@
 
   <div class="grid-2">
     <div class="panel">
-      <span class="panel-title" style="color: var(--green-dark);">APPROACH A — State CRUD &nbsp;·&nbsp; SHIPPED</span>
+      <span class="panel-title" style="color: var(--green-dark);">APPROACH A — State CRUD &nbsp;·&nbsp; SHIPPED
+        <span class="chev-slot" data-slot="letssavefood-2" style="margin-left:4px;"></span>
+      </span>
       <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
         One <code>InventoryItems</code> row per batch, mutated in place. A separate
         <code>AuditLog</code> records every change. <strong>"What's in stock now?"</strong> is a
@@ -343,7 +345,11 @@
   <div class="margin-note">Donor privacy is a real tension in the law: an inspector <em>may</em> ask
     where food came from, but public dashboards must not out the donor store. So
     <code>InventoryItemDto</code> simply has no <code>SourceStore</code> field — the private
-    provenance never leaves the service layer except through an authorised inspection query.</div>
+    provenance never leaves the service layer except through an authorised inspection query.
+    <span class="chev-slot" data-slot="letssavefood-1"
+          style="width: 12px; height: 12px; margin-left: 6px; vertical-align: middle;"
+          title="SELECT * FROM truth WHERE source = 'fingertips'"></span>
+  </div>
 
   <div class="caution-stripe"></div>
 
@@ -471,7 +477,7 @@
 <nav class="page-footer-nav">
   <a href="emotionhue.html">◄ EMOTIONHUE</a>
   <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
-  <a href="livingvault.html">THE LIVING VAULT ►</a>
+  <a href="schrutelibrary.html">SCHRUTE LIBRARY ►</a>
 </nav>
 
 <script src="../script.js"></script>

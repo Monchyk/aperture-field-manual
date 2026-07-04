@@ -29,7 +29,7 @@ enable Pages (root). Deploys to `https://<user>.github.io/aperture-field-manual/
 
 ## 2. Current state
 
-**Built & live (7 of 12 chambers):**
+**Built & live (9 of 12 chambers):**
 
 | # | File | Chamber | Interactive |
 |---|------|---------|-------------|
@@ -39,18 +39,24 @@ enable Pages (root). Deploys to `https://<user>.github.io/aperture-field-manual/
 | 03 | `pages/workshop.html` | The Workshop | (accordions) |
 | 04 | `pages/emotionhue.html` | EmotionHue | ✅ light-room console |
 | 05 | `pages/letssavefood.html` | Let's Save Food | ✅ audit-trail generator (`#lsf-audit-demo`) |
-| 08 | `pages/livingvault.html` | The Living Vault | ✅ TWO graphs: curated `#lv-context-web` + community `#lv-constellation` (real graph.json) + Mermaid (CDN, this page only) + verbatim graphify CLI output |
+| 06 | `pages/schrutelibrary.html` | The Schrute Memorial Library | ✅ Charity Poker book (`#poker-book`) — charity picker → 6-Chapter simulated poker night → pot reveal |
+| 08 | `pages/livingvault.html` | The Living Vault | ✅ TWO graphs: curated `#lv-context-web` + community `#lv-constellation` (real graph.json) + Mermaid (CDN, this page only) + verbatim graphify CLI output + **the Point of Origin dial** (see §11) |
+| 10 | `pages/miscwing.html` | The Misc Wing | ✅ Schematics Lab (`#schem-app`) — draggable ER explorer, live DDL/Mermaid output, 3 spy flies |
 | 11 | `pages/philosophy.html` | The Prime Directive | ✅ radial convergence map |
 | — | `style.css`, `script.js` | shared infra | — |
 | — | `README.md`, `HANDOFF.md` | docs | — |
 
-**Sealed (locked cards on index, not built):** 06 Schrute Library · 07 Graveyard ·
-09 Hardware · 10 Misc Wing · 12 Collaboration.
+**Sealed (locked cards on index, not built):** 07 Graveyard · 09 Hardware · 12 Collaboration.
+
+> **Coordination note, resolved:** the earlier note here flagged Chamber 06 vs. 10 as
+> candidate homes for the Schematics Lab. 06 went to Charity Poker; **the Schematics Lab
+> is built as Chamber 10 (Misc Wing)**, per the note's own recommendation. Both are now live.
 
 **Linear read order:** index(00) → governor(01) → gears(02) → workshop(03) →
-emotionhue(04) → letssavefood(05) → livingvault(08) → **[09 Hardware next — sealed]** → …
-→ philosophy(11) → collab(12). The chain skips sealed chambers: LSF(05)→LivingVault(08)→
-Philosophy(11). Philosophy is the convergence endpoint every page links back toward.
+emotionhue(04) → letssavefood(05) → schrutelibrary(06) → livingvault(08) → miscwing(10) →
+philosophy(11) → **[09 Hardware, 12 Collab — sealed]**. The chain skips sealed chambers:
+LSF(05)→Schrute(06)→LivingVault(08)→MiscWing(10)→Philosophy(11). Philosophy is the
+convergence endpoint every page links back toward.
 
 **⚠ New dependency (scoped):** `livingvault.html` is the FIRST page to load an external library —
 Mermaid.js from `cdn.jsdelivr.net/npm/mermaid@11` via a `<script type="module">` at page end,
@@ -243,7 +249,48 @@ headless checks can't confirm accordions expand, canvases animate, or mobile lay
 ---
 
 ## 10. Quick status line for the next session
-> **7/12 chambers live**, all cross-linked, all interactives verified (JS OK · 0 tag mismatches ·
+> **9/12 chambers live**, all cross-linked. **The Point of Origin minigame is DONE** (see
+> `HANDOFF-point-of-origin.md`) — six hidden Stargate-style chevrons (`.origin-chevron[data-chevron]`)
+> tucked into governor/gears/workshop/emotionhue/letssavefood/livingvault (each carries a
+> small `title` character-egg — DMX cue, a tempo marking, `SELECT * FROM truth WHERE source
+> = 'fingertips'`, etc.), tracked in `localStorage` (`origin.chevrons`), with a fixed
+> `#origin-dial-widget` corner indicator (7 slots, minimizable). All shared logic lives in
+> `script.js` (`initOriginChevrons`, `initOriginDialWidget`, `initOriginDial`) and
+> `style.css` (new "POINT OF ORIGIN" section) — no new files, per the one-shared-script
+> convention. The 7th glyph (Tau'ri) is traced by hand on `livingvault.html`'s sealed
+> subject node (`#origin-overlay`): a genuine pointer-gesture verifier (resample to 32
+> points, normalize, compare against 11 target waypoints, reject clicks/lines/too-fast/
+> too-slow) gates a kawoosh → cake SVG → Web Audio "Still Alive" chiptune (off by default,
+> toggle persisted) → a quiet closing line linking to Philosophy. Nothing about the gate can
+> be skipped by flipping a boolean in the console — the success path only runs from inside
+> the real `pointerup` handler. **Chamber 10 The Misc Wing is also DONE** — the Schematics
+> Lab (`#schem-app` in `pages/miscwing.html`): draggable ER-diagram entities (pointer-drag,
+> re-renders on move), toggle-visibility + cardinality-cycling controls, live DDL/Mermaid
+> `erDiagram` output with a "TRANSCRIBE" clipboard button, 3 presets (FACILITY/VAULT/CANTEEN),
+> and 3 animated spy flies (wander/scheme state machine, frozen under reduced motion) sharing
+> the same `.spyfly`/`initSpyflies()` infra a future page could reuse. Cross-linked per §4
+> (index card flipped + count bumped to 9 operational/3 sealed, philosophy radial node 10 +
+> socket unsealed, Living Vault's next repointed to Misc Wing, Misc Wing's next → Philosophy).
+> First site-wide `prefers-reduced-motion` block added (scoped to only the new elements).
+> **Next candidate:** 07 Graveyard or 09 Hardware.
+>
+> _(Earlier:)_ **8/12 chambers live**, all cross-linked. **Chamber 06 The Schrute Memorial Library is
+> DONE** — the sealed card's own joke premise (an inheritance hierarchy to model a note on
+> a page in a book) became the literal data model: `LibraryItem > Shelf > Book > Chapter >
+> Page > Note`, drawn as a `.topology` chain. The Shelf holds three "Books" — only
+> **Charity Poker: a Book on Giving** is checked out and readable (`#poker-book`): pick a
+> real effective-giving cause (data verified live against effectiefgeven.be — Zorggroepen
+> dropped per privacy call), watch 6 simulated poker Chapters (zero-sum, skill+luck
+> weighted), then the Colophon reveals the 60/25/15 pot split by cause. The other two
+> shelf spines (S&Box Zombie Survival, Piano-to-MIDI) are inert `.locked` placeholders —
+> no fabricated detail, per the verification mandate. Reused `.card-grid`/`.section-card`/
+> `.topology`/`.grid-3`/`.panel` throughout; only new CSS was the pool-bar chart. Cross-linked
+> per §4 (index card flipped, philosophy radial node 06 + socket unsealed, LSF's next
+> repointed to Schrute, Schrute's next → Living Vault). **See the coordination note in §2**
+> — Chamber 10 (Misc Wing), not 06, is the open slot for the point-of-origin build's
+> Schematics Lab. **Next candidate:** 07 Graveyard or 09 Hardware.
+>
+> _(Earlier:)_ (all previously below, unchanged) **7/12 chambers live**, all cross-linked, all interactives verified (JS OK · 0 tag mismatches ·
 > 0 broken links · index 7 operational/5 sealed · philosophy 7 live radial nodes). **Chamber 08
 > The Living Vault is DONE** — the vault documents *itself* (this Obsidian project). Mermaid flow
 > diagrams (pipeline sync→concept→status→digest→governor; the closed drift-loop; the dual-key

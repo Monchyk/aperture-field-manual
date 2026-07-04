@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Misc Wing — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+  <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 10 — THE MISC WING</span>
+  <a href="philosophy.html" class="nav-next">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-010">
+
+  <span class="classification">PERSONNEL: ENGINEERING ONLY</span>
+  <h1>The Misc Wing</h1>
+  <p class="doc-id">DOC: AFM-2026-MISC-010 &nbsp;|&nbsp; SUBSYSTEM: SCHEMATICS LAB &nbsp;|&nbsp; SURVEILLANCE: ACTIVE</p>
+
+  <div class="warning-box info">
+    <p>Auxiliary test chambers live here — the ones too small to number on their own. This one
+    is a schema/ER/flowchart room. Every panel is labelled by function, not decoration. Drag a
+    box, flip a toggle, and the teletype writes it out as DDL or Mermaid before you've finished
+    thinking about it. Three units are deployed for observation. I have not asked what they observe.
+    <span class="quote-attribution" style="display:block; margin-top:0.4rem;">— GLaDOS, Facility Governor</span></p>
+  </div>
+
+  <div class="schem-grid" id="schem-app">
+    <div class="panel panel-dark">
+      <span class="panel-title">CONTROL SURFACE</span>
+      <div class="schem-presets" id="schem-presets"></div>
+      <div class="schem-controls-list" id="schem-entity-list"></div>
+      <button type="button" class="schem-add-btn" id="schem-add-entity">+ ADD ENTITY</button>
+      <div class="margin-note" style="margin-top:0.8rem;">Relations — click to cycle cardinality:</div>
+      <div class="schem-controls-list" id="schem-rel-list"></div>
+    </div>
+
+    <div>
+      <div class="panel panel-dark spyfly-field" id="schem-window-panel">
+        <span class="panel-title">OBSERVATION WINDOW
+          <span class="chev-slot" data-slot="miscwing-1" data-style="on-dark" style="margin-left:4px;"></span>
+        </span>
+        <div id="schem-window"></div>
+
+        <model-viewer class="spyfly spyfly-3d" src="../assets/ghost-fly.glb"
+          autoplay disable-zoom interaction-prompt="none" shadow-intensity="0"
+          style="width:56px; height:44px; pointer-events:none; background:transparent;"></model-viewer>
+        <model-viewer class="spyfly spyfly-3d" src="../assets/ghost-fly.glb"
+          autoplay disable-zoom interaction-prompt="none" shadow-intensity="0"
+          style="width:56px; height:44px; pointer-events:none; background:transparent;"></model-viewer>
+        <model-viewer class="spyfly spyfly-3d" src="../assets/ghost-fly.glb"
+          autoplay disable-zoom interaction-prompt="none" shadow-intensity="0"
+          style="width:56px; height:44px; pointer-events:none; background:transparent;"></model-viewer>
+      </div>
+      <div class="margin-note">SURVEILLANCE UNITS DEPLOYED FROM THIS WING.</div>
+      <p class="annotation" style="text-align:center;">Ghost Fly (Rigged) — Adventure Time by
+        <a href="https://sketchfab.com/DreamingInAlternation27" target="_blank" rel="noopener">Dreaming In Alternation 27</a>,
+        licensed <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC-BY-4.0</a>.</p>
+
+      <div class="caution-stripe"></div>
+
+      <div class="panel panel-dark">
+        <span class="panel-title">TELETYPE OUTPUT</span>
+        <div class="schem-output-tabs">
+          <button type="button" class="schem-tab active" data-tab="ddl">DDL</button>
+          <button type="button" class="schem-tab" data-tab="mermaid">MERMAID</button>
+        </div>
+        <pre id="schem-output"></pre>
+        <button type="button" class="schem-transcribe" id="schem-transcribe">TRANSCRIBE</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="annotation" style="text-align:center;">Drag a box in the observation window. Toggle an
+  entity off and the teletype forgets it existed. Nothing here writes to a real database — it
+  only writes the sentence that would.</p>
+
+  <blockquote class="cave-quote">
+    Every great facility needs a room full of boxes and arrows. This is that room. Don't
+    overthink it — just drag something.
+    <span class="quote-attribution">— Cave Johnson, CEO</span>
+  </blockquote>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="livingvault.html">◄ LIVING VAULT</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="philosophy.html">THE PRIME DIRECTIVE ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>
