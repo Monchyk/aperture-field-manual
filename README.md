@@ -22,7 +22,7 @@ Built (7 chambers live):
 - `pages/workshop.html` — **The Workshop**: the human operating model
 - `pages/emotionhue.html` — **EmotionHue**: light engine + **interactive customisation console**
 - `pages/letssavefood.html` — **Let's Save Food**: .NET/EF Core food-bank engine + **interactive audit-trail generator**
-- `pages/livingvault.html` — **The Living Vault**: zero-quota self-monitoring pipeline, Mermaid flow diagrams + **interactive knowledge-graph web** (real graph.json data)
+- `pages/livingvault.html` — **The Living Vault**: zero-quota self-monitoring pipeline, Mermaid flow diagrams + **two interactive graphs** (a curated "process spine" and a colour-by-community "constellation", both from real graph.json) + verbatim `graphify explain`/`path` output
 - `pages/philosophy.html` — **The Prime Directive**: the one rule + **interactive radial map**
 - `style.css`, `script.js` — shared component library + behaviour
 

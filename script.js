@@ -546,6 +546,58 @@ function initLvContextWeb() {
   });
 }
 
+// --- LIVING VAULT: the colour-by-community "constellation" (graphify's real slice) ---
+// Obsidian/vis-network-style force graph rendered as static SVG. Hover/focus a node →
+// it + its neighbours glow, the rest fade. Nodes/edges come straight from graph.json.
+function initLvConstellation() {
+  const root = document.getElementById('lv-constellation');
+  if (!root) return;
+  const svg = root.querySelector('svg');
+  const info = root.querySelector('#lv-const-info');
+  const nodes = [...root.querySelectorAll('.cn-node')];
+  const edges = [...root.querySelectorAll('.cn-edge')];
+
+  const adj = {};
+  edges.forEach(e => {
+    const a = e.dataset.a, b = e.dataset.b;
+    (adj[a] = adj[a] || []).push(b);
+    (adj[b] = adj[b] || []).push(a);
+  });
+  const byId = {};
+  nodes.forEach(n => { byId[n.dataset.id] = n; });
+  const labelOf = id => (byId[id] ? byId[id].dataset.label : id);
+
+  function focus(id) {
+    const node = byId[id];
+    if (!node) return;
+    svg.classList.add('cn-focused');
+    const nb = new Set([id]);
+    (adj[id] || []).forEach(o => nb.add(o));
+    nodes.forEach(n => n.classList.toggle('lit', nb.has(n.dataset.id)));
+    edges.forEach(e => e.classList.toggle('lit', e.dataset.a === id || e.dataset.b === id));
+    const conns = adj[id] || [];
+    let html = `<span class="lv-info-label">${node.dataset.label}</span>` +
+               `<span class="lv-info-meta">${node.dataset.meta || ''}</span>`;
+    html += conns.length
+      ? conns.map(o => `<span class="lv-info-rel">→ ${labelOf(o)}</span>`).join('')
+      : '<span class="lv-info-rel">no edges in this slice</span>';
+    info.innerHTML = html;
+  }
+  function clear() {
+    svg.classList.remove('cn-focused');
+    nodes.forEach(n => n.classList.remove('lit'));
+    edges.forEach(e => e.classList.remove('lit'));
+    info.innerHTML = '<span class="lv-info-default">Hover or tap a node to trace its threads.</span>';
+  }
+  nodes.forEach(n => {
+    const id = n.dataset.id;
+    n.addEventListener('mouseenter', () => focus(id));
+    n.addEventListener('mouseleave', clear);
+    n.addEventListener('focus', () => focus(id));
+    n.addEventListener('blur', clear);
+  });
+}
+
 function initPages() {
   initGovernorBattery();   // gates on #governor-battery-form
   initGearSwitcher();      // gates on #gear-switcher
@@ -554,6 +606,7 @@ function initPages() {
   initNoiseCanvas();       // gates on #noise-canvas
   initLsfAuditDemo();      // gates on #lsf-audit-demo
   initLvContextWeb();      // gates on #lv-context-web
+  initLvConstellation();   // gates on #lv-constellation
 }
 
 // ============================================

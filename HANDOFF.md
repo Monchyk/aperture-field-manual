@@ -39,7 +39,7 @@ enable Pages (root). Deploys to `https://<user>.github.io/aperture-field-manual/
 | 03 | `pages/workshop.html` | The Workshop | (accordions) |
 | 04 | `pages/emotionhue.html` | EmotionHue | ✅ light-room console |
 | 05 | `pages/letssavefood.html` | Let's Save Food | ✅ audit-trail generator (`#lsf-audit-demo`) |
-| 08 | `pages/livingvault.html` | The Living Vault | ✅ interactive graph web (`#lv-context-web`) + Mermaid (CDN, this page only) |
+| 08 | `pages/livingvault.html` | The Living Vault | ✅ TWO graphs: curated `#lv-context-web` + community `#lv-constellation` (real graph.json) + Mermaid (CDN, this page only) + verbatim graphify CLI output |
 | 11 | `pages/philosophy.html` | The Prime Directive | ✅ radial convergence map |
 | — | `style.css`, `script.js` | shared infra | — |
 | — | `README.md`, `HANDOFF.md` | docs | — |
@@ -253,8 +253,16 @@ headless checks can't confirm accordions expand, canvases animate, or mobile lay
 > `docs/living-vault.md`, `graphify-out/{GRAPH_REPORT.md,graph.json}` (420 nodes/555 edges/37
 > communities/991,830 one-time tokens are all real). **Privacy win:** the subject (K.) is the #1
 > god node (18 edges) but ALL his edges are personal → rendered as a *sealed* redacted centre; no
-> AuDHD/therapy/housemate content drawn. **Next candidate:** Chamber 06 Schrute Library or 07
-> Graveyard (both sealed, both have vault source). Repo still needs manual GitHub creation.
+> AuDHD/therapy/housemate content drawn. **Later refined (per user):** kept the curated web as the
+> "process spine" and ADDED a second colour-by-community **constellation** (`#lv-constellation`, 62
+> nodes/54 edges) matching graphify's `graph.html` vibe (deep `#0f0f1a`, Tableau-10 by
+> `community%10`), plus verbatim `graphify explain "Living Vault"` + `graphify path` ("No path
+> found") artifacts, plus a "three layers" clarifier (vault / pipeline / graphify are distinct).
+> **Constellation reproducibility:** technical slice of `graph.json` — exclude communities 0/4/14 +
+> a personal-term denylist on LABELS only (never source_file — it's a `C:\Users\klaas` path that
+> false-positives on `klaas`); per-community top-5 by degree; verify 0 denylist hits on drawn
+> labels before shipping. Mermaid.js is on this page only (first CDN dep). **Next candidate:**
+> Chamber 06 Schrute Library or 07 Graveyard (both sealed, both have vault source).
 >
 > _(Earlier:)_ **Chamber 05 Let's Save Food is DONE** — bespoke ER + audit-flow SVGs, FAVV compliance table, OFF streaming-import diagram,
 > and a live audit-trail generator (`#lsf-audit-demo`) that mirrors `InventoryService` +

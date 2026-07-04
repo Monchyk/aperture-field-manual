@@ -36,6 +36,15 @@
     <div class="stat-box"><div class="stat-value">0</div><div class="stat-label">Tokens / Week</div></div>
   </div>
 
+  <div class="panel">
+    <span class="panel-title">Three layers, one vault — keep them straight</span>
+    <ul class="parts-list" style="margin-top:0.5rem;">
+      <li><span class="qty">1</span> <span><strong>The Obsidian vault</strong> <span class="note">the notes themselves — 164 threaded chat sessions, project MOCs, weekly digests, wired together by <code>[[wikilinks]]</code>. The thing you actually open and read.</span></span></li>
+      <li><span class="qty">2</span> <span><strong>The pipeline</strong> <span class="note">four Python scripts that fill and maintain that vault. Mechanical, weekly, zero quota. (Next.)</span></span></li>
+      <li><span class="qty">3</span> <span><strong>Graphify</strong> <span class="note">a separate tool that reads the vault and builds a <em>second</em>, AI-extracted graph on top — not the same thing as Obsidian's own link graph. (Further down.)</span></span></li>
+    </ul>
+  </div>
+
   <div class="caution-stripe"></div>
 
   <!-- ============= THE PIPELINE ============= -->
@@ -225,15 +234,16 @@ flowchart LR
 
   <div class="caution-stripe"></div>
 
-  <!-- ============= HERO: CONTEXT WEB ============= -->
-  <h2>The context web</h2>
+  <!-- ============= CURATED WEB (process spine) ============= -->
+  <h2>The wiring, traced by hand</h2>
   <p style="font-family: var(--mono); font-size:0.78rem;">
-    Once the vault holds the whole corpus, <strong>graphify</strong> reads all of it and extracts a
-    knowledge graph: every concept a node, every relationship an edge. Below is a real slice of it —
-    the technical spine, drawn from the actual <code>graph.json</code>. <strong>Hover or tap any
-    node</strong> to light its genuine connections. Solid lines were <em>extracted</em> from the
-    text; dashed amber lines are <em>inferred</em> — the graph reasoning that two things are alike
-    even though nothing said so directly.
+    First, the legible version. This is a hand-picked slice of the graph — the technical spine —
+    laid out so the <strong>input → machinery → feedback loop</strong> reads clearly: the pipeline
+    to the left, the projects to the right, the operating system between, all drawn from the real
+    <code>graph.json</code>. <strong>Hover or tap any node</strong> to light its genuine
+    connections. Solid lines were <em>extracted</em> from the text; dashed amber lines are
+    <em>inferred</em>. Further down is the same graph with the training wheels off — every
+    community, in colour.
   </p>
 
   <div id="lv-context-web">
@@ -334,16 +344,18 @@ flowchart LR
 
   <div class="caution-stripe"></div>
 
-  <!-- ============= GRAPHIFY LAYER ============= -->
-  <h2>How the web is woven — graphify</h2>
+  <!-- ============= SYSTEM 2: GRAPHIFY ============= -->
+  <h2>System 2 — graphify: a second graph, built by AI</h2>
   <p style="font-family: var(--mono); font-size:0.8rem;">
-    The graph is not free like the weekly routine — it is the one place the vault spends real
-    tokens, once. <strong>graphify</strong> read <strong>214 files · ~390,864 words</strong> and
-    built <strong>420 nodes · 555 edges · 37 communities · 36 hyperedges</strong> for a one-time
-    cost of <strong>991,830 input tokens</strong> (zero output — it only reads). Model choice is
-    gear-aware: the same Gear system from Chamber 02 routes the extraction to Haiku, Sonnet, or
-    Opus depending on how hard you're willing to spend. It follows Karpathy's "LLM as librarian"
-    pattern — raw notes in, a navigable wiki out.
+    Everything above is the vault and the pipeline that fills it. <strong>graphify is a different
+    system</strong>: a separate command-line tool that reads the whole vault and builds its
+    <em>own</em> graph — not Obsidian's <code>[[link]]</code> graph, but a semantic one, where a
+    model extracts concepts and the relationships between them. It read <strong>214 files ·
+    ~390,864 words</strong> and produced <strong>420 nodes · 555 edges · 37 communities</strong>.
+    Unlike the weekly routine, this costs real tokens — <strong>991,830</strong> on the last build,
+    <strong>~1.08M cumulative</strong> across two runs — but only when you ask. Afterwards,
+    incremental updates hash every file (<code>manifest.json</code>); code-only changes skip the
+    model entirely. Gear-aware, too: the Chamber 02 gears route extraction to Haiku, Sonnet, or Opus.
   </p>
 
   <div class="grid-3">
@@ -356,12 +368,190 @@ flowchart LR
     <code>references</code> (25), <code>semantically_similar_to</code> (23). The graph doesn't just
     say two things connect — it says <em>how</em>.</div>
 
+  <!-- ============= THE CONSTELLATION (obsidian vibe) ============= -->
+  <h3>The whole web, in colour</h3>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    This is the view that looks like Obsidian's graph — a real, larger slice of graphify's output,
+    every node <strong>coloured by its community</strong> and sized by how connected it is. Hover a
+    node to trace its threads; the rest fade. Sixteen communities, sixty-odd concepts — the actual
+    sprawl of projects and machinery, with the personal communities left sealed. Same palette the
+    real <code>graph.html</code> uses.
+  </p>
+
+  <div id="lv-constellation">
+        <svg viewBox="0 0 1000 820" width="1000" height="820" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Community-coloured knowledge-graph slice from the real graph. Hover a node to trace its connections.">
+      <g class="cn-edges" stroke-linecap="round">
+        <line class="cn-edge ext" data-a="digest_py" data-b="claude_vault_digest_build_facts" x1="782.8" y1="152.5" x2="787.4" y2="92.7"/>
+        <line class="cn-edge ext" data-a="digest_py" data-b="govstate_py" x1="782.8" y1="152.5" x2="832.4" y2="186.4"/>
+        <line class="cn-edge ext" data-a="digest_py" data-b="status_py" x1="782.8" y1="152.5" x2="653.1" y2="723.4"/>
+        <line class="cn-edge ext" data-a="status_py" data-b="govstate_py" x1="653.1" y1="723.4" x2="832.4" y2="186.4"/>
+        <line class="cn-edge ext" data-a="sync_py" data-b="sluggers_py" x1="869.6" y1="266.1" x2="792.0" y2="303.3"/>
+        <line class="cn-edge ext" data-a="status_py" data-b="claude_vault_status_collect_projects" x1="653.1" y1="723.4" x2="702.6" y2="757.2"/>
+        <line class="cn-edge ext" data-a="status_py" data-b="claude_vault_status_write_moc" x1="653.1" y1="723.4" x2="657.7" y2="663.5"/>
+        <line class="cn-edge ext" data-a="sync_py" data-b="claude_vault_sync_process_session" x1="869.6" y1="266.1" x2="919.1" y2="299.9"/>
+        <line class="cn-edge ext" data-a="sync_py" data-b="claude_vault_sync_main" x1="869.6" y1="266.1" x2="874.1" y2="206.2"/>
+        <line class="cn-edge ext" data-a="claude_vault_sync_main" data-b="claude_vault_sync_process_session" x1="874.1" y1="206.2" x2="919.1" y2="299.9"/>
+        <line class="cn-edge ext" data-a="ai_assistant_cluster_md" data-b="vox_project" x1="575.5" y1="113.8" x2="653.1" y2="76.6"/>
+        <line class="cn-edge ext" data-a="ai_assistant_cluster_md" data-b="day_data_analyser_project" x1="575.5" y1="113.8" x2="504.6" y2="40"/>
+        <line class="cn-edge inf" data-a="ai_assistant_cluster_md" data-b="vox_automation_design" x1="575.5" y1="113.8" x2="657.7" y2="40"/>
+        <line class="cn-edge inf" data-a="vox_project" data-b="hue_program_project" x1="653.1" y1="76.6" x2="130.4" y2="533.9"/>
+        <line class="cn-edge ext" data-a="vox_automation_design" data-b="vox_project" x1="657.7" y1="40" x2="653.1" y2="76.6"/>
+        <line class="cn-edge ext" data-a="day_data_analyser_project" data-b="audio_pipeline_project" x1="504.6" y1="40" x2="549.5" y2="83.9"/>
+        <line class="cn-edge inf" data-a="localai_orchestrator" data-b="day_data_analyser_project" x1="500.0" y1="50.0" x2="504.6" y2="40"/>
+        <line class="cn-edge ext" data-a="journey_to_gears_doc" data-b="triage_of_experts" x1="100.0" y1="400.0" x2="46" y2="437.2"/>
+        <line class="cn-edge ext" data-a="journey_to_gears_doc" data-b="sparing_agent_model" x1="100.0" y1="400.0" x2="104.6" y2="340.2"/>
+        <line class="cn-edge inf" data-a="journey_to_gears_doc" data-b="stress_test_doc" x1="100.0" y1="400.0" x2="149.5" y2="433.9"/>
+        <line class="cn-edge inf" data-a="triage_of_experts" data-b="sparing_agent_model" x1="46" y1="437.2" x2="104.6" y2="340.2"/>
+        <line class="cn-edge ext" data-a="session_computer_stats_gear_setup" data-b="project_computer_stats" x1="822.5" y1="437.2" x2="904.6" y2="340.2"/>
+        <line class="cn-edge inf" data-a="gw2_companion_chat" data-b="letssavefood_barcode_scanner" x1="422.5" y1="780" x2="549.5" y2="780"/>
+        <line class="cn-edge ext" data-a="vox_voice_pipeline" data-b="speaches_whisper" x1="900.0" y1="400.0" x2="949.5" y2="433.9"/>
+        <line class="cn-edge ext" data-a="session_sbox_init" data-b="project_sbox" x1="146.2" y1="104.0" x2="266.7" y2="186.4"/>
+        <line class="cn-edge ext" data-a="session_sbox_init" data-b="sbox_zombie_game" x1="146.2" y1="104.0" x2="217.2" y2="152.5"/>
+        <line class="cn-edge ext" data-a="letssavefood_project" data-b="letssavefood_aspnet" x1="217.2" y1="647.5" x2="266.7" y2="681.4"/>
+        <line class="cn-edge ext" data-a="letssavefood_project" data-b="letssavefood_postgres" x1="217.2" y1="647.5" x2="139.6" y2="684.7"/>
+        <line class="cn-edge ext" data-a="letssavefood_project" data-b="letssavefood_efcore" x1="217.2" y1="647.5" x2="221.7" y2="587.7"/>
+        <line class="cn-edge ext" data-a="letssavefood_efcore" data-b="letssavefood_postgres" x1="221.7" y1="587.7" x2="139.6" y2="684.7"/>
+        <line class="cn-edge ext" data-a="letssavefood_lsfdbcontext" data-b="letssavefood_softdelete" x1="351.5" y1="663.5" x2="269.4" y2="760.5"/>
+        <line class="cn-edge inf" data-a="letssavefood_audit" data-b="letssavefood_softdelete" x1="396.4" y1="757.2" x2="269.4" y2="760.5"/>
+        <line class="cn-edge ext" data-a="letssavefood_lsfdbcontext" data-b="letssavefood_audit" x1="351.5" y1="663.5" x2="396.4" y2="757.2"/>
+        <line class="cn-edge ext" data-a="s_vault_setup_meerkat" data-b="concept_vault_pipeline" x1="869.6" y1="533.9" x2="874.1" y2="474.1"/>
+        <line class="cn-edge ext" data-a="moc_claude_organisation" data-b="s_vault_setup_meerkat" x1="792.0" y1="571.1" x2="869.6" y2="533.9"/>
+        <line class="cn-edge ext" data-a="session_want_sort_chats" data-b="disk_cleanup_session" x1="705.3" y1="684.7" x2="832.4" y2="681.4"/>
+        <line class="cn-edge inf" data-a="session_want_sort_chats" data-b="session_obsidian_playbook" x1="705.3" y1="684.7" x2="782.8" y2="647.5"/>
+        <line class="cn-edge ext" data-a="vox_automation_design" data-b="vox_survivor_gen3" x1="657.7" y1="40" x2="702.6" y2="110.5"/>
+        <line class="cn-edge inf" data-a="piano_to_midi_project" data-b="music_csv_m3u_comparison" x1="346.9" y1="76.6" x2="396.4" y2="110.5"/>
+        <line class="cn-edge ext" data-a="piano_to_midi_project" data-b="piano_cuda_fix" x1="346.9" y1="76.6" x2="275.9" y2="40"/>
+        <line class="cn-edge ext" data-a="hue_program_project" data-b="hue_profile_builder" x1="130.4" y1="533.9" x2="135.0" y2="474.1"/>
+        <line class="cn-edge ext" data-a="hue_program_project" data-b="hue_steam_controller" x1="130.4" y1="533.9" x2="180.0" y2="567.8"/>
+        <line class="cn-edge ext" data-a="main_ai_tool_project" data-b="localai_orchestrator" x1="422.5" y1="87.2" x2="500.0" y2="50.0"/>
+        <line class="cn-edge inf" data-a="localai_orchestrator" data-b="audio_pipeline_project" x1="500.0" y1="50.0" x2="549.5" y2="83.9"/>
+        <line class="cn-edge ext" data-a="hue_program_claudemd" data-b="dwight_schrute_persona" x1="52.9" y1="303.3" x2="180.0" y2="299.9"/>
+        <line class="cn-edge inf" data-a="dwight_schrute_persona" data-b="confidence_signal" x1="180.0" y1="299.9" x2="130.4" y2="266.1"/>
+        <line class="cn-edge ext" data-a="skills_backlog_doc" data-b="confidence_signal" x1="135.0" y1="206.2" x2="130.4" y2="266.1"/>
+      </g>
+      <g class="cn-nodes">
+        <g class="cn-node" data-id="letssavefood_aspnet" data-label="ASP.NET Core Razor Pages (.NET 10)" data-meta="LetsSaveFood Web · 2 links" data-comm="12" tabindex="0" role="button" transform="translate(266.7,681.4)"><circle r="6.4" class="cn-dot" style="fill:#E15759"/><text class="cn-label" x="10.4" y="3">ASP.NET Core Razor…</text></g>
+        <g class="cn-node cn-hubnode" data-id="sbox_zombie_game" data-label="S&amp;Box Zombie Survival Gamemode (HL2 style)" data-meta="S&amp;box Zombie · 2 links" data-comm="17" tabindex="0" role="button" transform="translate(217.2,152.5)"><circle r="6.4" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label cn-hub" x="0" y="-13.4" text-anchor="middle">S&amp;Box Zombie Survi…</text></g>
+        <g class="cn-node" data-id="hue_person_profiles" data-label="PersonProfiles.cs Static Field Ordering Bug" data-meta="EmotionHue Lighting · 2 links" data-comm="13" tabindex="0" role="button" transform="translate(52.9,571.1)"><circle r="6.4" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label" x="10.4" y="3">PersonProfiles.cs …</text></g>
+        <g class="cn-node" data-id="dwight_schrute_persona" data-label="Dwight K. Schrute Teacher Identity — Mastery Over Speed" data-meta="Orchestration · 2 links" data-comm="16" tabindex="0" role="button" transform="translate(180.0,299.9)"><circle r="6.4" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label" x="10.4" y="3">Dwight K. Schrute …</text></g>
+        <g class="cn-node" data-id="hue_program_claudemd" data-label="Hue-program CLAUDE.md — Dwight Schrute Persona Config" data-meta="Orchestration · 2 links" data-comm="16" tabindex="0" role="button" transform="translate(52.9,303.3)"><circle r="6.4" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label" x="10.4" y="3">Hue-program CLAUDE…</text></g>
+        <g class="cn-node" data-id="project_sbox" data-label="S&amp;Box Claude Project (Zombie Survival Game)" data-meta="S&amp;box Zombie · 2 links" data-comm="17" tabindex="0" role="button" transform="translate(266.7,186.4)"><circle r="6.4" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label" x="10.4" y="3">S&amp;Box Claude Proje…</text></g>
+        <g class="cn-node" data-id="session_sbox_init" data-label="Session: S&amp;Box zombie game init (2026-06-01)" data-meta="S&amp;box Zombie · 2 links" data-comm="17" tabindex="0" role="button" transform="translate(146.2,104.0)"><circle r="6.4" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label" x="10.4" y="3">Session: S&amp;Box zom…</text></g>
+        <g class="cn-node" data-id="letssavefood_postgres" data-label="PostgreSQL Docker Container (lsf-postgres)" data-meta="LetsSaveFood Web · 2 links" data-comm="12" tabindex="0" role="button" transform="translate(139.6,684.7)"><circle r="6.4" class="cn-dot" style="fill:#E15759"/><text class="cn-label" x="10.4" y="3">PostgreSQL Docker …</text></g>
+        <g class="cn-node" data-id="hue_profile_builder" data-label="EmotionHue Profile Builder (QnA Wizard)" data-meta="EmotionHue Lighting · 2 links" data-comm="13" tabindex="0" role="button" transform="translate(135.0,474.1)"><circle r="6.4" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label" x="10.4" y="3">EmotionHue Profile…</text></g>
+        <g class="cn-node" data-id="skills_backlog_doc" data-label="Skills Backlog — Completed Agent Mode Inventory (9 modes across 3 tiers)" data-meta="Orchestration · 2 links" data-comm="16" tabindex="0" role="button" transform="translate(135.0,206.2)"><circle r="6.4" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label" x="10.4" y="3">Skills Backlog — C…</text></g>
+        <g class="cn-node" data-id="letssavefood_efcore" data-label="Entity Framework Core (Npgsql)" data-meta="LetsSaveFood Web · 2 links" data-comm="12" tabindex="0" role="button" transform="translate(221.7,587.7)"><circle r="6.4" class="cn-dot" style="fill:#E15759"/><text class="cn-label" x="10.4" y="3">Entity Framework C…</text></g>
+        <g class="cn-node" data-id="music_csv_m3u_comparison" data-label="CSV vs M3U Playlist Comparison Session" data-meta="Piano-To-Midi · 2 links" data-comm="18" tabindex="0" role="button" transform="translate(396.4,110.5)"><circle r="6.4" class="cn-dot" style="fill:#9C755F"/><text class="cn-label" x="10.4" y="3">CSV vs M3U Playlis…</text></g>
+        <g class="cn-node" data-id="piano_cuda_fix" data-label="PyTorch CUDA Build Fix (CPU→cu124)" data-meta="Piano-To-Midi · 2 links" data-comm="18" tabindex="0" role="button" transform="translate(275.9,40)"><circle r="6.4" class="cn-dot" style="fill:#9C755F"/><text class="cn-label" x="10.4" y="3">PyTorch CUDA Build…</text></g>
+        <g class="cn-node cn-hubnode" data-id="confidence_signal" data-label="Confidence Signal — Mandatory Escalation Driver (low/medium/high)" data-meta="Orchestration · 3 links" data-comm="16" tabindex="0" role="button" transform="translate(130.4,266.1)"><circle r="6.9" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label cn-hub" x="0" y="-13.9" text-anchor="middle">Confidence Signal …</text></g>
+        <g class="cn-node" data-id="stress_test_doc" data-label="Gear System Stress Test Results — Gear 1 vs Gear 3 Comparison" data-meta="Gear Evolution · 3 links" data-comm="15" tabindex="0" role="button" transform="translate(149.5,433.9)"><circle r="6.9" class="cn-dot" style="fill:#EDC948"/><text class="cn-label" x="10.9" y="3">Gear System Stress…</text></g>
+        <g class="cn-node" data-id="project_computer_stats" data-label="Computer-Stats Project" data-meta="Hardware &amp; Infra · 3 links" data-comm="6" tabindex="0" role="button" transform="translate(904.6,340.2)"><circle r="6.9" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label" x="-10.9" y="3" text-anchor="end">Computer-Stats Pro…</text></g>
+        <g class="cn-node" data-id="letssavefood_softdelete" data-label="Soft Delete Pattern (InventoryItem)" data-meta="LSF Data &amp; S&amp;box · 3 links" data-comm="11" tabindex="0" role="button" transform="translate(269.4,760.5)"><circle r="6.9" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label" x="10.9" y="3">Soft Delete Patter…</text></g>
+        <g class="cn-node" data-id="disk_cleanup_session" data-label="Disk Cleanup Analysis (Docker vhdx, AppData, Temp)" data-meta="Gear System &amp; Graphify · 3 links" data-comm="8" tabindex="0" role="button" transform="translate(832.4,681.4)"><circle r="6.9" class="cn-dot" style="fill:#9C755F"/><text class="cn-label" x="-10.9" y="3" text-anchor="end">Disk Cleanup Analy…</text></g>
+        <g class="cn-node" data-id="session_want_sort_chats" data-label="Unfinished Project Audit &amp; MANIFESTO Creation" data-meta="Gear System &amp; Graphify · 3 links" data-comm="8" tabindex="0" role="button" transform="translate(705.3,684.7)"><circle r="6.9" class="cn-dot" style="fill:#9C755F"/><text class="cn-label" x="-10.9" y="3" text-anchor="end">Unfinished Project…</text></g>
+        <g class="cn-node" data-id="session_gear_alignment" data-label="Gear System Design &amp; CLAUDE.md Alignment Session" data-meta="Gear System &amp; Graphify · 3 links" data-comm="8" tabindex="0" role="button" transform="translate(787.4,587.7)"><circle r="6.9" class="cn-dot" style="fill:#9C755F"/><text class="cn-label" x="-10.9" y="3" text-anchor="end">Gear System Design…</text></g>
+        <g class="cn-node" data-id="letssavefood_lsfdbcontext" data-label="LsfDbContext" data-meta="LSF Data &amp; S&amp;box · 3 links" data-comm="11" tabindex="0" role="button" transform="translate(351.5,663.5)"><circle r="6.9" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label" x="10.9" y="3">LsfDbContext</text></g>
+        <g class="cn-node cn-hubnode" data-id="piano_to_midi_project" data-label="Piano-To-Midi Audio Transcription Project" data-meta="Piano-To-Midi · 3 links" data-comm="18" tabindex="0" role="button" transform="translate(346.9,76.6)"><circle r="6.9" class="cn-dot" style="fill:#9C755F"/><text class="cn-label cn-hub" x="0" y="-13.9" text-anchor="middle">Piano-To-Midi Audi…</text></g>
+        <g class="cn-node" data-id="project_guild_wars" data-label="Guild Wars 2 Companion Project" data-meta="LSF Barcode &amp; GW2 · 3 links" data-comm="10" tabindex="0" role="button" transform="translate(504.6,690.2)"><circle r="6.9" class="cn-dot" style="fill:#4E79A7"/><text class="cn-label" x="10.9" y="3">Guild Wars 2 Compa…</text></g>
+        <g class="cn-node" data-id="triage_of_experts" data-label="Triage of Experts (Haiku/Sonnet/Opus hierarchy)" data-meta="Gear Evolution · 3 links" data-comm="15" tabindex="0" role="button" transform="translate(46,437.2)"><circle r="6.9" class="cn-dot" style="fill:#EDC948"/><text class="cn-label" x="10.9" y="3">Triage of Experts …</text></g>
+        <g class="cn-node" data-id="sparing_agent_model" data-label="Sparing Agent Model (April 20 2026 — Opus orchestrator, Sonnet executor, Haiku worker)" data-meta="Gear Evolution · 3 links" data-comm="15" tabindex="0" role="button" transform="translate(104.6,340.2)"><circle r="6.9" class="cn-dot" style="fill:#EDC948"/><text class="cn-label" x="10.9" y="3">Sparing Agent Mode…</text></g>
+        <g class="cn-node" data-id="gw2_companion_chat" data-label="GW2 Elementalist Companion Chat" data-meta="LSF Barcode &amp; GW2 · 4 links" data-comm="10" tabindex="0" role="button" transform="translate(422.5,780)"><circle r="7.4" class="cn-dot" style="fill:#4E79A7"/><text class="cn-label" x="11.4" y="3">GW2 Elementalist C…</text></g>
+        <g class="cn-node cn-hubnode" data-id="session_obsidian_playbook" data-label="Obsidian + Claude Code Organization Playbook (Web Research)" data-meta="Gear System &amp; Graphify · 4 links" data-comm="8" tabindex="0" role="button" transform="translate(782.8,647.5)"><circle r="7.4" class="cn-dot" style="fill:#9C755F"/><text class="cn-label cn-hub" x="0" y="-14.4" text-anchor="middle">Obsidian + Claude …</text></g>
+        <g class="cn-node cn-hubnode" data-id="journey_to_gears_doc" data-label="Journey to Gears — Orchestration Engine Origin Story" data-meta="Gear Evolution · 4 links" data-comm="15" tabindex="0" role="button" transform="translate(100.0,400.0)"><circle r="7.4" class="cn-dot" style="fill:#EDC948"/><text class="cn-label cn-hub" x="0" y="-14.4" text-anchor="middle">Journey to Gears —…</text></g>
+        <g class="cn-node" data-id="speaches_whisper" data-label="Speaches (Whisper API container)" data-meta="Hardware &amp; Infra · 4 links" data-comm="6" tabindex="0" role="button" transform="translate(949.5,433.9)"><circle r="7.4" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">Speaches (Whisper …</text></g>
+        <g class="cn-node" data-id="claude_vault_digest_build_facts" data-label="build_facts()" data-meta="Living Vault Digest · 4 links" data-comm="3" tabindex="0" role="button" transform="translate(787.4,92.7)"><circle r="7.4" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">build_facts()</text></g>
+        <g class="cn-node" data-id="session_computer_stats_gear_setup" data-label="Session: Computer-Stats gear/ghelper profile setup (2026-05-04)" data-meta="Hardware &amp; Infra · 4 links" data-comm="6" tabindex="0" role="button" transform="translate(822.5,437.2)"><circle r="7.4" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">Session: Computer-…</text></g>
+        <g class="cn-node" data-id="concept_agent_spawn_hook" data-label="PreToolUse Hook for Agent Spawn Monitoring" data-meta="Vault Setup &amp; Hooks · 4 links" data-comm="7" tabindex="0" role="button" transform="translate(919.1,567.8)"><circle r="7.4" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">PreToolUse Hook fo…</text></g>
+        <g class="cn-node" data-id="moc_claude_organisation" data-label="Claude Organisation MOC Index" data-meta="Vault Setup &amp; Hooks · 4 links" data-comm="7" tabindex="0" role="button" transform="translate(792.0,571.1)"><circle r="7.4" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">Claude Organisatio…</text></g>
+        <g class="cn-node" data-id="claude_vault_status_write_moc" data-label="write_moc()" data-meta="Status Model &amp; MOCs · 4 links" data-comm="9" tabindex="0" role="button" transform="translate(657.7,663.5)"><circle r="7.4" class="cn-dot" style="fill:#BAB0AC"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">write_moc()</text></g>
+        <g class="cn-node" data-id="concept_vault_pipeline" data-label="Claude History → Obsidian Vault Pipeline (6-phase)" data-meta="Vault Setup &amp; Hooks · 4 links" data-comm="7" tabindex="0" role="button" transform="translate(874.1,474.1)"><circle r="7.4" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label" x="-11.4" y="3" text-anchor="end">Claude History → O…</text></g>
+        <g class="cn-node" data-id="letssavefood_audit" data-label="Audit Logging via SaveChanges Override" data-meta="LSF Data &amp; S&amp;box · 5 links" data-comm="11" tabindex="0" role="button" transform="translate(396.4,757.2)"><circle r="7.8" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label" x="11.8" y="3">Audit Logging via …</text></g>
+        <g class="cn-node cn-hubnode" data-id="project_letssavefood_repo" data-label="LetsSaveFood Repository (ASP.NET Razor Pages)" data-meta="LSF Barcode &amp; GW2 · 5 links" data-comm="10" tabindex="0" role="button" transform="translate(500.0,750.0)"><circle r="7.8" class="cn-dot" style="fill:#4E79A7"/><text class="cn-label cn-hub" x="0" y="-14.8" text-anchor="middle">LetsSaveFood Repos…</text></g>
+        <g class="cn-node" data-id="letssavefood_barcode_scanner" data-label="LetsSaveFood Barcode Scanner Feature" data-meta="LSF Barcode &amp; GW2 · 5 links" data-comm="10" tabindex="0" role="button" transform="translate(549.5,780)"><circle r="7.8" class="cn-dot" style="fill:#4E79A7"/><text class="cn-label" x="11.8" y="3">LetsSaveFood Barco…</text></g>
+        <g class="cn-node" data-id="claude_vault_status_collect_projects" data-label="collect_projects()" data-meta="Status Model &amp; MOCs · 5 links" data-comm="9" tabindex="0" role="button" transform="translate(702.6,757.2)"><circle r="7.8" class="cn-dot" style="fill:#BAB0AC"/><text class="cn-label" x="-11.8" y="3" text-anchor="end">collect_projects()</text></g>
+        <g class="cn-node cn-hubnode" data-id="vox_voice_pipeline" data-label="Vox Voice Pipeline (.NET + Docker)" data-meta="Hardware &amp; Infra · 5 links" data-comm="6" tabindex="0" role="button" transform="translate(900.0,400.0)"><circle r="7.8" class="cn-dot" style="fill:#B07AA1"/><text class="cn-label cn-hub" x="0" y="-14.8" text-anchor="middle">Vox Voice Pipeline…</text></g>
+        <g class="cn-node" data-id="session_newsletter_design" data-label="Weekly Digest / Newsletter Design Session" data-meta="Status Model &amp; MOCs · 5 links" data-comm="9" tabindex="0" role="button" transform="translate(575.5,760.5)"><circle r="7.8" class="cn-dot" style="fill:#BAB0AC"/><text class="cn-label" x="11.8" y="3">Weekly Digest / Ne…</text></g>
+        <g class="cn-node" data-id="vox_automation_design" data-label="docs/vox/vox-automation-design.md — 3-Gen Pipeline Design Doc" data-meta="Vox Transcription · 6 links" data-comm="2" tabindex="0" role="button" transform="translate(657.7,40)"><circle r="8.2" class="cn-dot" style="fill:#E15759"/><text class="cn-label" x="-12.2" y="3" text-anchor="end">docs/vox/vox-autom…</text></g>
+        <g class="cn-node cn-hubnode" data-id="s_vault_setup_meerkat" data-label="Vault Setup Session (2026-04-20 fluttering-herding-meerkat)" data-meta="Vault Setup &amp; Hooks · 6 links" data-comm="7" tabindex="0" role="button" transform="translate(869.6,533.9)"><circle r="8.2" class="cn-dot" style="fill:#FF9DA7"/><text class="cn-label cn-hub" x="0" y="-15.2" text-anchor="middle">Vault Setup Sessio…</text></g>
+        <g class="cn-node" data-id="hue_steam_controller" data-label="EmotionHue Steam Controller Paint Mode" data-meta="EmotionHue Lighting · 6 links" data-comm="13" tabindex="0" role="button" transform="translate(180.0,567.8)"><circle r="8.2" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label" x="12.2" y="3">EmotionHue Steam C…</text></g>
+        <g class="cn-node" data-id="living_vault_doc" data-label="Living Vault — Weekly Routine &amp; Newsletter" data-meta="Living Vault Digest · 6 links" data-comm="3" tabindex="0" role="button" transform="translate(705.3,189.7)"><circle r="8.2" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label" x="-12.2" y="3" text-anchor="end">Living Vault — Wee…</text></g>
+        <g class="cn-node" data-id="main_ai_tool_project" data-label="Main-Ai-Tool Project" data-meta="LocalAI Audio Pipeline · 7 links" data-comm="1" tabindex="0" role="button" transform="translate(422.5,87.2)"><circle r="8.5" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label" x="12.5" y="3">Main-Ai-Tool Proje…</text></g>
+        <g class="cn-node cn-hubnode" data-id="hue_program_project" data-label="EmotionHue Philips Hue Control System" data-meta="EmotionHue Lighting · 7 links" data-comm="13" tabindex="0" role="button" transform="translate(130.4,533.9)"><circle r="8.5" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label cn-hub" x="0" y="-15.5" text-anchor="middle">EmotionHue Philips…</text></g>
+        <g class="cn-node" data-id="sluggers_py" data-label="sluggers.py" data-meta="Vault Sync Pipeline · 7 links" data-comm="5" tabindex="0" role="button" transform="translate(792.0,303.3)"><circle r="8.5" class="cn-dot" style="fill:#EDC948"/><text class="cn-label" x="-12.5" y="3" text-anchor="end">sluggers.py</text></g>
+        <g class="cn-node" data-id="day_data_analyser_project" data-label="AudioPipeline / day-data-analyser (Daemon)" data-meta="LocalAI Audio Pipeline · 7 links" data-comm="1" tabindex="0" role="button" transform="translate(504.6,40)"><circle r="8.5" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label" x="12.5" y="3">AudioPipeline / da…</text></g>
+        <g class="cn-node" data-id="claude_vault_sync_main" data-label="main()" data-meta="Vault Sync Pipeline · 7 links" data-comm="5" tabindex="0" role="button" transform="translate(874.1,206.2)"><circle r="8.5" class="cn-dot" style="fill:#EDC948"/><text class="cn-label" x="-12.5" y="3" text-anchor="end">main()</text></g>
+        <g class="cn-node" data-id="ai_assistant_cluster_md" data-label="AI-ASSISTANT-CLUSTER — LocalAI Lineage Map" data-meta="Vox Transcription · 8 links" data-comm="2" tabindex="0" role="button" transform="translate(575.5,113.8)"><circle r="8.8" class="cn-dot" style="fill:#E15759"/><text class="cn-label" x="12.8" y="3">AI-ASSISTANT-CLUST…</text></g>
+        <g class="cn-node" data-id="claude_vault_sync_process_session" data-label="process_session()" data-meta="Vault Sync Pipeline · 8 links" data-comm="5" tabindex="0" role="button" transform="translate(919.1,299.9)"><circle r="8.8" class="cn-dot" style="fill:#EDC948"/><text class="cn-label" x="-12.8" y="3" text-anchor="end">process_session()</text></g>
+        <g class="cn-node cn-hubnode" data-id="sbox_project" data-label="S&amp;box Zombie Survival Project" data-meta="LSF Data &amp; S&amp;box · 9 links" data-comm="11" tabindex="0" role="button" transform="translate(346.9,723.4)"><circle r="9.1" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label cn-hub" x="0" y="-16.1" text-anchor="middle">S&amp;box Zombie Survi…</text></g>
+        <g class="cn-node" data-id="audio_pipeline_project" data-label="AudioPipeline Project (.NET Worker Service)" data-meta="LocalAI Audio Pipeline · 10 links" data-comm="1" tabindex="0" role="button" transform="translate(549.5,83.9)"><circle r="9.4" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label" x="13.4" y="3">AudioPipeline Proj…</text></g>
+        <g class="cn-node" data-id="vox_survivor_gen3" data-label="Vox Gen 3 — shipped, manual-first, live system" data-meta="Vox Transcription · 10 links" data-comm="2" tabindex="0" role="button" transform="translate(702.6,110.5)"><circle r="9.4" class="cn-dot" style="fill:#E15759"/><text class="cn-label" x="-13.4" y="3" text-anchor="end">Vox Gen 3 — shippe…</text></g>
+        <g class="cn-node cn-hubnode" data-id="letssavefood_project" data-label="LetsSaveFood Project" data-meta="LetsSaveFood Web · 11 links" data-comm="12" tabindex="0" role="button" transform="translate(217.2,647.5)"><circle r="9.6" class="cn-dot" style="fill:#E15759"/><text class="cn-label cn-hub" x="0" y="-16.6" text-anchor="middle">LetsSaveFood Proje…</text></g>
+        <g class="cn-node cn-hubnode" data-id="localai_orchestrator" data-label="LocalAI Orchestrator (.NET)" data-meta="LocalAI Audio Pipeline · 12 links" data-comm="1" tabindex="0" role="button" transform="translate(500.0,50.0)"><circle r="9.9" class="cn-dot" style="fill:#F28E2B"/><text class="cn-label cn-hub" x="0" y="-16.9" text-anchor="middle">LocalAI Orchestrat…</text></g>
+        <g class="cn-node" data-id="govstate_py" data-label="govstate.py" data-meta="Living Vault Digest · 13 links" data-comm="3" tabindex="0" role="button" transform="translate(832.4,186.4)"><circle r="10.1" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label" x="-14.1" y="3" text-anchor="end">govstate.py</text></g>
+        <g class="cn-node cn-hubnode" data-id="vox_project" data-label="Vox — Voice Memo Transcription Pipeline" data-meta="Vox Transcription · 14 links" data-comm="2" tabindex="0" role="button" transform="translate(653.1,76.6)"><circle r="10.4" class="cn-dot" style="fill:#E15759"/><text class="cn-label cn-hub" x="0" y="-17.4" text-anchor="middle">Vox — Voice Memo T…</text></g>
+        <g class="cn-node cn-hubnode" data-id="status_py" data-label="status.py" data-meta="Status Model &amp; MOCs · 14 links" data-comm="9" tabindex="0" role="button" transform="translate(653.1,723.4)"><circle r="10.4" class="cn-dot" style="fill:#BAB0AC"/><text class="cn-label cn-hub" x="0" y="-17.4" text-anchor="middle">status.py</text></g>
+        <g class="cn-node cn-hubnode" data-id="digest_py" data-label="digest.py" data-meta="Living Vault Digest · 14 links" data-comm="3" tabindex="0" role="button" transform="translate(782.8,152.5)"><circle r="10.4" class="cn-dot" style="fill:#76B7B2"/><text class="cn-label cn-hub" x="0" y="-17.4" text-anchor="middle">digest.py</text></g>
+        <g class="cn-node cn-hubnode" data-id="sync_py" data-label="sync.py" data-meta="Vault Sync Pipeline · 17 links" data-comm="5" tabindex="0" role="button" transform="translate(869.6,266.1)"><circle r="11.0" class="cn-dot" style="fill:#EDC948"/><text class="cn-label cn-hub" x="0" y="-18.0" text-anchor="middle">sync.py</text></g>
+      </g>
+    </svg>
+    <div id="lv-const-info" class="lv-web-info">
+      <span class="lv-info-default">Hover or tap a node to trace its threads.</span>
+    </div>
+    <div class="lv-legend">
+      <span><span class="lv-swatch" style="background:#F28E2B"></span> LocalAI / Audio</span>
+      <span><span class="lv-swatch" style="background:#E15759"></span> Vox / Voice</span>
+      <span><span class="lv-swatch" style="background:#76B7B2"></span> Living Vault · EmotionHue</span>
+      <span><span class="lv-swatch" style="background:#EDC948"></span> Vault Sync / Gears</span>
+      <span><span class="lv-swatch" style="background:#BAB0AC"></span> Status &amp; MOCs</span>
+      <span><span class="lv-swatch" style="background:#9C755F"></span> Gear · Graphify</span>
+      <span><span class="lv-swatch" style="background:#4E79A7"></span> LSF / GW2</span>
+      <span><span class="lv-swatch" style="background:#B07AA1"></span> Hardware</span>
+      <span><span class="lv-swatch" style="background:#FF9DA7"></span> Vault Setup</span>
+    </div>
+  </div>
+  <div class="annotation" style="text-align:center;">
+    Each hue is a cluster graphify found on its own — a project, a pipeline module, a subsystem.
+    Colours cycle across the graph's communities. This is the real <code>graph.json</code>, technical
+    nodes only; the operator's personal communities are the biggest ones in the full graph, and they
+    are not drawn here.
+  </div>
+
+  <!-- ============= GRAPHIFY, ASKED ABOUT ITSELF ============= -->
+  <h3>The vault, asked about itself</h3>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    graphify isn't only a picture — it answers questions by walking the graph. Real output, verbatim:
+  </p>
+  <div class="panel panel-dark" style="border-color: var(--amber);">
+    <span class="panel-title" style="color: var(--amber);">$ graphify explain "Living Vault"</span>
+    <p style="font-family: var(--mono); font-size:0.76rem; margin-top:0.4rem; color: var(--text-light); line-height:1.7;">
+      Node: <strong>Living Vault — Weekly Routine &amp; Newsletter</strong> · community 3 · degree 6<br/>
+      → governor-state.md — Source of Truth &nbsp;<span style="color:#6b7280">[references]</span><br/>
+      → Free Python Chain (sync → status → digest) &nbsp;<span style="color:#6b7280">[implements]</span><br/>
+      → On-demand Rich Newsletter &nbsp;<span style="color:#6b7280">[implements]</span><br/>
+      → Dormancy Thresholds (7/21/21/60 days) &nbsp;<span style="color:#6b7280">[references]</span><br/>
+      → Living Vault Python Pipeline (sync → status → digest) &nbsp;<span style="color:#6b7280">[specifies]</span><br/>
+      ← Claude Organisation Vault Config &nbsp;<span style="color:#6b7280">[references · inferred]</span>
+    </p>
+    <span class="quote-attribution" style="color: var(--amber);">— graphify, describing the vault from inside the vault</span>
+  </div>
+
+  <div class="warning-box info">
+    <p>Ask it to connect the machinery to the work — <code>graphify path "sync.py" "EmotionHue"</code>
+    — and it answers honestly: <strong>"No path found."</strong> The pipeline and the projects it
+    catalogues are separate islands in the graph, bridged only through the one node whose edges are
+    sealed. The watcher and the watched never touch directly.</p>
+  </div>
+
   <div class="warning-box">
     <p><strong>It grades its own homework.</strong> The report flags where it is weak: the biggest
     communities have low cohesion (0.08 — loosely knit), and <strong>146 nodes are near-isolated</strong>,
     marked as possible documentation gaps. A knowledge graph honest enough to point at its own holes
     is worth more than one that pretends to be complete.</p>
   </div>
+
+  <div class="margin-note">graphify also emits an interactive <code>graph.html</code> (a d3 force-graph)
+    and a <code>callflow.html</code> architecture doc — locally. Neither is shipped into this manual:
+    the full graph still contains the sealed personal communities, and they stay in the vault.</div>
 
   <div class="caution-stripe"></div>
 

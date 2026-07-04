@@ -1347,6 +1347,33 @@ a.section-card:hover {
 .lv-swatch-line.ext { border-top: 2px solid #9ca3af; }
 .lv-swatch-line.inf { border-top: 2px dashed #b45309; }
 
+/* ---- Living Vault: the "constellation" (community-coloured, obsidian vibe) ---- */
+#lv-constellation { border: 2px solid var(--border); background: #0f0f1a; margin: 1rem 0; padding: 0.5rem; }
+#lv-constellation svg { width: 100%; height: auto; display: block; }
+.cn-edge { stroke: #3a3a5e; stroke-width: 1.2; transition: stroke 0.15s, stroke-width 0.15s, opacity 0.15s; }
+.cn-edge.inf { stroke: #6b5a3e; stroke-dasharray: 4 4; }
+.cn-node { cursor: pointer; }
+/* NOTE: no CSS `filter` anywhere here — a drop-shadow on an SVG child forces the whole
+   SVG to rasterize then scale, which blurs the vector text. Glow = crisp stroke ring instead. */
+.cn-dot { stroke: #0f0f1a; stroke-width: 1.5; transition: stroke 0.15s, stroke-width 0.15s; }
+.cn-label {
+  font-family: var(--mono); font-size: 11px; fill: #ece8dc; pointer-events: none;
+  paint-order: stroke; stroke: #0f0f1a; stroke-width: 2.5px; stroke-linejoin: round;
+  text-rendering: geometricPrecision; display: none;   /* hidden at rest — Obsidian-style */
+}
+.cn-label.cn-hub { display: block; fill: #d3cec0; }     /* one anchor label per cluster */
+.cn-focused .cn-label { display: none; }                /* on hover, hide the rest… */
+.cn-focused .cn-node.lit .cn-label { display: block; fill: #ffffff; }  /* …show the hovered thread */
+/* hover/focus: Obsidian-style — light the node + its threads, fade the rest */
+.cn-focused .cn-edge { opacity: 0.08; }
+.cn-focused .cn-node { opacity: 0.25; }
+.cn-focused .cn-edge.lit { opacity: 1; stroke-width: 2.2; stroke: #f5f0e8; }
+.cn-focused .cn-edge.lit.inf { stroke: #f59e0b; }
+.cn-focused .cn-node.lit { opacity: 1; }
+.cn-focused .cn-node.lit .cn-dot { stroke: #ffffff; stroke-width: 2.5; }
+.cn-node:focus { outline: none; }
+.cn-node:focus .cn-dot { stroke: #f5f0e8; stroke-width: 2.5; }
+
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 600px) {
