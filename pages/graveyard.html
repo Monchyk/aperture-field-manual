@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Graveyard — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 07 — THE GRAVEYARD</span>
+  <a href="livingvault.html" class="nav-next">THE LIVING VAULT ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-007">
+
+  <span class="classification">DECOMMISSIONED TEST CHAMBERS</span>
+  <h1>The Graveyard</h1>
+  <p class="doc-id">DOC: AFM-2026-GY-007 &nbsp;|&nbsp; SUBJECT: THE PERSONAL-AI-ASSISTANT ARC &nbsp;|&nbsp; STATUS: 2 ARCHIVED · 1 SHIPPED</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    "An AI program to benefit my personal life" was not one project. It was the <strong>same idea,
+    built three times</strong>, each more ambitious than the last, all blocked on the same wall:
+    self-hosted GPU inference. Two are buried here. The third is alive — and it's alive precisely
+    because it stopped trying to be the first two. Ambition shrank. Working code grew.
+  </p>
+
+  <blockquote class="glados-quote">
+    Generation one: fourteen pipelines, crashes on startup. Generation two: references three Docker
+    images that do not exist. Generation three: it works. The correlation between the subject's
+    ambition and the subject's failure is, at this point, well-documented in this facility. I have
+    filed it under "learning," which is the word organics use for this.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-value">3</div><div class="stat-label">Generations</div></div>
+    <div class="stat-box"><div class="stat-value">14</div><div class="stat-label">Gen-1 Pipelines</div></div>
+    <div class="stat-box"><div class="stat-value">0</div><div class="stat-label">Models llama-stack Served</div></div>
+    <div class="stat-box"><div class="stat-value">1</div><div class="stat-label">Survivor</div></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= INTERACTIVE TIMELINE (HERO) ============= -->
+  <h2>Live: slide through the three generations</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Pick a generation. Watch <strong>scope shrink</strong> and <strong>working code grow</strong> —
+    the inverse correlation that is the entire lesson of this chamber.
+  </p>
+
+  <div id="graveyard-timeline">
+    <div class="lsf-ops" role="tablist">
+      <button type="button" class="lsf-op" data-gen="1">Gen 1 · Main-Ai-Tool</button>
+      <button type="button" class="lsf-op" data-gen="2">Gen 2 · day-data-analyser</button>
+      <button type="button" class="lsf-op" data-gen="3">Gen 3 · Vox ⭐</button>
+    </div>
+
+    <div class="gy-bars">
+      <div class="gy-bar-row">
+        <span class="gy-bar-label">AMBITION</span>
+        <div class="gy-track"><div id="gy-ambition" class="gy-fill amber"></div></div>
+        <span id="gy-ambition-val" class="gy-bar-num">—</span>
+      </div>
+      <div class="gy-bar-row">
+        <span class="gy-bar-label">SHIPPED</span>
+        <div class="gy-track"><div id="gy-shipped" class="gy-fill green"></div></div>
+        <span id="gy-shipped-val" class="gy-bar-num">—</span>
+      </div>
+    </div>
+
+    <div id="gy-detail" class="lv-web-info" aria-live="polite">
+      <span class="lv-info-default">Pick a generation to read its autopsy.</span>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE LINEAGE TABLE ============= -->
+  <h2>The lineage, most-ambitious → simplest</h2>
+  <div class="panel">
+    <div style="overflow-x:auto;">
+      <table style="width:100%; font-family: var(--mono); font-size:0.72rem; border-collapse: collapse; min-width:560px;">
+        <tr>
+          <th style="text-align:left; padding:0.4rem; border-bottom:2px solid var(--border);">PROJECT</th>
+          <th style="text-align:left; padding:0.4rem; border-bottom:2px solid var(--border);">TRIED TO BE</th>
+          <th style="text-align:left; padding:0.4rem; border-bottom:2px solid var(--border);">REAL STATE</th>
+          <th style="text-align:left; padding:0.4rem; border-bottom:2px solid var(--border);">VERDICT</th>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light); color:var(--amber-dark);">LocalAI / Main-Ai-Tool</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Orchestrator + GPU model-swap scheduler + Blazor UI + 14 pipelines</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Real code, ran once (outputs 2026-04-16). Blazor UI never built → crashes on startup. Music pipelines stubbed.</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">merge&nbsp;into&nbsp;Vox</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light); color:var(--amber-dark);">AudioPipeline (day-data-analyser)</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Daemon: folder-watch + Whisper + MIDI + classifier microservices</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Compiles, but the 3 Docker sidecar images don't exist. Classifier is dead code.</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light); color:var(--red);">archive</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light); color:var(--amber-dark);">llama-stack</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">The local GPU LLM backend they all leaned on</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">Dockerfile + compose exist. <code>models/</code> is empty — never loaded a model, never served a request.</td>
+          <td style="padding:0.4rem; border-bottom:1px solid var(--border-light);">reference&nbsp;only</td>
+        </tr>
+        <tr>
+          <td style="padding:0.4rem; color:var(--green-dark); font-weight:700;">Vox ⭐</td>
+          <td style="padding:0.4rem;">Simplest: voice memo → transcribe → summarise → markdown in the vault</td>
+          <td style="padding:0.4rem;">5 clean services, zero stubs, compiles, first end-to-end run 2026-06-05. Uses Ollama.</td>
+          <td style="padding:0.4rem; color:var(--green-dark);">ship&nbsp;closest</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE KEYSTONE / llama-stack ============= -->
+  <h2>The keystone that was never laid</h2>
+  <div class="panel panel-dark" style="border-color: var(--red);">
+    <span class="panel-title" style="color: var(--red);">◾ llama-stack — the shared delusion</span>
+    <p style="font-family: var(--mono); font-size:0.8rem; margin-top:0.4rem; color: var(--text-light);">
+      Every generation leaned on one thing: a self-hosted GPU LLM backend that would serve all of them.
+      The Dockerfile is clean. The compose file is tidy. The <code>models/</code> directory is
+      <strong>empty</strong>. It never downloaded a model. It never served a single request. Three
+      projects were architected around a keystone that was never laid.
+    </p>
+    <span class="quote-attribution" style="color: var(--red);">cause of death: the inference backbone, every time</span>
+  </div>
+  <div class="margin-note">The common failure was never the idea — voice-to-notes is a fine idea. It was
+    always the <strong>hosting</strong>: the daemon, the scheduler, the GPU-swap, the web UI, the
+    autonomous routing. The ambition to self-host, not the value, is what kept killing it.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE INSIGHT ============= -->
+  <h2>The insight that ended the loop</h2>
+  <div class="prime-rule">
+    <div class="rule-text">"The hosting was the hard part, not the value."</div>
+    <div class="rule-sub">Vox's transcription + summarisation are just HTTP calls to OpenAI-compatible endpoints</div>
+  </div>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Vox talks to <code>/v1/audio/transcriptions</code> and <code>/v1/chat/completions</code>. Nothing
+    about the <em>value</em> requires a local GPU — only the ambition to self-host did. So the cheapest
+    way to learn whether the tool actually helps is to run the loop against any hosted endpoint first,
+    and only then decide if local hosting is worth the fight. The survivor is
+    <strong>local-default, key-optional</strong>: absent a cloud key it still runs end-to-end — dumber
+    summaries, never broken.
+  </p>
+  <div class="socket-row">
+    <span class="socket active"><span class="status-dot on"></span> Speaches (Whisper) · :8000</span>
+    <span class="socket active"><span class="status-dot on"></span> Ollama qwen2.5:7b · :11434</span>
+    <span class="socket active"><span class="status-dot on"></span> SQLite SHA-256 dedup</span>
+    <span class="socket active"><span class="status-dot on"></span> RTX 4070 8GB · sequential VRAM</span>
+  </div>
+  <div class="margin-note">The proven survivor stack, validated end-to-end 2026-06-05. Transcribe all,
+    <em>then</em> summarise all — sequential, because 8&nbsp;GB of VRAM won't hold both models at once.
+    See the rig in <a href="hardware.html">The Hardware</a>.</div>
+
+  <blockquote class="cave-quote">
+    We built it three damn times. First one had fourteen pipelines and crashed. Second one referenced
+    Docker images that don't exist. Third one — five services, zero stubs, it runs. That's not failure.
+    That's iteration with extra steps. The graveyard isn't where projects go to die. It's where the
+    next one goes to learn.
+    <span class="quote-attribution">— Cave Johnson, CEO</span>
+  </blockquote>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      Three tries, scope shrank, the third shipped — that is the One Rule teaching itself the hard way.
+      See it stated in <a href="philosophy.html">The Prime Directive</a>, the rig that runs the survivor
+      in <a href="hardware.html">The Hardware</a>, or the system that catalogued all three in
+      <a href="livingvault.html">The Living Vault</a>. Back to the
+      <a href="../index.html">Facility Directory</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="schrutelibrary.html">◄ SCHRUTE LIBRARY</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="livingvault.html">THE LIVING VAULT ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

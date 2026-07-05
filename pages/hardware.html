@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hardware — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 09 — THE HARDWARE</span>
+  <a href="miscwing.html" class="nav-next">THE MISC WING ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-009">
+
+  <span class="classification ok">TEST CHAMBER INFRASTRUCTURE</span>
+  <h1>The Hardware</h1>
+  <p class="doc-id">DOC: AFM-2026-HW-009 &nbsp;|&nbsp; ONE LAPTOP · ONE GPU · 8 GB VRAM &nbsp;|&nbsp; STATUS: LOCAL INFERENCE PROVEN</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    No cluster. No cloud bill. One laptop: an AMD Ryzen 9 and an RTX 4070 Mobile with
+    <strong>8 GB of VRAM</strong> — the number everyone says is too small to run a 7-billion-parameter
+    model alongside speech recognition. It isn't. You just can't hold both at once. Whisper transcribes,
+    hands the card over, and the language model summarises. Sequential, not concurrent. The wall is a
+    scheduling problem, not a wall.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-value">8</div><div class="stat-label">GB VRAM</div></div>
+    <div class="stat-box"><div class="stat-value">7B</div><div class="stat-label">Params, Local</div></div>
+    <div class="stat-box"><div class="stat-value">2</div><div class="stat-label">Models, 1 Card</div></div>
+    <div class="stat-box"><div class="stat-value">0</div><div class="stat-label">Cloud Required</div></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= INTERACTIVE VRAM ALLOCATOR (HERO) ============= -->
+  <h2>Live: 8 GB, two models, one card</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Try to load both models at once — the card runs out of memory. Switch to <strong>sequential</strong>
+    (the real design) and the same two models fit fine, one handing off to the other. Sizes are
+    approximate and include overhead; the lesson is exact.
+  </p>
+
+  <div id="hardware-vram">
+    <div class="hw-mode">
+      <button type="button" class="hw-modebtn active" data-mode="concurrent">Both at once</button>
+      <button type="button" class="hw-modebtn" data-mode="sequential">Sequential (real)</button>
+    </div>
+
+    <div class="hw-vrambar" aria-label="8 GB VRAM budget">
+      <div id="hw-fill-whisper" class="hw-seg whisper" style="width:0"></div>
+      <div id="hw-fill-llm" class="hw-seg llm" style="width:0"></div>
+      <div class="hw-ceiling"><span>8 GB CEILING</span></div>
+    </div>
+    <div id="hw-readout" class="hw-readout">0.0 / 8.0 GB used</div>
+
+    <div class="lsf-ops">
+      <button type="button" class="lsf-op" data-load="whisper">Load Whisper (faster-whisper-medium)</button>
+      <button type="button" class="lsf-op" data-load="llm">Load qwen2.5:7b</button>
+      <button type="button" class="lsf-op lsf-reset" data-load="reset">↺ Reset</button>
+    </div>
+    <div id="hw-verdict" class="lv-web-info" aria-live="polite">
+      <span class="lv-info-default">Load a model. Then try loading the other.</span>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE RIG ============= -->
+  <h2>The rig</h2>
+  <div class="grid-2">
+    <div class="panel">
+      <span class="panel-title">Specification</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">CPU</span> <span>AMD Ryzen 9 7845HX <span class="note">12 cores, mobile</span></span></li>
+        <li><span class="qty">GPU</span> <span>RTX 4070 Laptop (AD106M) <span class="note">8 GB GDDR6</span></span></li>
+        <li><span class="qty">RAM</span> <span>16 GB DDR5</span></li>
+        <li><span class="qty">OS</span> <span>Windows 11 + WSL2 <span class="note">Docker GPU passthrough</span></span></li>
+        <li><span class="qty">PWR</span> <span>G-Helper <span class="note">TDP / fan profiles per task</span></span></li>
+      </ul>
+    </div>
+    <div class="panel" style="border-color: var(--green);">
+      <span class="panel-title" style="color: var(--green-dark);">Proven, not theorised</span>
+      <p style="font-family: var(--mono); font-size:0.75rem; margin-top:0.4rem;">
+        Docker GPU passthrough <strong>works</strong> — <code>--gpus all</code> verified end-to-end by
+        Vox on 2026-06-05. <code>faster-whisper-medium</code> (Speaches) and <code>qwen2.5:7b</code>
+        (Ollama) both run on this card. Not simultaneously — a <code>VramCooldownSeconds</code> handoff
+        sits between the transcribe phase and the summarise phase so the first model fully releases
+        before the second loads.
+      </p>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step"><span class="step-num">1</span><div class="icon">🎙️</div><div class="label">Load Whisper<br/>transcribe all</div></div>
+    <div class="step"><span class="step-num">2</span><div class="icon">♻️</div><div class="label">Release VRAM<br/>VramCooldownSeconds</div></div>
+    <div class="step"><span class="step-num">3</span><div class="icon">🧠</div><div class="label">Load qwen2.5:7b<br/>summarise all</div></div>
+    <div class="step"><span class="step-num">4</span><div class="icon">📝</div><div class="label">Notes to the<br/>Obsidian vault</div></div>
+  </div>
+  <div class="margin-note">Batching by phase — <em>all</em> transcriptions, then <em>all</em>
+    summarisations — means the card only ever holds one model. It's the whole reason the "wall" isn't
+    one.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= MYTH BUSTING ============= -->
+  <h2>The wall is a myth</h2>
+  <div class="prime-rule">
+    <div class="rule-text">"7B-on-8GB is a wall" is outdated.</div>
+    <div class="rule-sub">whisper-medium + qwen2.5:7b run fine on one 8 GB card — sequentially</div>
+  </div>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The belief that a 7B model won't share an 8 GB card with anything is a hosting reflex, not a
+    hardware fact. Don't architect around the wall — architect the <strong>handoff</strong>. The same
+    instinct that killed the Graveyard's early generations (self-host everything, concurrently, now)
+    is the one this rig quietly disproves.
+  </p>
+
+  <div class="warning-box info">
+    <p>Planned upgrade: a second, older GPU (a 1070) dedicated to <strong>simple CRUD-grade
+    inference</strong> — the small, constant, low-stakes calls — so the 4070 is free for the heavy
+    sequential work. Priority scheduling, not more silicon. The rig grows by getting smarter about what
+    it already has.</p>
+  </div>
+
+  <blockquote class="glados-quote">
+    The subject runs a seven-billion-parameter language model and a speech recogniser on a laptop
+    graphics card designed for video games. It works because he stopped asking the card to do two
+    things at once — a lesson he has, I note, needed to learn in several other chambers as well.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      One card, one thing at a time — the One Rule, in silicon. See it stated in
+      <a href="philosophy.html">The Prime Directive</a>, the survivor it runs in
+      <a href="graveyard.html">The Graveyard</a>, or the smaller builds in
+      <a href="miscwing.html">The Misc Wing</a>. Back to the
+      <a href="../index.html">Facility Directory</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="livingvault.html">◄ THE LIVING VAULT</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="miscwing.html">THE MISC WING ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

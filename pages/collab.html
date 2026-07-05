@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collaboration Protocol — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 12 — COLLABORATION PROTOCOL</span>
+  <a href="../index.html" class="nav-next">DIRECTORY ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-012">
+
+  <span class="classification">JOINT OPERATIONS AUTHORIZATION</span>
+  <h1>Collaboration Protocol</h1>
+  <p class="doc-id">DOC: AFM-2026-CP-012 &nbsp;|&nbsp; THE LAST CHAMBER &nbsp;|&nbsp; STATUS: OPEN TO JOINT OPERATIONS</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    You've walked the whole facility — the governor, the gears, the flagship, the graveyard, the vault.
+    If any of it resonated, this is the door out that's also a door in. The subject builds things and
+    likes people who build things. That's the entire protocol.
+  </p>
+
+  <blockquote class="glados-quote">
+    You have reached the end of the facility with your clearance intact. Statistically, most test
+    subjects leave through the nearest exit and are never seen again. The ones who stop at this chamber
+    and actually make contact are, in my experience, the interesting ones. Do with that what you will.
+    <span class="quote-attribution">— GLaDOS, Facility Governor</span>
+  </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= WHAT'S IN THE TOOLBOX ============= -->
+  <h2>Capabilities on file</h2>
+  <div class="grid-2">
+    <div class="panel">
+      <span class="panel-title">Skills inventory</span>
+      <ul class="parts-list" style="margin-top:0.4rem;">
+        <li><span class="qty">◆</span> <span>.NET / C# <span class="note">primary — production software</span></span></li>
+        <li><span class="qty">◆</span> <span>Python <span class="note">tooling, ML, pipelines</span></span></li>
+        <li><span class="qty">◆</span> <span>Docker <span class="note">GPU passthrough, local AI stacks</span></span></li>
+        <li><span class="qty">◆</span> <span>AI orchestration <span class="note">multi-model routing, agents</span></span></li>
+        <li><span class="qty">◆</span> <span>Database design <span class="note">EF Core, schemas, audit trails</span></span></li>
+        <li><span class="qty">◆</span> <span>Lighting / DMX <span class="note">live events, real-time control</span></span></li>
+      </ul>
+    </div>
+    <div class="panel" style="border-color: var(--amber);">
+      <span class="panel-title" style="color: var(--amber-dark);">Currently learning</span>
+      <p style="font-family: var(--mono); font-size:0.8rem; margin-top:0.4rem;">
+        <strong>Arduino / ESP32</strong> — pushing the software instincts down into hardware. Small
+        boards, real signals, physical output. The natural next border to cross for someone who already
+        thinks in lighting rigs and real-time control.
+      </p>
+      <p style="font-family: var(--mono); font-size:0.75rem; color: var(--text-light);">
+        Domains that keep recurring: live-events tech, DMX/lighting, audio pipelines, hardware
+        integration, AI orchestration.
+      </p>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= INTERACTIVE AUTHORIZATION ============= -->
+  <h2>Request joint-operations clearance</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    Aperture requires authorization before releasing contact channels. Fill in the form. The facility is
+    not picky — it mostly wants to know you're a person with something you're building.
+  </p>
+
+  <div id="collab-auth">
+    <div class="ca-form">
+      <label class="ca-label">DESIGNATION (your name / handle)
+        <input type="text" id="ca-name" class="ca-input" autocomplete="off" placeholder="e.g. a fellow test subject"/>
+      </label>
+      <label class="ca-label">STATED OBJECTIVE (what are you building / why reach out?)
+        <textarea id="ca-intent" class="ca-input" rows="2" placeholder="e.g. I build interactive installations and this looked like my kind of nonsense"></textarea>
+      </label>
+      <button type="button" id="ca-submit" class="bp-run">REQUEST CLEARANCE</button>
+    </div>
+    <div id="ca-result" class="ca-result" hidden></div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= COMPANION FACILITY ============= -->
+  <h2>Companion facility</h2>
+  <div class="warning-box info">
+    <p>The festival-scale expression of the lighting work — a whole forest of interactive lights for a
+    burn — lives in the first facility in this series:
+    <a href="https://monchyk.github.io/burn-lights/">the Aperture Forest Operations Manual</a>. Same
+    hands, bigger room, fewer walls.</p>
+  </div>
+
+  <blockquote class="cave-quote">
+    I didn't build all this to put it behind glass. I built it because building is the point. If you've
+    got something interesting and you need someone who can take it from schematic to shipping — or you
+    just want to compare notes on doing hard things on small hardware — the door's open. That's not a
+    sales pitch. That's an invitation. Now get out there and make something.
+    <span class="quote-attribution">— Cave Johnson, CEO, signing off</span>
+  </blockquote>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      Every chamber in this facility was the same one rule, applied to a different domain. You can see it
+      stated plainly one last time in <a href="philosophy.html">The Prime Directive</a>. Then close the
+      door behind you — or don't. Back to the <a href="../index.html">Facility Directory</a>.
+    </p>
+    <p style="font-family: var(--mono); font-size:0.65rem; color: var(--border-light); margin-top:0.6rem;">
+      APERTURE SCIENCE FIELD MANUAL — end of catalogued chambers.<br/>
+      "We do what we must, because we can." — with apologies to Aperture Science.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="philosophy.html">◄ THE PRIME DIRECTIVE</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="../index.html">DIRECTORY ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

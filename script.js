@@ -201,6 +201,11 @@ const CATEGORY_PAGES = {
 };
 const PAGE_TO_CATEGORY = {};
 Object.keys(CATEGORY_PAGES).forEach(cat => CATEGORY_PAGES[cat].forEach(p => { PAGE_TO_CATEGORY[p.page] = cat; }));
+const CHAMBER_NAMES = {
+  governor: 'The Governor', gears: 'The Gear System', workshop: 'The Workshop',
+  philosophy: 'The Prime Directive', emotionhue: 'EmotionHue', letssavefood: "Let's Save Food",
+  schrutelibrary: 'Schrute Library', miscwing: 'The Misc Wing', livingvault: 'The Living Vault'
+};
 
 function currentPageId() {
   const file = location.pathname.split('/').pop().replace('.html', '');
@@ -297,8 +302,33 @@ function updateOriginWidget() {
     countEl.textContent = found.length + '/7';
     originDot.title = found.length >= 6 ? 'AWAITING POINT OF ORIGIN' : ('COORDINATE LOCK ' + found.length + ' OF 7');
   }
-  originWidgetEl.classList.toggle('visible', found.length > 0 || confirmed);
+  originWidgetEl.classList.add('visible'); // always present — an obnoxious little guide, minimizable
   originDot.onclick = () => { if (found.length >= 6 && !confirmed) window.location.href = originVaultHref(); };
+
+  // Guidance: name exactly which chambers still hold glyphs (no more pixel-hunting).
+  const hintEl = originWidgetEl.querySelector('.odw-hint');
+  if (hintEl) {
+    if (confirmed) {
+      hintEl.innerHTML = '';
+    } else if (found.length >= 6) {
+      hintEl.innerHTML = 'all six locked → <a href="' + originVaultHref() + '">set the Point of Origin</a>';
+    } else {
+      const cat = originGetPref('origin.category', '');
+      if (!cat || !CATEGORY_PAGES[cat]) {
+        hintEl.textContent = '◈ enter any chamber to start collecting glyphs';
+      } else {
+        const remaining = CATEGORY_PAGES[cat].filter(p => {
+          for (let i = 1; i <= p.slots; i++) if (found.indexOf(p.page + '-' + i) === -1) return true;
+          return false;
+        });
+        hintEl.innerHTML = remaining.length
+          ? 'glyphs glow in: ' + remaining.map(p =>
+              '<a href="' + originPageHref(p.page + '.html') + '">' + (CHAMBER_NAMES[p.page] || p.page) + '</a>'
+            ).join(' · ')
+          : '';
+      }
+    }
+  }
 }
 
 function initOriginDialWidget() {
@@ -317,12 +347,13 @@ function initOriginDialWidget() {
         `</svg>` +
       `</span>` +
       `<span class="odw-count"></span>` +
+      `<span class="odw-hint"></span>` +
     `</div>`;
   document.body.appendChild(div);
   originWidgetEl = div;
   if (originGetPref('origin.widget', 'open') === 'min') div.classList.add('minimized');
   div.querySelector('.odw-panel').addEventListener('click', e => {
-    if (e.target.closest('.odw-origin')) return;
+    if (e.target.closest('.odw-origin') || e.target.closest('.odw-hint')) return;
     const nowMin = !div.classList.contains('minimized');
     div.classList.toggle('minimized', nowMin);
     originSetPref('origin.widget', nowMin ? 'min' : 'open');
@@ -457,8 +488,8 @@ function initOriginHintFly() {
 
   setTimeout(function loop() {
     if (!settle()) return;
-    setTimeout(loop, 3500 + Math.random() * 2000); // short + jittery = more visibly "present"
-  }, 900);
+    setTimeout(loop, 1100 + Math.random() * 900); // frequent re-settling = actively leading, not just loitering
+  }, 300);
 }
 
 // ============================================
@@ -1762,6 +1793,116 @@ function initSchematicsLab() {
   loadPreset(activePreset);
 }
 
+// --- GRAVEYARD: three-generation timeline (scope shrinks, shipped grows) ---
+function initGraveyardTimeline() {
+  const root = document.getElementById('graveyard-timeline');
+  if (!root) return;
+  const amb = root.querySelector('#gy-ambition'), shp = root.querySelector('#gy-shipped');
+  const ambV = root.querySelector('#gy-ambition-val'), shpV = root.querySelector('#gy-shipped-val');
+  const detail = root.querySelector('#gy-detail');
+  const G = {
+    '1': { ambition: 100, shipped: 25, label: 'Gen 1 · LocalAI / Main-Ai-Tool',
+      body: 'Maximal vision: orchestrator + GPU model-swap scheduler + Blazor UI + <strong>14 pipelines</strong>. Real code, proven to have run once (outputs 2026-04-16) — but the Blazor UI was never built, so it crashes on startup now; music pipelines stubbed. Verdict: merge into Vox.' },
+    '2': { ambition: 65, shipped: 30, label: 'Gen 2 · AudioPipeline / day-data-analyser',
+      body: 'A daemon: folder-watch + Whisper + MIDI + classifier microservices. It compiles — but the <strong>3 Docker sidecar images don\'t exist</strong> (referenced by name only), and the classifier is dead code. Verdict: archive; its clean .NET core cherry-picked into Vox.' },
+    '3': { ambition: 30, shipped: 95, label: 'Gen 3 · Vox ⭐ (the survivor)',
+      body: 'The simplest: voice memo → transcribe → summarise → markdown in the vault. <strong>5 clean services, zero stubs</strong>, compiles, first end-to-end run 2026-06-05. Uses Ollama instead of the never-loaded llama-stack. Verdict: ship-closest. The one that already shed the ambition.' },
+  };
+  const btns = root.querySelectorAll('.lsf-op[data-gen]');
+  function show(g) {
+    const d = G[g];
+    amb.style.width = d.ambition + '%'; shp.style.width = d.shipped + '%';
+    ambV.textContent = d.ambition + '%'; shpV.textContent = d.shipped + '%';
+    detail.innerHTML = `<span class="lv-info-label">${d.label}</span>` +
+      `<span class="lv-info-meta">ambition ${d.ambition}% · shipped ${d.shipped}%</span>` +
+      `<span class="lv-info-rel" style="display:block;margin-top:0.3rem;">${d.body}</span>`;
+  }
+  btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(x => x.classList.toggle('active', x === b));
+    show(b.dataset.gen);
+  }));
+}
+
+// --- HARDWARE: 8GB VRAM allocator (concurrent OOMs, sequential fits) ---
+function initHardwareVram() {
+  const root = document.getElementById('hardware-vram');
+  if (!root) return;
+  const CEIL = 8.0, SIZE = { whisper: 3.0, llm: 5.6 };
+  const NAME = { whisper: 'faster-whisper-medium', llm: 'qwen2.5:7b' };
+  const fillW = root.querySelector('#hw-fill-whisper'), fillL = root.querySelector('#hw-fill-llm');
+  const readout = root.querySelector('#hw-readout'), verdict = root.querySelector('#hw-verdict');
+  let mode = 'concurrent';
+  const loaded = { whisper: false, llm: false };
+  function render() {
+    const usedW = loaded.whisper ? SIZE.whisper : 0, usedL = loaded.llm ? SIZE.llm : 0;
+    const total = usedW + usedL;
+    fillW.style.width = (usedW / CEIL * 100) + '%';
+    fillL.style.width = (usedL / CEIL * 100) + '%';
+    const over = total > CEIL + 0.001;
+    fillW.classList.toggle('oom', over); fillL.classList.toggle('oom', over);
+    readout.textContent = `${total.toFixed(1)} / ${CEIL.toFixed(1)} GB used`;
+    readout.classList.toggle('oom', over);
+    let html;
+    if (over) {
+      html = `<span class="lv-info-label" style="color:var(--red)">CUDA out of memory</span>` +
+        `<span class="lv-info-meta">${total.toFixed(1)} GB requested on an 8 GB card</span>` +
+        `<span class="lv-info-rel">This is exactly the "wall." Switch to <strong>Sequential</strong> — the same two models fit when only one is resident at a time.</span>`;
+    } else if (!loaded.whisper && !loaded.llm) {
+      html = `<span class="lv-info-default">Load a model. Then try loading the other.</span>`;
+    } else {
+      const names = Object.keys(loaded).filter(k => loaded[k]).map(k => NAME[k]).join(' + ');
+      html = `<span class="lv-info-label" style="color:var(--green-dark)">Resident: ${names}</span>` +
+        `<span class="lv-info-meta">${total.toFixed(1)} GB of 8.0 GB — fits</span>` +
+        (mode === 'sequential'
+          ? `<span class="lv-info-rel">Sequential mode: loading one model releases the other (a VramCooldownSeconds handoff sits between the phases).</span>`
+          : `<span class="lv-info-rel">Fits for now — but load the other model too and watch the card overflow.</span>`);
+    }
+    verdict.innerHTML = html;
+  }
+  root.querySelectorAll('.hw-modebtn').forEach(b => b.addEventListener('click', () => {
+    root.querySelectorAll('.hw-modebtn').forEach(x => x.classList.toggle('active', x === b));
+    mode = b.dataset.mode;
+    if (mode === 'sequential' && loaded.whisper && loaded.llm) loaded.llm = false;
+    render();
+  }));
+  root.querySelectorAll('.lsf-op[data-load]').forEach(b => b.addEventListener('click', () => {
+    const k = b.dataset.load;
+    if (k === 'reset') { loaded.whisper = false; loaded.llm = false; render(); return; }
+    if (mode === 'sequential') { loaded.whisper = false; loaded.llm = false; loaded[k] = true; }
+    else { loaded[k] = !loaded[k]; }
+    render();
+  }));
+  render();
+}
+
+// --- COLLAB: joint-operations authorization form ---
+function initCollabAuth() {
+  const root = document.getElementById('collab-auth');
+  if (!root) return;
+  const name = root.querySelector('#ca-name'), intent = root.querySelector('#ca-intent');
+  const result = root.querySelector('#ca-result');
+  root.querySelector('#ca-submit').addEventListener('click', () => {
+    const who = ((name.value || '').trim() || 'Unnamed Test Subject').replace(/[<>&]/g, '');
+    const said = (intent.value || '').trim();
+    if (!said) {
+      result.hidden = false;
+      result.innerHTML = `<div class="ca-deny">CLEARANCE PENDING — state an objective. The facility needs to know what you're building.</div>`;
+      return;
+    }
+    result.hidden = false;
+    result.innerHTML =
+      `<div class="ca-grant">✔ CLEARANCE GRANTED — <strong>${who}</strong></div>` +
+      `<p class="ca-note">Objective logged. Channels released — reach out through any of these:</p>` +
+      `<div class="socket-row">` +
+        `<a class="socket active" href="https://github.com/monchyk"><span class="status-dot on"></span> GitHub · monchyk</a>` +
+        `<a class="socket active" href="https://klaasm.be"><span class="status-dot on"></span> klaasm.be</a>` +
+        `<a class="socket active" href="https://monchyk.github.io/burn-lights/"><span class="status-dot on"></span> burn-lights zine</a>` +
+        `<a class="socket active" href="mailto:klaas.monchy@outlook.com"><span class="status-dot on"></span> e-mail</a>` +
+      `</div>` +
+      `<p class="ca-note" style="color:var(--border-light)">"Welcome to joint operations. Now go make something." — the management</p>`;
+  });
+}
+
 function initPages() {
   initGovernorBattery();   // gates on #governor-battery-form
   initGearSwitcher();      // gates on #gear-switcher
@@ -1776,6 +1917,9 @@ function initPages() {
   initSpyflies();          // gates on .spyfly-field
   initCharityPokerBook();  // gates on #poker-book
   initOriginDirectoryFlies(); // gates on .card-grid
+  initGraveyardTimeline(); // gates on #graveyard-timeline
+  initHardwareVram();      // gates on #hardware-vram
+  initCollabAuth();        // gates on #collab-auth
 }
 
 // ============================================

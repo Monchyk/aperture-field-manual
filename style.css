@@ -1487,6 +1487,32 @@ a.section-card:hover {
 .origin-chevron.found .chev-arms { fill: var(--amber-dark); }
 .origin-chevron.found .chev-lock { fill: var(--amber); animation: breathe 6s ease-in-out infinite; }
 
+/* ==== LOUD in-page hunt chevrons — impossible to miss (scoped to the clickable ones) ==== */
+.origin-chevron[data-chevron] {
+  width: 32px; height: 32px; opacity: 1; cursor: pointer; margin: 0 2px;
+  animation: chevPulse 1.4s ease-in-out infinite;
+}
+.origin-chevron[data-chevron] .chev-arms { fill: var(--amber); }
+.origin-chevron[data-chevron] .chev-lock { fill: #fff5e6; }
+.origin-chevron[data-chevron].on-dark .chev-arms { fill: var(--amber); }
+.origin-chevron[data-chevron].on-dark .chev-lock { fill: #fff5e6; }
+.origin-chevron[data-chevron]:hover,
+.origin-chevron[data-chevron]:focus-visible {
+  transform: scale(1.28); opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(245,158,11,1));
+  outline: none;
+}
+.origin-chevron[data-chevron].found {
+  animation: none; transform: none; opacity: 0.92; cursor: default;
+  filter: drop-shadow(0 0 5px rgba(22,163,74,0.7));
+}
+.origin-chevron[data-chevron].found .chev-arms { fill: var(--green); }
+.origin-chevron[data-chevron].found .chev-lock { fill: var(--green-dark); animation: none; }
+@keyframes chevPulse {
+  0%, 100% { filter: drop-shadow(0 0 5px rgba(245,158,11,0.6)); transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 13px rgba(245,158,11,1));  transform: scale(1.14); }
+}
+
 /* ---- dialing indicator widget (fixed corner) ---- */
 #origin-dial-widget {
   position: fixed;
@@ -1544,6 +1570,16 @@ a.section-card:hover {
 #origin-dial-widget.minimized .odw-div,
 #origin-dial-widget.minimized .odw-origin { display: none; }
 #origin-dial-widget.minimized .odw-count { display: block; }
+/* guidance hint — tells you exactly where the glyphs are (no more pixel-hunting) */
+#origin-dial-widget .odw-panel { flex-wrap: wrap; max-width: 320px; }
+#origin-dial-widget .odw-hint {
+  flex-basis: 100%; font-family: var(--mono); font-size: 0.6rem; line-height: 1.6;
+  color: var(--text-light); margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--border);
+}
+#origin-dial-widget .odw-hint:empty { display: none; }
+#origin-dial-widget .odw-hint a { color: var(--amber); text-decoration: none; border-bottom: 1px dotted var(--amber); }
+#origin-dial-widget .odw-hint a:hover { color: var(--amber-dark); border-bottom-color: var(--amber-dark); }
+#origin-dial-widget.minimized .odw-hint { display: none; }
 
 /* ---- visit card: revisitable follow-up to the dial, site-wide ---- */
 #origin-visit-card {
@@ -1781,10 +1817,17 @@ a.section-card:hover {
   height: 22px;
   z-index: 55;
   pointer-events: none;
-  transition: left 1.6s ease, top 1.6s ease, opacity 0.6s ease;
+  transition: left 1s ease, top 1s ease, opacity 0.5s ease;
   opacity: 0;
 }
-.origin-hint-fly.settled { opacity: 0.92; }
+.origin-hint-fly.settled { opacity: 0.92; animation: ohf-drift 2.4s ease-in-out infinite; }
+/* small continuous wander so it never fully sits still between re-settles */
+@keyframes ohf-drift {
+  0%, 100% { margin-left: 0; margin-top: 0; }
+  25%      { margin-left: 3px; margin-top: -2px; }
+  50%      { margin-left: -2px; margin-top: 2px; }
+  75%      { margin-left: 2px; margin-top: 3px; }
+}
 .spyfly .sf-wing {
   animation: sf-wing-flicker 0.25s steps(2) infinite;
   transform-origin: 14px 8px;
@@ -1839,6 +1882,45 @@ a.section-card:hover {
 }
 .pb-again:hover { background: var(--amber); color: var(--text); }
 
+/* ---- Graveyard: generation bars ---- */
+#graveyard-timeline { border: 2px solid var(--border); background: var(--bg-panel); margin: 1rem 0; padding: 0.9rem; }
+.gy-bars { margin: 0.8rem 0; }
+.gy-bar-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.5rem 0; }
+.gy-bar-label { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.1em; width: 4.6rem; color: var(--text-light); }
+.gy-track { flex: 1; height: 16px; background: var(--bg-dark-panel); border: 1px solid var(--border); overflow: hidden; }
+.gy-fill { height: 100%; width: 0; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+.gy-fill.amber { background: repeating-linear-gradient(45deg, var(--amber), var(--amber) 6px, var(--amber-dark) 6px, var(--amber-dark) 12px); }
+.gy-fill.green { background: var(--green); }
+.gy-bar-num { font-family: var(--mono); font-size: 0.72rem; width: 2.6rem; text-align: right; }
+
+/* ---- Hardware: VRAM allocator ---- */
+#hardware-vram { border: 2px solid var(--border); background: var(--bg-panel); margin: 1rem 0; padding: 0.9rem; }
+.hw-mode { display: flex; gap: 0; margin-bottom: 0.9rem; border: 2px solid var(--border); width: fit-content; }
+.hw-modebtn { background: var(--bg-dark-panel); color: var(--text-light); border: none; border-right: 1px solid var(--border); padding: 0.4rem 0.9rem; font-family: var(--mono); font-size: 0.72rem; cursor: pointer; }
+.hw-modebtn:last-child { border-right: none; }
+.hw-modebtn.active { background: var(--amber); color: var(--text); font-weight: 700; }
+.hw-vrambar { position: relative; height: 44px; background: var(--bg-dark-panel); border: 2px solid var(--border); display: flex; overflow: hidden; }
+.hw-seg { height: 100%; width: 0; transition: width 0.45s ease; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.62rem; color: #0f0f12; white-space: nowrap; overflow: hidden; }
+.hw-seg.whisper { background: #76B7B2; }
+.hw-seg.llm { background: #4E79A7; color: #f5f0e8; }
+.hw-seg.oom { background: var(--red) !important; color: #fff; }
+.hw-ceiling { position: absolute; top: 0; right: 0; height: 100%; border-left: 2px dashed var(--border-light); display: flex; align-items: center; }
+.hw-ceiling span { font-family: var(--mono); font-size: 0.58rem; color: var(--border-light); padding: 0 0.3rem; writing-mode: horizontal-tb; }
+.hw-readout { font-family: var(--mono); font-size: 0.8rem; margin: 0.5rem 0 0.8rem; color: var(--text-light); }
+.hw-readout.oom { color: var(--red); font-weight: 700; }
+
+/* ---- Collab: authorization form ---- */
+#collab-auth { border: 2px solid var(--border); background: var(--bg-panel); margin: 1rem 0; padding: 0.9rem; }
+.ca-form { display: flex; flex-direction: column; gap: 0.6rem; }
+.ca-label { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--amber-dark); text-transform: uppercase; display: flex; flex-direction: column; gap: 0.25rem; }
+.ca-input { background: var(--bg-page); border: 2px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.82rem; padding: 0.5rem; resize: vertical; }
+.ca-input:focus { outline: none; border-color: var(--amber); }
+.ca-result { margin-top: 0.9rem; background: var(--bg-dark-panel); border-left: 4px solid var(--green); padding: 0.9rem 1.1rem; }
+.ca-result[hidden] { display: none; }
+.ca-grant { font-family: var(--mono); font-size: 0.9rem; color: var(--green); font-weight: 700; }
+.ca-deny { font-family: var(--mono); font-size: 0.82rem; color: var(--amber); }
+.ca-note { font-family: var(--mono); font-size: 0.76rem; color: var(--text-light); margin: 0.5rem 0; }
+
 /* ---- RESPONSIVE ---- */
 
 @media (max-width: 600px) {
@@ -1881,6 +1963,7 @@ a.section-card:hover {
 
 @media (prefers-reduced-motion: reduce) {
   .origin-chevron.found .chev-lock { animation: none; }
+  .origin-chevron[data-chevron] { animation: none; }
   #origin-dial-widget .odw-origin { animation: none; }
   .odw-slot.odw-recent .chev-lock { animation: none; }
   .oo-ring-burst, .oo-kawoosh::before { animation: none !important; opacity: 0; }
