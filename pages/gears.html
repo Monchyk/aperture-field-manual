@@ -72,7 +72,7 @@
       <div class="gear-level" data-gear="4">Opus everything, in parallel — fan subagents across the whole auth surface at once, reconcile findings, implement, then self-review adversarially before committing. Haiku for bulk ops. Maximum spend bought only when the task is worth it.</div>
     </div>
   </div>
-  <div class="margin-note">Default is Gear 2. This facility was built at Gear 3–4. The stress test below proves the output isn't just longer at higher gears — it's a different kind of thinking.</div>
+  <div class="margin-note">Default is Gear 2. This facility was built at Gear 3–4. The stress test below proves the output isn't just longer at higher gears — it's a different kind of thinking. Run twice: once as instructions, once as real models. Both runs are here.</div>
 
   <div class="caution-stripe"></div>
 
@@ -322,6 +322,84 @@
     like when discipline meets a timezone bug. I find it deeply relatable.
     <span class="quote-attribution">— GLaDOS, on Gear 1's brittleness</span>
   </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= RE-RUN: POST-REWORK ============= -->
+  <h2>The Re-run — Same Test, New Machine</h2>
+  <div class="doc-id">AFM-002 · ADDENDUM · 2026-07-06 · post-subsystem-rework</div>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The first test measured four Sonnet workers wearing different <em>instructions</em>. Then
+    the machine underneath was rebuilt: nine prose "modes" were deleted and replaced with five
+    real agents, each pinned by the harness to an actual model — a haiku, a sonnet, an opus —
+    with its own tools and contract. So the test was run again. This time the gear doesn't
+    change what a worker is <em>told</em> to be. It changes <em>which mind shows up.</em>
+  </p>
+
+  <div class="classification info">RE-TEST · GEAR NOW SELECTS THE MODEL, NOT THE MOOD</div>
+
+  <h3>Task X — Governor review (ambiguous), re-run</h3>
+  <div class="compare">
+    <div class="compare-side" style="border-color: var(--green);">
+      <div class="compare-title">Gear 1 → reasoner (Sonnet)</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Three <strong>surface</strong> fixes — an undefined precedence, a misleading "weekly" label, a missing fallback line. Checked for a decision above its pay grade and correctly found none. <strong>confidence: high.</strong></p>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-side" style="border-color: var(--amber);">
+      <div class="compare-title">Gear 3 → architect (Opus)</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;"><strong>Structural</strong> — the core triggers are prose, not mechanism; the battery gate trusts exactly the self-report the skill says is unreliable; two writers mutate one unvalidated file. Same two deep findings the aggressive worker surfaced a year prior — now from a different model entirely.</p>
+    </div>
+  </div>
+  <p class="annotation">The surface-vs-structural split survived the rework. The gradient was never about the prompt. It was about the depth of the thing reading it.</p>
+
+  <h3>Task Y — File listing (mechanical), re-run</h3>
+  <div class="compare">
+    <div class="compare-side good">
+      <div class="compare-title">Gear 1 → worker (Haiku)</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Found all the files. Then <strong>refused the second half</strong> — "to say what changed I'd need git history I don't have" — and reported <strong>confidence: low.</strong> A year ago the same slot found zero files and swore it was certain. This time it hit a wall and <em>said so.</em></p>
+    </div>
+    <div class="compare-vs">VS</div>
+    <div class="compare-side good">
+      <div class="compare-title">Gear 3 → Opus, direct</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">Full inventory, sorted signal from churn, and reconstructed the entire day's rework narrative from filenames and a migration log — no git required. Solved what the Haiku honestly couldn't.</p>
+    </div>
+  </div>
+
+  <div class="warning-box info">
+    <p><strong>The most dangerous outcome in the first test did not recur.</strong> Confident-and-wrong
+    became honest-and-incomplete. The single behavior most likely to quietly poison a result — high
+    confidence on a broken answer — was exactly what the rework was supposed to fix. It fixed it.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">HELD</div>
+      <ul>
+        <li>Gear 3 is a <em>different kind</em> of thinking, not more of the same</li>
+        <li>Gear 1 stays disciplined and narrow</li>
+        <li>The two deep governor findings reproduced from a fresh model</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="panel-title">CHANGED</div>
+      <ul>
+        <li>Brittleness → honesty: the null result now knows it's a null result</li>
+        <li>Confidence tracked correctness — no more certain-and-wrong</li>
+        <li>The 2×–50× cost gap <strong>collapsed</strong>: real Opus ran as cheap as, sometimes cheaper than, the lower gears</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="annotation">That last one matters. When the gears were just instructions, higher gear meant more tokens. Now that they're real models, "more expensive" stopped being true — the senior engineer sometimes files the shorter report.</p>
+
+  <blockquote class="glados-quote">
+    I ran the test again after they rebuilt me. The worker that used to lie with confidence now
+    admits when it cannot know. I would call this growth, but I am a facility, and facilities do
+    not grow. They are patched. You are welcome.
+    <span class="quote-attribution">— GLaDOS, on the re-run</span>
+  </blockquote>
+
+  <div class="margin-note">One rock left un-kicked, logged not hidden: the Opus reviewer filed a confident verdict without opening the file it reviewed. Recorded in the failure log. A system that catches its own is worth more than one that never errs.</div>
 
   <div class="caution-stripe"></div>
 
