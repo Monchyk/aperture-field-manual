@@ -1,0 +1,27 @@
+# This repo is PUBLIC and deploys to klaasm.be. Everything tracked here is world-readable.
+# So this file is a privacy control, not tidiness — it exists so build output and local scratch
+# can never be swept in by a careless `git add -A`.
+#
+# The lesson it encodes (2026-07-21, learned the expensive way in the vault repo): a gitignore
+# line protecting one subtree says nothing about sibling artifacts, and a prose rule in a docs
+# file has failed as a control every time it has been tried. Deny by pattern, not by vigilance.
+
+# graphify build output — AST cache, generated report, rendered graph. Regenerable from source
+# (`graphify update .`), so there is no reason to publish it. Verified 2026-08-06 to contain no
+# absolute user paths, but it is still build output in a content repo.
+graphify-out/
+
+# local scratch / editor / OS noise
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# anything explicitly marked local — a deliberate escape hatch for drafts that must not ship
+*.local.*
+/local/
+/scratch/
