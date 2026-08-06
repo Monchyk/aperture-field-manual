@@ -14,7 +14,7 @@ Second in a series. The first — the **[Aperture Forest Operations Manual](http
 
 ## Status — Phases 1–3 (partial)
 
-Built (9 chambers live):
+Built (13 chambers live):
 
 - `index.html` — Facility Directory (navigation hub, card grid)
 - `pages/governor.html` — **The Governor**: speed limiter + **interactive battery pre-flight**
@@ -24,6 +24,7 @@ Built (9 chambers live):
 - `pages/letssavefood.html` — **Let's Save Food**: .NET/EF Core food-bank engine + **interactive audit-trail generator**
 - `pages/schrutelibrary.html` — **The Schrute Memorial Library**: an over-engineered class hierarchy (LibraryItem > Shelf > Book > Chapter > Page > Note) that turns out to be load-bearing + **interactive Charity Poker book** — pick a real effective-giving cause, watch a simulated poker night, see the pot split 60/25/15
 - `pages/livingvault.html` — **The Living Vault**: zero-quota self-monitoring pipeline, Mermaid flow diagrams + **two interactive graphs** (a curated "process spine" and a colour-by-community "constellation", both from real graph.json) + verbatim `graphify explain`/`path` output
+- `pages/calibration.html` — **The Calibration Lab** (13): the facility measures its own instruments. Interactive **wiring test** (turn the retired gear dial, watch the model lamp stay dead while the behaviour lamp moves) + a **four-run selector** for the stress-test series. Documents the gear→model null result, the prose-binds finding, the collapse to tier/effort/max_parallel, and a rejected rule that regrew across 7 documents
 - `pages/miscwing.html` — **The Misc Wing**: auxiliary test chambers, starting with a **draggable ER/schema explorer** (drag entities, toggle visibility, cycle cardinality) + live DDL/Mermaid output + copy-to-clipboard, patrolled by three animated spy flies
 - `pages/philosophy.html` — **The Prime Directive**: the one rule + **interactive radial map**
 - `style.css`, `script.js` — shared component library + behaviour
@@ -38,7 +39,7 @@ connections). One scoped exception to the no-library rule: `livingvault.html` lo
 **Mermaid.js** from a CDN (only that page) to render its flow diagrams — mirroring the vault's
 own `concept.py`, which emits Mermaid natively.
 
-Chambers still sealed (future phases): Graveyard · Hardware · Collaboration.
+All 13 chambers are live. Chamber 13 (The Calibration Lab) was appended after the facility was declared complete: the routing engine documented in Chamber 02 was measured and found never to have been connected to model selection. It holds the autopsy, the four-run stress-test series, and the three-axis system that replaced the four-gear dial.
 
 **Point of Origin** (hidden, site-wide): six small Stargate-style chevrons are tucked into the
 six live chambers below — find them all, then interact with the sealed subject node on the

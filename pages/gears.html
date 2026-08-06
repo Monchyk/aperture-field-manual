@@ -18,7 +18,23 @@
 
   <span class="classification info">EXPERIMENT INTENSITY CONTROL</span>
   <h1>The Gear System</h1>
-  <p class="doc-id">DOC: AFM-2026-GEAR-002 &nbsp;|&nbsp; SUBSYSTEM: MODEL ROUTING ENGINE &nbsp;|&nbsp; MODELS: 3 &nbsp;|&nbsp; GEARS: 4</p>
+  <p class="doc-id">DOC: AFM-2026-GEAR-002 &nbsp;|&nbsp; SUBSYSTEM: MODEL ROUTING ENGINE &nbsp;|&nbsp; MODELS: 3 &nbsp;|&nbsp; GEARS: 4 <span style="color: var(--red);">(RETIRED)</span></p>
+
+  <div class="warning-box danger">
+    <p><strong>SUPERSEDED — read this first.</strong> The four-gear dial described in this chamber
+    was retired in August 2026. It was retired because it was <em>measured</em>, and the
+    measurement found that the gear was never connected to model selection at all — one code
+    reader, and it rendered a display string. Four months, zero binding.
+    <br/><br/>
+    This chamber is preserved as written rather than corrected, because what it got wrong is more
+    interesting than what it got right. The autopsy, the four stress runs, and the three-axis
+    system that replaced the dial are in <a href="calibration.html"><strong>Chamber 13 — The
+    Calibration Lab</strong></a>.
+    <br/><br/>
+    One thing here <em>did</em> survive measurement, and it is the reason none of this was deleted:
+    the role vocabulary and the stress test below. Model held constant, prose varied, behaviour
+    changed. <strong>The gears never routed anything — but the words did.</strong></p>
+  </div>
 
   <p style="font-family: var(--mono); font-size:0.82rem;">
     Three AI models are available to this facility. One is brilliant and bills by the
@@ -465,10 +481,52 @@
     automatic ceiling. And the governor? It protects the human, not the budget.</p>
   </div>
 
+  <div class="caution-stripe"></div>
+
+  <!-- ============= RETIREMENT NOTICE ============= -->
+  <h2>Epilogue — The Dial Was Not Connected</h2>
+  <div class="doc-id">AFM-002 · RETIREMENT NOTICE · 2026-08-06</div>
+
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Everything above is left exactly as first written. Three months after it was written, somebody
+    grepped the configuration tree for the state key this whole chamber is about.
+  </p>
+
+  <div class="grid-2">
+    <div class="panel" style="border-color: var(--red);">
+      <div class="panel-title">WHAT THE GREP FOUND</div>
+      <ul>
+        <li>The gear had <strong>one</strong> reader — a hook that printed a label</li>
+        <li><strong>131 of 255</strong> agent spawns inherited the session model anyway</li>
+        <li>A global setting pinned the top model, overriding the scheme entirely</li>
+        <li><strong>Gear → model routing never bound.</strong> Not once, in four months</li>
+      </ul>
+    </div>
+    <div class="panel" style="border-color: var(--green);">
+      <div class="panel-title">WHAT SURVIVED ANYWAY</div>
+      <ul>
+        <li>The stress test above — <em>model constant, prose varied, behaviour changed</em></li>
+        <li>So: gear → <strong>prose</strong> → behaviour <em>did</em> bind</li>
+        <li>The role vocabulary was a hand-rolled depth dial, in words</li>
+        <li><code>confidence:</code> as control flow — untouched, still load-bearing</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="annotation">Four gears became three independent axes: <strong>tier</strong> (loop posture) · <strong>effort</strong> (depth) · <strong>max_parallel</strong> (blast radius). The old table conflated all three. A fourth stress run confirmed the quality gradient survives the collapse.</p>
+
+  <div class="warning-box info">
+    <p><strong>Do not confuse <em>unenforced</em> with <em>inert</em>.</strong> That sentence cost
+    four months and is the most useful thing this chamber produced. The full autopsy — plus a dial
+    you can turn to watch the disconnection happen — is in
+    <a href="calibration.html">Chamber 13, The Calibration Lab</a>.</p>
+  </div>
+
   <div style="text-align:center; margin-top:1.5rem;">
     <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
       The engine is enforced by <a href="governor.html">The Governor</a>, operationalised in
-      <a href="workshop.html">The Workshop</a>, and answers — like everything here — to
+      <a href="workshop.html">The Workshop</a>, audited in
+      <a href="calibration.html">The Calibration Lab</a>, and answers — like everything here — to
       <a href="philosophy.html">The Prime Directive</a>.
     </p>
   </div>

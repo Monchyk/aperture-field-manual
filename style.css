@@ -1976,3 +1976,199 @@ a.section-card:hover {
   .origin-hint-fly { transition: opacity 0.6s ease !important; }
   .origin-directory-fly { display: none; }
 }
+
+/* ============================================
+   CHAMBER 13 — THE CALIBRATION LAB
+   Two interactives: the wiring test (#calib-wiring)
+   and the four-run selector (#calib-runs).
+   ============================================ */
+
+/* --- The wiring test --- */
+.calib-wiring {
+  border: 2px solid var(--border);
+  background: var(--paper-dark, #ece5d8);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.cw-dial-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.cw-gear {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  padding: 0.45rem 0.8rem;
+  border: 2px solid var(--border);
+  background: var(--paper, #f7f2e8);
+  color: var(--text, #1a1a1a);
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+.cw-gear:hover { transform: translateY(-1px); }
+.cw-gear.active {
+  background: var(--border);
+  color: var(--text-light);
+}
+.cw-lamps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+@media (max-width: 620px) { .cw-lamps { grid-template-columns: 1fr; } }
+.cw-lamp {
+  border: 1px solid var(--border-light);
+  padding: 0.7rem;
+  text-align: center;
+  background: #12121c;
+  color: var(--text-light);
+}
+.cw-lamp-label {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  color: var(--border-light);
+  line-height: 1.35;
+}
+.cw-lamp-sub { font-size: 0.6rem; opacity: 0.75; }
+.cw-lamp-bulb {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.5rem auto;
+  width: 3.4rem; height: 3.4rem;
+  line-height: 3.4rem;
+  border-radius: 50%;
+  border: 2px solid var(--border-light);
+  background: #1d1d2b;
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s;
+}
+.cw-lamp-bulb.stuck {
+  border-color: var(--red);
+  color: #fca5a5;
+  background: #2a1416;
+  box-shadow: 0 0 12px rgba(220,38,38,0.35) inset;
+}
+.cw-lamp-bulb.live {
+  border-color: var(--green);
+  color: #86efac;
+  background: #10241a;
+  box-shadow: 0 0 14px rgba(22,163,74,0.4) inset;
+}
+.cw-lamp-read {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  min-height: 2.6em;
+  line-height: 1.35;
+}
+.cw-lamp-verdict {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  margin-top: 0.45rem;
+  padding-top: 0.4rem;
+  border-top: 1px dotted var(--border-light);
+  font-weight: 700;
+}
+.cw-lamp-verdict.bad { color: #fca5a5; }
+.cw-lamp-verdict.good { color: #86efac; }
+.cw-trace {
+  margin-top: 0.8rem;
+  border: 1px dashed var(--border-light);
+  padding: 0.6rem 0.7rem;
+  background: var(--paper, #f7f2e8);
+}
+.cw-trace-title {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--border-light);
+  margin-bottom: 0.35rem;
+}
+.cw-trace-body {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+.cw-trace-body code {
+  font-size: 0.68rem;
+  background: rgba(0,0,0,0.06);
+  padding: 0 3px;
+}
+.cw-wire {
+  display: block;
+  margin: 0.3rem 0;
+  letter-spacing: 0.02em;
+}
+.cw-wire.dead { color: var(--red); }
+.cw-wire.alive { color: var(--green-dark, #15803d); }
+
+/* --- The four-run selector --- */
+.calib-runs {
+  border: 2px solid var(--border);
+  margin: 1rem 0;
+  background: var(--paper, #f7f2e8);
+}
+.cr-tabs { display: flex; flex-wrap: wrap; border-bottom: 2px solid var(--border); }
+.cr-tab {
+  flex: 1 1 auto;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  padding: 0.5rem 0.4rem;
+  border: 0;
+  border-right: 1px solid var(--border-light);
+  background: transparent;
+  color: var(--text, #1a1a1a);
+  cursor: pointer;
+}
+.cr-tab:last-child { border-right: 0; }
+.cr-tab:hover { background: rgba(0,0,0,0.04); }
+.cr-tab.active { background: var(--border); color: var(--text-light); font-weight: 700; }
+.cr-panel { padding: 0.8rem; }
+.cr-matrix {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.7rem;
+}
+@media (max-width: 520px) { .cr-matrix { grid-template-columns: repeat(2, 1fr); } }
+.cr-cell {
+  border: 1px solid var(--border-light);
+  padding: 0.4rem 0.3rem;
+  text-align: center;
+  font-family: var(--mono);
+}
+.cr-cell-k {
+  display: block;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--border-light);
+}
+.cr-cell-v { display: block; font-size: 0.74rem; font-weight: 700; margin-top: 0.2rem; }
+.cr-cell-v.varied { color: var(--amber-dark, #b45309); }
+.cr-cell-v.held { color: var(--border-light); font-weight: 400; }
+.cr-cell-v.na { color: var(--border-light); opacity: 0.5; font-weight: 400; }
+.cr-question {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-style: italic;
+  padding: 0.45rem 0.55rem;
+  border-left: 3px solid var(--amber);
+  background: rgba(245,158,11,0.08);
+  margin-bottom: 0.6rem;
+}
+.cr-result { font-family: var(--mono); font-size: 0.76rem; line-height: 1.55; }
+.cr-result strong { letter-spacing: 0.02em; }
+.cr-verdict {
+  display: inline-block;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.45rem;
+  border: 1px solid currentColor;
+  margin-bottom: 0.45rem;
+  font-weight: 700;
+}

@@ -1903,6 +1903,158 @@ function initCollabAuth() {
   });
 }
 
+// ============================================
+// CHAMBER 13 — THE CALIBRATION LAB
+// ============================================
+
+// The wiring test: turn the gear dial and watch the model lamp NOT move (gear->model never
+// bound: one code reader, and it rendered a display string) while the behaviour lamp DOES
+// (gear->prose->behaviour bound, proven by the May-3 test with the model held constant).
+// The null result is the point — the left lamp is deliberately boring.
+function initCalibWiring() {
+  const root = document.getElementById('calib-wiring');
+  if (!root) return;
+
+  const GEARS = {
+    1: {
+      behaviour: 'Narrow, disciplined, hedges honestly. Surface-level findings; flags its own boundary and stops.',
+      grade: 'SURFACE',
+      trace: [
+        ['dead', 'gear 1 → looked up by … 1 reader → rendered as a label. No model chosen.'],
+        ['alive', 'gear 1 → conservative role prose → loaded into context → behaviour narrows.']
+      ]
+    },
+    2: {
+      behaviour: 'Balanced. Plans before acting, delegates the mechanical parts, escalates the one real decision.',
+      grade: 'MIXED',
+      trace: [
+        ['dead', 'gear 2 → looked up by … 1 reader → rendered as a label. No model chosen.'],
+        ['alive', 'gear 2 → standard role prose → loaded into context → behaviour balances.']
+      ]
+    },
+    3: {
+      behaviour: 'Structural. Finds enforcement gaps and self-contradictions the lower settings never surface.',
+      grade: 'STRUCTURAL',
+      trace: [
+        ['dead', 'gear 3 → looked up by … 1 reader → rendered as a label. No model chosen.'],
+        ['alive', 'gear 3 → aggressive role prose → loaded into context → behaviour deepens.']
+      ]
+    },
+    4: {
+      behaviour: 'Structural and parallel. Fans out, reconciles, then reviews itself adversarially before committing.',
+      grade: 'STRUCTURAL+',
+      trace: [
+        ['dead', 'gear 4 → looked up by … 1 reader → rendered as a label. No model chosen.'],
+        ['alive', 'gear 4 → burst role prose → loaded into context → behaviour widens.']
+      ]
+    }
+  };
+
+  const btns = Array.from(root.querySelectorAll('.cw-gear'));
+  const bulbModel = document.getElementById('cw-bulb-model');
+  const readModel = document.getElementById('cw-read-model');
+  const verdModel = document.getElementById('cw-verdict-model');
+  const bulbBeh = document.getElementById('cw-bulb-behaviour');
+  const readBeh = document.getElementById('cw-read-behaviour');
+  const verdBeh = document.getElementById('cw-verdict-behaviour');
+  const traceBody = document.getElementById('cw-trace-body');
+  if (!bulbModel || !bulbBeh || !traceBody) return;
+
+  let shifts = 0;
+
+  function select(g) {
+    const data = GEARS[g];
+    if (!data) return;
+    btns.forEach(b => b.classList.toggle('active', b.dataset.gear === String(g)));
+    shifts++;
+
+    // Left lamp: identical every time, on purpose. That IS the measurement.
+    bulbModel.textContent = '—';
+    bulbModel.className = 'cw-lamp-bulb stuck';
+    readModel.innerHTML = 'Whatever the session was already running.<br/>Unchanged by this dial.';
+    verdModel.textContent = shifts > 2 ? 'STILL NOT WIRED' : 'NOT WIRED';
+    verdModel.className = 'cw-lamp-verdict bad';
+
+    // Right lamp: genuinely varies.
+    bulbBeh.textContent = g;
+    bulbBeh.className = 'cw-lamp-bulb live';
+    readBeh.textContent = data.behaviour;
+    verdBeh.textContent = 'BOUND · ' + data.grade;
+    verdBeh.className = 'cw-lamp-verdict good';
+
+    traceBody.innerHTML = data.trace
+      .map(([cls, txt]) => '<span class="cw-wire ' + cls + '">' +
+        (cls === 'dead' ? '✗ ' : '✓ ') + txt + '</span>')
+      .join('') +
+      (shifts >= 4
+        ? '<span class="cw-wire" style="margin-top:0.5rem; border-top:1px dotted currentColor; padding-top:0.4rem;">' +
+          'You have now shifted four times. The left lamp never moved once. ' +
+          'Four months of production use produced exactly this reading.</span>'
+        : '');
+  }
+
+  btns.forEach(b => b.addEventListener('click', () => select(b.dataset.gear)));
+  select(2); // default gear was 2
+}
+
+// The four stress runs, each isolating one variable. Data is the real recorded outcome.
+function initCalibRuns() {
+  const root = document.getElementById('calib-runs');
+  if (!root) return;
+
+  const RUNS = {
+    may: {
+      prose: ['varied', 'VARIED'], model: ['held', 'held'], effort: ['held', 'held'], tier: ['na', 'n/a'],
+      q: 'Does the gear vocabulary change anything at all, with the model held constant?',
+      verdict: 'PROSE ALONE BINDS',
+      vcolor: 'var(--green-dark, #15803d)',
+      body: 'Four workers, <strong>same model</strong>, different gear instructions. The aggressive framing found structural gaps — missing enforcement triggers, a subsystem contradicting its own stated rationale — that the conservative framing never reached. On the mechanical task the conservative worker hit a timezone bug, returned <strong>zero files</strong>, and reported <em>high confidence</em>. There were forty. <br/><br/>The gradient was real. So was the most dangerous failure mode in the series: confidently wrong.'
+    },
+    jul: {
+      prose: ['varied', 'varied'], model: ['varied', 'VARIED'], effort: ['held', 'held'], tier: ['na', 'n/a'],
+      q: 'Does the gradient survive when the gear actually selects a real model?',
+      verdict: 'SURVIVED — AND COST BROKE',
+      vcolor: 'var(--amber-dark, #b45309)',
+      body: 'The nine prose modes were replaced by real agents pinned to real models. The surface-versus-structural split held, and the expensive reviewer independently rediscovered the <em>same two deep findings</em> as the earlier run.<br/><br/>Better: confidently-wrong became <strong>honestly incomplete</strong> — the cheap worker hit a real limit and said so instead of inventing certainty.<br/><br/>But the economics inverted: the expensive model came in <strong>cheaper</strong> than the cheap one on the ambiguous task. The whole cost rationale for a four-rung ladder died here, quietly, and the ladder outlived it by a month.'
+    },
+    aug4: {
+      prose: ['held', 'held'], model: ['held', 'held'], effort: ['varied', 'VARIED'], tier: ['na', 'n/a'],
+      q: 'Does the platform’s own depth dial subsume the prose effect, or add to it?',
+      verdict: 'ADDITIVE, NOT SUBSUMED',
+      vcolor: 'var(--green-dark, #15803d)',
+      body: 'Same agent, same prompt, four cells, only the depth dial moved. The high setting graded all-structural and earned high confidence; the low setting hedged honestly.<br/><br/>The mechanism was the surprise: <strong>depth bought tool calls, and tool calls bought falsifiability.</strong> The low cell stayed inside the two files it was handed. The high cell <em>left them</em> — walked the plan directory on disk and found that the facility’s own stall-detector reads a signal its actual habits never write. That finding is not reachable by thinking harder about prose; it required going to look.<br/><br/>Word count moved only 1.3×. Depth is not verbosity.'
+    },
+    aug6: {
+      prose: ['held', 'held'], model: ['held', 'held'], effort: ['held', 'held'], tier: ['varied', 'VARIED'],
+      q: 'After the collapse from four gears to two tiers — is the gradient still there?',
+      verdict: 'GRADIENT SURVIVES THE COLLAPSE',
+      vcolor: 'var(--green-dark, #15803d)',
+      body: 'The smoke test. Two tiers, same two tasks, depth held so routing was the only variable.<br/><br/>The split reproduced. Confidence tracked correctness in all four cells. The dangerous failure mode from the first run did <strong>not</strong> return.<br/><br/>And the run paid for itself immediately: both cells reviewing the wellbeing subsystem independently caught a defect introduced hours earlier — a numbered procedure that had lost its second step, and, underneath that, a <em>guaranteed</em> nudge with nothing actually detecting its trigger. Fixed the same session, then logged as a failure so the apply-check that missed it gets fixed too.'
+    }
+  };
+
+  const tabs = Array.from(root.querySelectorAll('.cr-tab'));
+  const el = id => document.getElementById(id);
+  const fields = { prose: el('cr-prose'), model: el('cr-model'), effort: el('cr-effort'), tier: el('cr-tier') };
+  const qEl = el('cr-question'), rEl = el('cr-result');
+  if (!qEl || !rEl || !fields.prose) return;
+
+  function select(key) {
+    const r = RUNS[key];
+    if (!r) return;
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.run === key));
+    ['prose', 'model', 'effort', 'tier'].forEach(k => {
+      fields[k].className = 'cr-cell-v ' + r[k][0];
+      fields[k].textContent = r[k][1];
+    });
+    qEl.textContent = r.q;
+    rEl.innerHTML = '<span class="cr-verdict" style="color:' + r.vcolor + '">' + r.verdict + '</span><br/>' + r.body;
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => select(t.dataset.run)));
+  select('may');
+}
+
 function initPages() {
   initGovernorBattery();   // gates on #governor-battery-form
   initGearSwitcher();      // gates on #gear-switcher
@@ -1920,6 +2072,8 @@ function initPages() {
   initGraveyardTimeline(); // gates on #graveyard-timeline
   initHardwareVram();      // gates on #hardware-vram
   initCollabAuth();        // gates on #collab-auth
+  initCalibWiring();       // gates on #calib-wiring
+  initCalibRuns();         // gates on #calib-runs
 }
 
 // ============================================

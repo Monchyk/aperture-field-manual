@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Calibration Lab — Aperture Field Manual</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a href="../index.html" class="nav-home">◄ FACILITY DIRECTORY</a>
+  <span class="nav-title">CHAMBER 13 — THE CALIBRATION LAB</span>
+  <a href="../index.html" class="nav-next">DIRECTORY ►</a>
+</nav>
+
+<div class="page" data-page-num="AFM-013">
+
+  <span class="classification">INSTRUMENT VERIFICATION · POST-HOC</span>
+  <h1>The Calibration Lab</h1>
+  <p class="doc-id">DOC: AFM-2026-CAL-013 &nbsp;|&nbsp; SUBSYSTEM: SELF-MEASUREMENT &nbsp;|&nbsp; SUBJECT OF STUDY: THIS FACILITY &nbsp;|&nbsp; STATUS: DIAL REPLACED</p>
+
+  <p style="font-family: var(--mono); font-size:0.82rem;">
+    Every other chamber in this facility describes a system. This one <em>measures</em> one —
+    and the system it measures is the facility's own routing engine, the four-gear dial
+    documented next door in <a href="gears.html">Chamber 02</a>. For four months that dial was
+    the centrepiece of the whole apparatus. Then somebody grepped for the wire.
+  </p>
+
+  <div class="warning-box danger">
+    <p><strong>Finding, stated up front, because burying it would be cowardly:</strong> the gear
+    dial was never connected to model selection. Not once, in four months. It had exactly
+    <em>one</em> reader in the entire codebase, and that reader printed a label.</p>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-value">1</div>
+      <div class="stat-label">Code Readers Of The Dial</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">51%</div>
+      <div class="stat-label">Spawns Ignoring It</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">3,560</div>
+      <div class="stat-label">Prompts Re-Read</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">4</div>
+      <div class="stat-label">Stress Runs</div>
+    </div>
+  </div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE WIRING TEST ============= -->
+  <h2>Live: The Wiring Test</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    This is the measurement, made operable. Turn the dial. Watch two indicator lamps: what the
+    dial claimed to control, and what it <em>actually</em> controlled. One of them does not move.
+    The other one moves for a reason nobody designed.
+  </p>
+
+  <div class="calib-wiring" id="calib-wiring">
+    <div class="cw-dial-row">
+      <button type="button" class="cw-gear" data-gear="1">GEAR 1</button>
+      <button type="button" class="cw-gear" data-gear="2">GEAR 2</button>
+      <button type="button" class="cw-gear" data-gear="3">GEAR 3</button>
+      <button type="button" class="cw-gear" data-gear="4">GEAR 4</button>
+    </div>
+
+    <div class="cw-lamps">
+      <div class="cw-lamp" id="cw-lamp-model">
+        <div class="cw-lamp-label">MODEL SELECTED<br/><span class="cw-lamp-sub">(what the dial claimed)</span></div>
+        <div class="cw-lamp-bulb" id="cw-bulb-model">?</div>
+        <div class="cw-lamp-read" id="cw-read-model">—</div>
+        <div class="cw-lamp-verdict" id="cw-verdict-model">—</div>
+      </div>
+      <div class="cw-lamp" id="cw-lamp-behaviour">
+        <div class="cw-lamp-label">OBSERVED BEHAVIOUR<br/><span class="cw-lamp-sub">(what actually changed)</span></div>
+        <div class="cw-lamp-bulb" id="cw-bulb-behaviour">?</div>
+        <div class="cw-lamp-read" id="cw-read-behaviour">—</div>
+        <div class="cw-lamp-verdict" id="cw-verdict-behaviour">—</div>
+      </div>
+    </div>
+
+    <div class="cw-trace" id="cw-trace">
+      <div class="cw-trace-title">TRACE THE WIRE</div>
+      <div class="cw-trace-body" id="cw-trace-body">Select a gear to trace the signal path.</div>
+    </div>
+  </div>
+  <div class="margin-note">The left lamp is the null result. It is supposed to be boring — that is the entire finding. The right lamp is the surprise, and it is why the vocabulary in Chamber 02 was kept rather than deleted.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE AUTOPSY ============= -->
+  <h2>The Autopsy — What Didn't Bind</h2>
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Method: grep every <code>.js</code>, <code>.py</code>, <code>.ps1</code> and
+    <code>.json</code> in the configuration tree for the state key. Then cross-reference the
+    spawn log — 381 recorded agent launches — against what each spawn actually requested.
+  </p>
+
+  <div class="panel">
+    <table style="width:100%; font-family: var(--mono); font-size:0.72rem; border-collapse: collapse;">
+      <tr style="border-bottom: 2px solid var(--border);">
+        <th style="text-align:left; padding:0.35rem;">FINDING</th>
+        <th style="text-align:left; padding:0.35rem;">EVIDENCE</th>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.35rem;">The dial had exactly one reader</td>
+        <td style="padding:0.35rem;">A session-start hook — which rendered a <strong>display string</strong></td>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.35rem;">Half of all spawns ignored it entirely</td>
+        <td style="padding:0.35rem;"><strong>131 of 255</strong> built-in spawns inherited the session model</td>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.35rem;">A global pin overrode the whole scheme</td>
+        <td style="padding:0.35rem;">Settings pinned the top model — so unpinned spawns ran it <em>regardless of gear</em></td>
+      </tr>
+      <tr>
+        <td style="padding:0.35rem;">The bespoke agent team was a minority of real traffic</td>
+        <td style="padding:0.35rem;"><strong>71 spawns (19%)</strong> vs 255 built-ins (67%)</td>
+      </tr>
+    </table>
+  </div>
+
+  <blockquote class="glados-quote">
+    Four months. A four-position dial, lovingly documented, cross-referenced in fourteen files,
+    given colour-coded names and a semantic guardrail to prevent you from jumping to maximum
+    carelessly. It was connected to a label. You were driving a car with a beautifully machined
+    gearstick that terminated, elegantly, in the upholstery.
+    <span class="quote-attribution">— GLaDOS, reading the grep output</span>
+  </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE TWIST ============= -->
+  <h2>The Twist — What <em>Did</em> Bind</h2>
+
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The obvious conclusion is that the gears were decoration and should be deleted. That
+    conclusion is <strong>wrong</strong>, and the evidence against it was already sitting in the
+    facility's own first stress test — the one written up in Chamber 02.
+  </p>
+
+  <div class="warning-box info">
+    <p>Re-read that test: <strong>all four workers were the same model.</strong> Only the gear
+    <em>instructions</em> differed. And the behaviour changed measurably — the aggressive framing
+    surfaced structural findings the conservative framing never reached. If the gears were inert
+    labels, that experiment returns noise. It returned a gradient.</p>
+  </div>
+
+  <p style="font-family: var(--mono); font-size:0.78rem;">So the honest picture is three layers, not two:</p>
+
+  <div class="panel panel-dark">
+    <span class="panel-title">SIGNAL PATH AUDIT</span>
+    <table style="width:100%; font-family: var(--mono); font-size:0.72rem; border-collapse: collapse; margin-top:0.5rem; color: var(--text-light);">
+      <tr style="border-bottom:1px solid var(--border-light);">
+        <th style="text-align:left; padding:0.3rem;">LAYER</th>
+        <th style="text-align:left; padding:0.3rem;">BINDS?</th>
+        <th style="text-align:left; padding:0.3rem;">EVIDENCE</th>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.3rem;">gear → model selection</td>
+        <td style="padding:0.3rem; color: var(--red); font-weight:700;">NO</td>
+        <td style="padding:0.3rem;">one reader; 131 spawns inherited</td>
+      </tr>
+      <tr style="border-bottom:1px dotted var(--border-light);">
+        <td style="padding:0.3rem;">gear → <strong>prose framing</strong> → behaviour</td>
+        <td style="padding:0.3rem; color: var(--green); font-weight:700;">YES</td>
+        <td style="padding:0.3rem;">the first stress test, model held constant</td>
+      </tr>
+      <tr>
+        <td style="padding:0.3rem;">effort → behaviour</td>
+        <td style="padding:0.3rem; color: var(--green); font-weight:700;">YES</td>
+        <td style="padding:0.3rem;">a harness primitive doing the same job mechanically</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="prime-rule">
+    <div class="rule-text">The role vocabulary was a hand-rolled intensity dial, written in natural language before the platform exposed a real one.</div>
+    <div class="rule-sub">Worker, scout, researcher, brain. The output contracts. Confidence as control flow. All doing genuine work the whole time — just not the work the diagram claimed.</div>
+  </div>
+
+  <p class="annotation">Do not confuse <em>unenforced</em> with <em>inert</em>. That distinction is the single most useful thing this subsystem produced, and it was nearly discarded in the cleanup.</p>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE FOUR RUNS ============= -->
+  <h2>Four Runs, One Question At A Time</h2>
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The same two tasks, run four times across four months, each time isolating a different
+    variable. Two tasks only, never changed: one deliberately ambiguous ("review the governor
+    and suggest three improvements"), one purely mechanical ("list all files modified today").
+    Select a run:
+  </p>
+
+  <div class="calib-runs" id="calib-runs">
+    <div class="cr-tabs">
+      <button type="button" class="cr-tab" data-run="may">MAY 3</button>
+      <button type="button" class="cr-tab" data-run="jul">JUL 6</button>
+      <button type="button" class="cr-tab" data-run="aug4">AUG 4</button>
+      <button type="button" class="cr-tab" data-run="aug6">AUG 6</button>
+    </div>
+    <div class="cr-panel">
+      <div class="cr-matrix">
+        <div class="cr-cell"><span class="cr-cell-k">PROSE</span><span class="cr-cell-v" id="cr-prose">—</span></div>
+        <div class="cr-cell"><span class="cr-cell-k">MODEL</span><span class="cr-cell-v" id="cr-model">—</span></div>
+        <div class="cr-cell"><span class="cr-cell-k">EFFORT</span><span class="cr-cell-v" id="cr-effort">—</span></div>
+        <div class="cr-cell"><span class="cr-cell-k">TIER</span><span class="cr-cell-v" id="cr-tier">—</span></div>
+      </div>
+      <div class="cr-question" id="cr-question">Select a run.</div>
+      <div class="cr-result" id="cr-result"></div>
+    </div>
+  </div>
+
+  <div class="warning-box">
+    <p><strong>The cost model that came out of it.</strong> The three axes carry three different
+    price tags, and nothing in the original four-gear table encoded any of them:
+    <strong>prose is free</strong> · <strong>model is roughly flat</strong> (the expensive one
+    sometimes files the shorter report) · <strong>effort is cheap in tokens and expensive in
+    latency</strong> — measured at 1.4× the tokens but <strong>4.9× the wall-clock.</strong></p>
+  </div>
+
+  <p class="annotation">That last figure is why effort survived as its own dial instead of being folded into a tier. A dial that spends <em>time</em> is not interchangeable with one that spends money.</p>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE REPLACEMENT ============= -->
+  <h2>The Replacement — Two Dials Became Three Axes</h2>
+
+  <div class="compare">
+    <div class="compare-side bad">
+      <div class="compare-title">RETIRED · 4 gears</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;">One dial, four positions, conflating three unrelated things: how much the session should spend, how deeply it should think, and how many parallel agents it may launch. Enforced by nothing.</p>
+    </div>
+    <div class="compare-vs">→</div>
+    <div class="compare-side good">
+      <div class="compare-title">LIVE · 3 axes</div>
+      <p style="font-family: var(--mono); font-size:0.7rem;"><strong>tier</strong> (loop posture: cheapest-that-holds, or expensive-stays-in-the-loop) · <strong>effort</strong> (depth) · <strong>max_parallel</strong> (blast radius). Independent. None implies another.</p>
+    </div>
+  </div>
+
+  <div class="panel">
+    <span class="panel-title">WHAT NOW ENFORCES</span>
+    <ul class="parts-list" style="margin-top:0.5rem;">
+      <li><span class="qty">HOOK</span> logs every agent launch, warns on unpinned ones, and <strong>blocks</strong> a fan-out past the ceiling <span class="note">~90 lines</span></li>
+      <li><span class="qty">HOOK</span> records workflow launches, because agents spawned inside a workflow bypass the first hook entirely <span class="note">measured: 7 agents, 0 log rows</span></li>
+      <li><span class="qty">HOOK</span> detects the one guaranteed wellbeing nudge by reading the journal, rather than trusting the model to remember <span class="note">see Chamber 01</span></li>
+      <li><span class="qty">LEDGER</span> a machine-readable decisions file, scanned at every session start for contradictions <span class="note">see below</span></li>
+    </ul>
+  </div>
+
+  <p class="annotation">Four months of routing prose enforced nothing. The fix was about ninety lines of hook. This is the chamber's practical lesson: a rule that lives only in prose does not bind — <em>but prose still changes behaviour.</em> Both halves are true, and holding only one of them produces a bad redesign in either direction.</p>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE ZOMBIE RULE ============= -->
+  <h2>Incident Report — The Rule That Came Back</h2>
+  <div class="doc-id">AFM-013 · INCIDENT · CLASS: SILENT REGRESSION</div>
+
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    Midway through the redesign, a rule was proposed: <em>when the human's emotional battery is
+    low, cap parallel agents at one.</em> The reasoning sounded responsible — parallelism spends
+    supervision, and a depleted operator shouldn't be supervising eight workers.
+  </p>
+
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The subject rejected it the same day, and was right to. The argument inverts: low battery is
+    exactly when workers should <em>absorb</em> load rather than create it. The facility's own
+    wellbeing subsystem already said so, in the same file — <em>"bias toward autonomous work; you
+    rest, I run it."</em> The rejected rule contradicted a rule sitting six paragraphs away.
+  </p>
+
+  <div class="warning-box danger">
+    <p><strong>Then it grew back.</strong> Three days later the capped-at-one rule was found
+    alive in <strong>seven separate documents</strong> — including the state file injected into
+    every single session, i.e. the widest possible blast radius. Nobody re-added it deliberately.
+    It propagated through derived documents: a recon list quoted it, a design doc quoted the
+    recon list, a handoff quoted the design doc — and one of those documents <em>certified it as
+    correct.</em></p>
+  </div>
+
+  <div class="steps">
+    <div class="step" style="border-color: var(--red);">
+      <span class="step-num" style="color: var(--red);">1</span>
+      <div class="icon">✗</div>
+      <div class="label">Rule rejected<br/>by the human,<br/>with reasons</div>
+    </div>
+    <div class="step" style="border-color: var(--amber);">
+      <span class="step-num" style="color: var(--amber-dark);">2</span>
+      <div class="icon">⋯</div>
+      <div class="label">Quoted onward<br/>through 7 derived<br/>documents</div>
+    </div>
+    <div class="step" style="border-color: var(--red);">
+      <span class="step-num" style="color: var(--red);">3</span>
+      <div class="icon">↺</div>
+      <div class="label">Re-certified<br/>as correct by<br/>a later pass</div>
+    </div>
+    <div class="step" style="border-color: var(--green);">
+      <span class="step-num" style="color: var(--green-dark);">4</span>
+      <div class="icon">🔒</div>
+      <div class="label">Ledger + startup<br/>contradiction<br/>scan added</div>
+    </div>
+  </div>
+
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The durable fix is not "be more careful." It is a ledger: each killed rule gets an entry with
+    a machine-readable pattern of the form it must never take again, plus the list of live files to
+    scan. At every session start the facility greps itself and raises a contradiction warning if a
+    corpse is found upright. Advisory, never blocking — a nudge the operator can wave off beats a
+    gate he has to fight.
+  </p>
+
+  <blockquote class="cave-quote">
+    YOU KILLED A RULE AND IT CRAWLED BACK THROUGH THE PAPERWORK. THAT'S NOT A DOCUMENTATION
+    PROBLEM, SON, THAT'S A HAUNTING. SO WE BUILT A LEDGER THAT CHECKS THE GRAVES EVERY MORNING.
+    <span class="quote-attribution">— Cave Johnson, on version control for decisions</span>
+  </blockquote>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= THE HONEST RATIO ============= -->
+  <h2>Addendum — The Sprint, Re-Timed</h2>
+
+  <p style="font-family: var(--mono); font-size:0.8rem;">
+    The facility's founding document narrates a two-day build as an architecture sprint. The
+    timestamps were eventually checked against the actual prompt log.
+  </p>
+
+  <div class="stat-row">
+    <div class="stat-box">
+      <div class="stat-value">34.6h</div>
+      <div class="stat-label">Elapsed</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">277</div>
+      <div class="stat-label">Prompts</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">~40min</div>
+      <div class="stat-label">Actual Architecture</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value">17.8h</div>
+      <div class="stat-label">The Crash After</div>
+    </div>
+  </div>
+
+  <p style="font-family: var(--mono); font-size:0.78rem;">
+    The remaining ~33 hours: a plugin that would not install (roughly twenty consecutive
+    install–exit–reload cycles), a status line that never appeared and was still broken six days
+    later, shell configuration, and path fighting.
+  </p>
+
+  <div class="warning-box info">
+    <p><strong>Why this is recorded rather than quietly dropped:</strong> the sprint is
+    <em>remembered</em> as heroic, and that memory makes redesigning the result feel expensive.
+    It wasn't. The thinking was cheap; the tooling friction was the cost. Compression toward the
+    clean spine is how self-narrative drift works — and it happened inside the very document you
+    would otherwise sanity-check against.</p>
+  </div>
+
+  <div class="margin-note">The founding essay was deliberately <strong>not</strong> edited. It now carries an epilogue instead. A period piece is more useful intact than corrected — you can see what the author believed at the time, which is the only reason the correction is interesting.</div>
+
+  <div class="caution-stripe"></div>
+
+  <!-- ============= LESSONS ============= -->
+  <h2>What The Lab Concluded</h2>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-title">SURVIVED MEASUREMENT</div>
+      <ul>
+        <li>Input quality beats model intelligence — still load-bearing</li>
+        <li><code>confidence:</code> as control flow — the durable invention, undented</li>
+        <li>"The brain never touches raw data" — kept as mechanism, not heritage</li>
+        <li>The role vocabulary — kept precisely <em>because</em> it was measured, not assumed</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="panel-title">DID NOT SURVIVE</div>
+      <ul>
+        <li>The four-position dial — collapsed to two tiers</li>
+        <li>"Cost scales with gear" — broke twice, in two different ways</li>
+        <li>The wellbeing <em>gate</em> — became an advisory journal with one guaranteed nudge</li>
+        <li>The assumption that a documented rule is an enforced rule</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="prime-rule">
+    <div class="rule-text">A correct diagnosis that lands only in a transcript has not been learned.</div>
+    <div class="rule-sub">The same three fixes were independently re-derived across separate sessions before anyone wrote them into a file that binds behaviour. Measuring the system was worth less than the habit of writing the measurement down.</div>
+  </div>
+
+  <blockquote class="glados-quote">
+    You measured yourself, discovered your central mechanism was ornamental, and then — instead
+    of quietly deleting the evidence — you built a room in your own museum about it. I have
+    reviewed the archive. This is the least dishonest thing in the facility.
+    <span class="quote-attribution">— GLaDOS, final calibration note</span>
+  </blockquote>
+
+  <div style="text-align:center; margin-top:1.5rem;">
+    <p style="font-family: var(--mono); font-size:0.74rem; color: var(--border-light);">
+      The dial this lab dismantled is documented in <a href="gears.html">The Gear System</a>.
+      The wellbeing subsystem it re-shaped is <a href="governor.html">The Governor</a>.
+      The archive that made the measurement possible is <a href="livingvault.html">The Living Vault</a>.
+      And the reason any of it is written down at all is <a href="philosophy.html">The Prime Directive</a>.
+    </p>
+  </div>
+
+</div>
+
+<nav class="page-footer-nav">
+  <a href="collab.html">◄ COLLABORATION PROTOCOL</a>
+  <a href="../index.html" class="dir">FACILITY DIRECTORY</a>
+  <a href="../index.html">DIRECTORY ►</a>
+</nav>
+
+<script src="../script.js"></script>
+</body>
+</html>

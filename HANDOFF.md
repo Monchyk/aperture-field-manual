@@ -249,6 +249,53 @@ headless checks can't confirm accordions expand, canvases animate, or mobile lay
 ---
 
 ## 10. Quick status line for the next session
+
+> **⚠ THIS FILE'S §2 TABLE IS STALE — read this block first.** Since it was written, the facility
+> was completed (Graveyard 07, Hardware 09, Collab 12 all built — commit `1e2444f`) and then a
+> **13th chamber was appended: `pages/calibration.html` — The Calibration Lab** (2026-08-06).
+> **13/13 live, nothing sealed.**
+>
+> **Chamber 13 is the meta-chamber and the only one whose subject is the facility itself.** It
+> documents the measured finding that the four-gear routing dial in Chamber 02 was **never
+> connected to model selection** (one code reader; it rendered a display string; 131/255 spawns
+> inherited the session model anyway) — *but* that the gear **prose** did bind, proven by the
+> May-3 stress test with the model held constant. Also: the four-run stress series
+> (May 3 prose / Jul 6 prose+model / Aug 4 effort / Aug 6 tier), the collapse of 4 gears into 3
+> independent axes (tier · effort · max_parallel), the incident where a rule the subject had
+> explicitly killed **regrew across 7 documents** and got re-certified, and the honest re-timing
+> of the founding sprint (34.6h elapsed, ~40min of actual architecture).
+>
+> **Two new interactives**, both in `script.js`, gated + wired into `initPages()` per §3:
+> - `#calib-wiring` → `initCalibWiring()` — the **wiring test**. Four gear buttons; the left lamp
+>   ("MODEL SELECTED") is *deliberately identical every time* — that null result IS the finding —
+>   while the right lamp ("OBSERVED BEHAVIOUR") genuinely varies. Shift 4× for a closing line.
+>   **Do not "fix" the left lamp's non-responsiveness. It is the point of the page.**
+> - `#calib-runs` → `initCalibRuns()` — the **four-run selector**; tabs swap a varied/held matrix,
+>   the question that run answered, and the recorded verdict.
+> - New CSS lives in a `CHAMBER 13 — THE CALIBRATION LAB` block at the end of `style.css`
+>   (`.calib-wiring`/`.cw-*`, `.calib-runs`/`.cr-*`).
+>
+> **Two existing chambers were corrected in the same pass** (both had gone factually stale):
+> - `gears.html` — now carries a **SUPERSEDED banner** at the top and a full **retirement-notice
+>   epilogue** at the bottom. The original body is left *exactly* as written, deliberately: it is a
+>   period piece, and what it got wrong is the evidence. Do not retro-edit it.
+> - `governor.html` — the **battery gate is retired**. R3's accordion, the GLaDOS "test postponed"
+>   quote (kept, but re-labelled as a historical transcript with a correction box), and the "five
+>   rules are physical gates" line all now reflect: advisory mood-journal, never an execution lock,
+>   with exactly one guaranteed-to-be-*said* nudge (emotional ≤2 two days running).
+>
+> Cross-links done per §4: index card 13 added + a revised Facility Log addendum; `collab.html`
+> nav-next and footer-next repointed to Calibration (the chain must not skip). Philosophy's radial
+> has 12 nodes by design and was left alone — 13 is an appendix, not part of the original twelve.
+>
+> Verification suite (§9) run and clean: `node --check` OK · 0 tag mismatches · 0 broken links ·
+> gate/init cross-check OK · privacy scan clean (no names/PII introduced).
+>
+> **Next candidates:** nothing is sealed, so future work is depth not breadth — e.g. the §7 audit
+> items still open (GLaDOS fatigue, convergence-footer repetition, diagram density on the older
+> chambers), or a mobile pass on the two new interactives (headless checks can't confirm layout).
+
+### Earlier status lines (pre-Chamber-13)
 > **9/12 chambers live**, all cross-linked. **The Point of Origin minigame is DONE** (see
 > `HANDOFF-point-of-origin.md`) — six hidden Stargate-style chevrons (`.origin-chevron[data-chevron]`)
 > tucked into governor/gears/workshop/emotionhue/letssavefood/livingvault (each carries a

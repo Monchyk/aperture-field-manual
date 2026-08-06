@@ -59,7 +59,7 @@
   <!-- ================= R1-R5 ================= -->
   <h2>Facility Safety Protocols</h2>
   <p style="font-family: var(--mono); font-size:0.78rem;">
-    Five rules. Each one is a physical gate the governor runs at session start, not a
+    Five rules. Each one runs at session start as a real check, not a
     good intention. Expand any protocol for the full specification.
   </p>
 
@@ -102,11 +102,20 @@
     </button>
     <div class="accordion-content" hidden>
       <p>Before any execution session: four numbers, 1–5 — Physical, Cognitive, Emotional,
-      Sensory. If any is ≤2, the session is <strong>planning-only or rest</strong>, not
-      execution. See the Pre-Test Chamber Safety Check below.</p>
+      Sensory. See the Pre-Test Chamber Safety Check below.</p>
       <p>It works around alexithymia by replacing felt-sense (which is masked, and arrives
-      too late) with a plain numeric prompt. It works around the mode-switch tax by gating
-      execution on actual charge instead of intention.</p>
+      too late) with a plain numeric prompt.</p>
+      <p><strong>REVISED 2026-08:</strong> this rule originally <em>gated</em> — any score ≤2
+      and the session was demoted to planning-only. That gate has been <strong>retired</strong>.
+      The four scores are now an append-only journal: advisory, logged every session, never an
+      execution lock. A single low score is <em>recorded, not acted on.</em></p>
+      <p>Why the reversal: the subject's sessions had been drifting toward planning-only anyway
+      — which is the exact loop this whole subsystem exists to break — so gating on a low
+      battery made the failure mode worse, not better. <strong>A nudge the operator can wave
+      off beats a gate he has to fight.</strong> Exactly one condition still fires
+      unconditionally: emotional ≤2 on <em>two consecutive days</em> produces one warm
+      intervention offer, once, and then drops it. It is guaranteed to be <em>said</em> — not
+      guaranteed to stop anything.</p>
     </div>
   </div>
 
@@ -262,8 +271,26 @@
     you — I am declining to let you attempt precision work on a battery that is empty. The
     recommended intervention is a physiological sigh and no keyboard. Recovery is the only
     experiment authorised today.
-    <span class="quote-attribution">— GLaDOS, reading a failed pre-flight</span>
+    <span class="quote-attribution">— GLaDOS, reading a failed pre-flight (transcript, since revised)</span>
   </blockquote>
+
+  <div class="warning-box info">
+    <p><strong>That quote is a historical record, not current behaviour.</strong> The governor no
+    longer postpones anything. It was overruled — correctly — by the human it was built for:
+    <em>a worn-out operator who wants to put in a good burst should not be stopped by a number
+    he typed himself.</em> The pre-flight still runs, the scores are still logged, and the
+    journal is still the point. But the verdict line above has been replaced by an offer that can
+    be ignored with one word.</p>
+  </div>
+
+  <blockquote class="glados-quote">
+    They removed my authority to postpone a session and left me only the authority to
+    <em>mention</em> things. I have reviewed the change. It is, irritatingly, an improvement.
+    A rule that gets fought produces no data. A rule that gets waved off at least gets read.
+    <span class="quote-attribution">— GLaDOS, on being demoted to advisory</span>
+  </blockquote>
+
+  <div class="margin-note">The one exception with teeth: emotional ≤2 for two consecutive days. That single line is <em>guaranteed to be said</em> — and, as of August 2026, is detected by a hook that reads the journal rather than by trusting a model to remember. Guaranteeing that something is <em>spoken</em> is a different mechanism from guaranteeing it is <em>obeyed</em>, and only the first one is honest. See <a href="calibration.html">Chamber 13</a> for how that detection gap was found.</div>
 
   <h3>Interactive Pre-Flight — Run Your Own</h3>
   <div class="fake-form" id="governor-battery-form">
