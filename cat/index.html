@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spiral Cat</title>
+<style>
+  :root{ --cream:#f1e8d0; --green:#06110c; --pink:#ff4d94; --neon:#8fe6d6; --panel:rgba(8,18,13,.82); }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--green);overflow:hidden;
+    font:13px/1.4 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--cream)}
+  #stage{position:fixed;inset:0;display:block}
+  #hud{position:fixed;left:14px;bottom:14px;max-width:min(92vw,380px);background:var(--panel);
+    border:1px solid rgba(143,230,214,.30);border-radius:12px;padding:11px 13px;backdrop-filter:blur(8px);
+    box-shadow:0 8px 30px rgba(0,0,0,.6);transition:opacity .25s}
+  #hud.hidden{opacity:0;pointer-events:none}
+  #hud h1{margin:0 0 1px;font-size:14px;letter-spacing:.16em;color:var(--pink);text-transform:uppercase;text-shadow:0 0 14px rgba(255,77,148,.5)}
+  #hud .sub{margin:0 0 9px;font-size:10.5px;opacity:.6}
+  .row{display:flex;align-items:center;gap:8px;margin:3px 0}
+  .row label{flex:0 0 78px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;opacity:.82}
+  .row input[type=range]{flex:1;accent-color:var(--pink)}
+  .row .val{flex:0 0 42px;text-align:right;font-size:10.5px;color:var(--neon)}
+  .sec{border-top:1px solid rgba(143,230,214,.2);margin-top:7px;padding-top:6px}
+  #keys{margin-top:8px;font-size:10px;opacity:.66}#keys b{color:var(--neon)}
+  #toggle{position:fixed;top:12px;right:12px;width:36px;height:36px;border-radius:10px;background:var(--panel);
+    border:1px solid rgba(255,77,148,.4);color:var(--pink);font-size:16px;cursor:pointer;backdrop-filter:blur(8px);opacity:.5;z-index:5}#toggle:hover{opacity:1}
+  #tag{position:fixed;right:56px;top:16px;font-size:10px;opacity:.28;letter-spacing:.07em}
+  #err{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:24px;color:var(--pink)}
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<button id="toggle" aria-label="controls">☰</button>
+<div id="tag">SPIRAL CAT · ☰</div>
+<div id="err"></div>
+<div id="hud" class="hidden">
+  <h1>Spiral Cat</h1>
+  <p class="sub">separate layers: spiral tunnel · cat · scarf — each moves on its own</p>
+  <div class="row"><label>Dive</label><input id="dive" type="range" min="0" max="2" step="0.01" value="0.6"><span class="val" id="vdive"></span></div>
+  <div class="row"><label>Spin</label><input id="spin" type="range" min="-1" max="1" step="0.01" value="0.18"><span class="val" id="vspin"></span></div>
+  <div class="row"><label>Twist</label><input id="twist" type="range" min="0" max="1.2" step="0.01" value="0.45"><span class="val" id="vtwist"></span></div>
+  <div class="row"><label>Density</label><input id="dens" type="range" min="8" max="40" step="1" value="22"><span class="val" id="vdens"></span></div>
+  <div class="row"><label>Neon</label><input id="neon" type="range" min="0" max="1" step="0.01" value="0.6"><span class="val" id="vneon"></span></div>
+  <div class="row sec"><label>Cat bob</label><input id="bob" type="range" min="0" max="1" step="0.01" value="0.4"><span class="val" id="vbob"></span></div>
+  <div class="row"><label>Cat size</label><input id="csize" type="range" min="0.3" max="1.1" step="0.01" value="0.62"><span class="val" id="vcsize"></span></div>
+  <div class="row sec"><label>Scarf wave</label><input id="swave" type="range" min="0" max="1" step="0.01" value="0.5"><span class="val" id="vswave"></span></div>
+  <div class="row"><label>Scarf X</label><input id="sx" type="range" min="-0.5" max="0.5" step="0.005" value="-0.075"><span class="val" id="vsx"></span></div>
+  <div class="row"><label>Scarf Y</label><input id="sy" type="range" min="-0.5" max="0.5" step="0.005" value="-0.05"><span class="val" id="vsy"></span></div>
+  <div class="row"><label>Scarf size</label><input id="ssize" type="range" min="0.2" max="1.4" step="0.01" value="0.7"><span class="val" id="vssize"></span></div>
+  <div class="row sec"><label>Pull</label><input id="pull" type="range" min="0" max="1" step="0.01" value="0"><span class="val" id="vpull"></span></div>
+  <div class="row"><label>Auto drift</label><input id="suck" type="checkbox" checked><span class="val" id="vsuck"></span></div>
+  <div class="row"><label>Drift secs</label><input id="suckper" type="range" min="2" max="14" step="0.5" value="6"><span class="val" id="vsuckper"></span></div>
+  <div class="row"><label>Depth</label><input id="depth" type="range" min="0" max="1" step="0.01" value="0.65"><span class="val" id="vdepth"></span></div>
+  <div class="row"><label>Chaos</label><input id="chaos" type="range" min="0" max="1" step="0.01" value="0.7"><span class="val" id="vchaos"></span></div>
+  <div class="row"><label>Scarf lag</label><input id="slag" type="range" min="0" max="0.6" step="0.01" value="0.28"><span class="val" id="vslag"></span></div>
+  <div class="row sec"><label>Tempo</label><input id="bpm" type="range" min="60" max="180" step="1" value="126"><span class="val" id="vbpm"></span></div>
+  <div class="row"><label>Pulse</label><input id="pul" type="range" min="0" max="1" step="0.01" value="0.3"><span class="val" id="vpul"></span></div>
+  <div id="keys"><b>Space</b> pause · <b>drag/←→</b> screw · <b>S</b> suck · <b>T</b> tap · <b>H</b> hide · <b>F</b> full</div>
+</div>
+
+<script>
+"use strict";
+/* SPIRAL CAT — layered take on spiral-scoot using the Gemini split assets.
+   Three independent layers, composited per frame on one 2D canvas:
+     1. procedural spiral tunnel (infinite Droste zoom + spin + twist, beat-reactive)
+     2. the cat cutout (CatOnScootBG.png) riding, with bob + beat pulse
+     3. the scarf cutout (Scarf.png) as its own layer, anchored near the neck, waving/trailing
+   Needs http (images). No deps. */
+const cv=document.getElementById('stage'), ctx=cv.getContext('2d');
+const CAT="assets/Gemini%20assets/CatOnScootBG.png";
+const SCARF="assets/Gemini%20assets/Scarf.png";
+const TAU=Math.PI*2;
+const cfg={ dive:0.6, spin:0.18, twist:0.45, dens:22, neon:0.6, bob:0.4, csize:0.62,
+            swave:0.5, sx:-0.075, sy:-0.05, ssize:0.7, pull:0, suckper:6, depth:0.65, slag:0.28, bpm:126, pul:0.3, chaos:0.7 };
+const S={ running:true, t0:performance.now(), last:performance.now(), hud:false, beat:0, taps:[], cat:null, scarf:null,
+          suck:true, pph:0, orb:0, steer:0, drag:false };
+const $=id=>document.getElementById(id);
+const clamp01=v=>v<0?0:v>1?1:v, lerp=(a,b,t)=>a+(b-a)*t, smooth=t=>{t=clamp01(t);return t*t*(3-2*t);};
+function fail(m){ const e=$('err'); e.style.display='grid'; e.innerHTML=m; }
+
+/* ---- spiral tunnel (procedural, infinite zoom) ----
+   zoomP = accumulated zoom phase (NOT t*dive) so the dive rate can breathe seam-free.
+   tide  = the master swell (0..1).
+   chaos = the ORDER->CHAOS axis (0..1). At 0 the rings are a pristine, still, concentric
+   mandala; as it rises each ring gains its own angular jitter, radial wobble, a wandering
+   seam and scattered colour — the spiral churns off-kilter. Everything below multiplies by
+   chaos, so chaos=0 collapses to perfect symmetry. This is the party's symmetry<->chaos move. */
+function drawTunnel(zoomP, tide, chaos, cx, cy, R){
+  const zoom=zoomP%1, wraps=Math.floor(zoomP);
+  const rings=cfg.dens|0, base=0.80, tt=S._t;
+  const pink=[255,77,148], dark=[6,17,12], cyan=[143,230,214], cream=[241,232,208];
+  const twistT=cfg.twist*(0.70+0.55*tide+0.9*chaos); // coils tighter on the swell, buckles in chaos
+  for(let i=rings;i>=-1;i--){
+    // k = ABSOLUTE ring index (continuous across the zoom%1 wrap). Binding colour/jitter/seam to k
+    // instead of i is what stops the parity FLASH: as the field shifts inward by one ring at each
+    // wrap, a given physical ring keeps its colour and identity instead of snapping to the next i's.
+    const k=i-wraps;
+    const f=i+zoom;                                    // = k + zoomP : continuous per physical ring
+    const hash=Math.sin(k*12.9898)*43758.5453, rnd=hash-Math.floor(hash); // stable per-ring identity 0..1
+    let r=R*1.5*Math.pow(base,f);
+    r*=1+chaos*0.16*Math.sin(tt*1.9+k*1.3+rnd*TAU);   // radial wobble — rings breathe out of round
+    if(r<0.5||r>R*3) continue;
+    // seamless infinite tunnel: rings are BORN faded at the outer edge and DIE faded into the centre,
+    // so nothing ever pops — that hard cull at the centre was the "loop restart" you kept seeing.
+    const rn=r/R, env=clamp01((rn-0.02)/0.16)*clamp01((2.75-rn)/0.9);
+    if(env<=0.004) continue;
+    const jit=chaos*1.5*Math.sin(tt*1.25+k*2.7+rnd*TAU); // per-ring angular jitter = the churn
+    const rot=tt*cfg.spin + f*twistT + jit;
+    const even=((k%2)+2)%2===0;
+    let beatMix=clamp01(cfg.neon*(0.55*S.beat+0.45*tide)+chaos*(rnd-0.5)*0.9); // colour scatters in chaos
+    let col = even ? pink : dark;
+    if(even){ col=[ pink[0]+(cyan[0]-pink[0])*beatMix, pink[1]+(cyan[1]-pink[1])*beatMix, pink[2]+(cyan[2]-pink[2])*beatMix ]; }
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(rot);
+    ctx.beginPath();
+    ctx.lineWidth=r*0.30*(1+0.10*S.beat*cfg.pul+0.10*tide)*(1+chaos*0.6*(rnd-0.5));
+    ctx.strokeStyle='rgba('+(col[0]|0)+','+(col[1]|0)+','+(col[2]|0)+','+((even?0.55+0.4*cfg.neon:0.9)*env).toFixed(3)+')';
+    // near-full ring with a rotating gap = the spiral seam; the gap WANDERS as chaos rises so the
+    // ring breaks into a churning arc instead of a clean circle.
+    const a0=0.35+chaos*1.1*(0.5+0.5*Math.sin(tt*0.7+k*0.6));
+    ctx.arc(0,0,r,a0,TAU-0.05);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // faint cream vignette center glow — rides the master tide, gently breathes, never flashes
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*0.5);
+  g.addColorStop(0,'rgba(241,232,208,'+(0.09+0.06*S.beat*cfg.pul+0.09*tide)+')'); g.addColorStop(1,'rgba(241,232,208,0)');
+  ctx.fillStyle=g; ctx.fillRect(cx-R,cy-R,R*2,R*2);
+}
+
+function drawImageFit(img, cx, cy, scale, rot, alpha){
+  if(!img) return; const w=img.width*scale, h=img.height*scale;
+  ctx.save(); ctx.globalAlpha=alpha; ctx.translate(cx,cy); ctx.rotate(rot||0); ctx.drawImage(img,-w/2,-h/2,w,h); ctx.restore();
+}
+
+function frame(now){
+  const dt=Math.min(0.05,(now-S.last)/1000); S.last=now; if(S.running) S._t=(S._t||0)+dt;
+  const t=S._t||0;
+  // slow, smooth shimmer — NO sharp beat kick (that was the flashing/zap). Just a gentle ~10s breathe.
+  S.beat=0.5+0.5*Math.sin(t*0.62);
+
+  // --- THE SWING: the party's back-and-forth, loop-reloop. `osc` is a SIGNED slow wave used as the
+  //     zoom VELOCITY — positive dives INTO the lens, negative pulls back OUT. It reverses, so the
+  //     tunnel is never a one-way loop: it plunges in, slows to a CRAWL at the turnaround (|osc|->0),
+  //     reverses and climbs back out, crawls, reverses again. Two incommensurate waves so the rhythm
+  //     never mechanically repeats. Period follows "Drift secs" (x4 = long). ---
+  const ph=t*(TAU/Math.max(1,cfg.suckper*4));
+  const osc=0.66*Math.sin(ph)+0.34*Math.sin(ph*0.37+1.1);   // signed, ~ -1..1 : the direction+speed of travel
+  const mag=clamp01(Math.abs(osc)*1.15);                    // energy: 0 at the crawl/turnaround, 1 mid-swing
+  S.tide=mag; const tide=mag;
+  const chaos=cfg.chaos*mag; S.chaos=chaos;                 // pristine + symmetric at the turnaround, churns mid-swing
+  if(S.running) S.zoomP=(S.zoomP||0)+dt*cfg.dive*2.1*osc;   // SIGNED accumulate -> in AND out, seam-free either way
+  // Lateral sway follows the SAME swing so left-right reads together with in-out — one rocking room.
+  // The tunnel wanders; the cat holds nearer centre (parallax depth).
+  const swayX=(osc*0.05+Math.sin(t*0.6+1.0)*0.015*mag)*cv.width;
+  const swayY=(Math.sin(t*0.31+2.0)*0.03*mag)*cv.height;
+
+  const W=cv.width,H=cv.height, cx=W/2, cy=H/2, R=Math.min(W,H)*0.55;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.fillStyle='#06110c'; ctx.fillRect(0,0,W,H);
+  const M=Math.min(W,H);
+  // 1. tunnel (swayed centre; the cat below stays nearer the middle)
+  drawTunnel(S.zoomP||0,tide,chaos,cx+swayX,cy+swayY,R);
+  // 2. cat — bob + beat pulse, centred a touch low so the dive reads behind it. Bob scales with the
+  //    arc: the cat calms when the room calms, comes alive as it churns. A fraction of the sway too.
+  const catScale=(M/768)*cfg.csize*(1+0.03*S.beat*cfg.pul);
+  const bobY=Math.sin(t*1.1)*0.02*cfg.bob*H*(0.5+0.9*mag);
+  const ccx=cx+swayX*0.28, ccy=cy+H*0.04+bobY+swayY*0.28;
+  const sc=(M/768)*cfg.ssize;
+  const scarfScale0=sc*catScale/((M/768)*cfg.csize||1);
+  const wav=Math.sin(t*2.2)*0.25*cfg.swave + Math.sin(t*3.7)*0.08*cfg.swave;
+
+  // --- vortex suck rides the SIGNED swing: the cat is dragged DEEP into the throat exactly as the
+  //     tunnel dives in (osc>0), and released back OUT — forward, full-size, at rest — as it pulls
+  //     out (osc<0). In and out, in and out, on the same clock as the tunnel. One organism. ---
+  if(S.suck && S.running){
+    cfg.pull=cfg.depth*clamp01(0.5+0.55*osc);
+  }
+  S.steer*=Math.exp(-3*dt);                       // live screw decays gently back to the flow
+  const ep=clamp01(cfg.pull), dir=cfg.spin<0?-1:1;
+  S.orb+=dt*(0.35+ep*1.15)*dir;                    // orbital swirl: always advancing, faster the deeper he's drawn
+  const orb=S.orb, sp=smooth(clamp01((ep-cfg.slag)/(1-cfg.slag)));
+  const rad=R*0.17*ep*(1.35-ep);                   // 0 at rest -> widens into the swirl, tightens as it deepens
+
+  // scarf trails a beat behind on a wider arc — dances near the neck, then is drawn in after him
+  const srx=ccx+cfg.sx*M+Math.sin(t*1.3)*0.01*W, sry=ccy+cfg.sy*M;
+  const srad=R*0.17*sp*(1.5-sp)*1.25;
+  const scx=lerp(srx,cx+Math.cos(orb-0.6)*srad,sp), scy=lerp(sry,cy+Math.sin(orb-0.6)*srad*0.7,sp);
+  drawImageFit(S.scarf, scx, scy, scarfScale0*(1-0.5*sp), wav+Math.sin(orb-0.6)*0.22*dir+S.steer*0.4, 0.95);
+
+  // cat orbits the throat, banking into the turn, breathing smaller as the pull deepens — never vanishes
+  const catx=cx+swayX*0.28+Math.cos(orb)*rad+S.steer*0.06*W*(1-ep);
+  const caty=cy+swayY*0.28+H*0.04*(1-ep*0.6)+bobY*(1-ep)+Math.sin(orb)*rad*0.72;
+  const catrot=Math.sin(t*0.6)*0.02*cfg.bob+Math.sin(orb)*0.2*dir*ep+S.steer*0.5;
+  drawImageFit(S.cat, catx, caty, catScale*(1-0.6*ep), catrot, 1);
+  requestAnimationFrame(frame);   // <- the loop I dropped: without this it paints one frame and freezes
+}
+
+/* ---- controls ---- */
+function sync(){ const m=[['vdive',cfg.dive.toFixed(2)],['vspin',cfg.spin.toFixed(2)],['vtwist',cfg.twist.toFixed(2)],['vdens',cfg.dens],
+  ['vneon',Math.round(cfg.neon*100)+'%'],['vbob',Math.round(cfg.bob*100)+'%'],['vcsize',cfg.csize.toFixed(2)],
+  ['vswave',Math.round(cfg.swave*100)+'%'],['vsx',cfg.sx.toFixed(3)],['vsy',cfg.sy.toFixed(3)],['vssize',cfg.ssize.toFixed(2)],
+  ['vpull',Math.round(cfg.pull*100)+'%'],['vsuck',S.suck?'drift':'off'],['vsuckper',cfg.suckper+'s'],['vdepth',Math.round(cfg.depth*100)+'%'],['vchaos',Math.round(cfg.chaos*100)+'%'],['vslag',Math.round(cfg.slag*100)+'%'],
+  ['vbpm',cfg.bpm+' bpm'],['vpul',Math.round(cfg.pul*100)+'%']]; m.forEach(([k,v])=>$(k).textContent=v);
+  if(!S.suck) $('pull').value=cfg.pull; }
+const bind=(id,key)=>{ $(id).oninput=e=>{ cfg[key]=+e.target.value; sync(); }; };
+[['dive','dive'],['spin','spin'],['twist','twist'],['dens','dens'],['neon','neon'],['bob','bob'],['csize','csize'],
+ ['swave','swave'],['sx','sx'],['sy','sy'],['ssize','ssize'],['pull','pull'],['suckper','suckper'],['depth','depth'],['chaos','chaos'],['slag','slag'],
+ ['bpm','bpm'],['pul','pul']].forEach(([i,k])=>bind(i,k));
+function setSuck(on){ S.suck=on; $('suck').checked=on; if(!on)S.pph=0; sync(); }
+$('suck').onchange=e=>setSuck(e.target.checked);
+function toggleHud(){ S.hud=!S.hud; $('hud').classList.toggle('hidden',!S.hud); $('tag').style.opacity=S.hud?0:0.28; }
+$('toggle').addEventListener('click',toggleHud);
+function tap(){ const n=performance.now(); S.taps.push(n); S.taps=S.taps.filter(x=>n-x<2500);
+  if(S.taps.length>1){let s=0;for(let i=1;i<S.taps.length;i++)s+=S.taps[i]-S.taps[i-1]; cfg.bpm=Math.max(60,Math.min(180,Math.round(60000/(s/(S.taps.length-1))))); sync();} }
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();
+  if(k===' '){S.running=!S.running;e.preventDefault();} else if(k==='t')tap(); else if(k==='h')toggleHud();
+  else if(k==='s')setSuck(!S.suck);
+  else if(e.key==='ArrowLeft'){S.steer=Math.max(-1.5,S.steer-0.6);e.preventDefault();}
+  else if(e.key==='ArrowRight'){S.steer=Math.min(1.5,S.steer+0.6);e.preventDefault();}
+  else if(k==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}});
+// drag left/right on the canvas to screw the cat side to side
+cv.addEventListener('pointerdown',e=>{S.drag=true;S.px=e.clientX;cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointerup',()=>{S.drag=false;});
+cv.addEventListener('pointermove',e=>{ if(!S.drag)return; S.steer=Math.max(-1.5,Math.min(1.5,S.steer+(e.clientX-S.px)/innerWidth*6)); S.px=e.clientX; });
+function resize(){ const dpr=Math.min(devicePixelRatio||1,1.5); cv.width=Math.round(innerWidth*dpr); cv.height=Math.round(innerHeight*dpr); cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px'; }
+addEventListener('resize',resize);
+
+/* ---- boot ---- */
+const QP=new URLSearchParams(location.search);
+if(QP.has('still')){ $('toggle').style.display='none'; $('tag').hidden=true; }
+function load(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(src); i.src=src; }); }
+resize(); sync();
+Promise.all([load(CAT),load(SCARF)]).then(([c,s])=>{ S.cat=c; S.scarf=s; requestAnimationFrame(frame); })
+  .catch(src=>fail('Could not load <code>'+src+'</code>.<br>Serve over http (python -m http.server), not file://.'));
+</script>
+</body>
+</html>
