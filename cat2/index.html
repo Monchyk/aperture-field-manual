@@ -81,7 +81,7 @@
   <div class="row"><label>Beams</label><input id="beams" type="range" min="1" max="8" step="1" value="1"><span class="val" id="vbeams"></span></div>
   <div class="row"><label>Sweep</label><input id="sweep" type="range" min="0" max="1" step="0.01" value="0.15"><span class="val" id="vsweep"></span></div>
   <div class="row"><label>Detail</label><input id="rings" type="range" min="2" max="12" step="0.5" value="5"><span class="val" id="vrings"></span></div>
-  <div class="row"><label>Spiral bound</label><input id="bound" type="range" min="0.1" max="0.55" step="0.01" value="0.26"><span class="val" id="vbound"></span></div>
+  <div class="row"><label>Spiral bound</label><input id="bound" type="range" min="0.02" max="0.55" step="0.01" value="0.26"><span class="val" id="vbound"></span></div>
   <div class="row"><label>Spin</label><input id="spin" type="range" min="-0.4" max="0.4" step="0.005" value="0"><span class="val" id="vspin"></span></div>
   <div class="row"><label>Zoom</label><input id="zoom" type="range" min="1.1" max="2.6" step="0.01" value="1.2"><span class="val" id="vzoom"></span></div>
   <div class="row"><label>Cam dive</label><input id="dive" type="range" min="0" max="1.2" step="0.01" value="0"><span class="val" id="vdive"></span></div>
@@ -161,13 +161,13 @@ void main(){
   if(u_btexOn>0.5){ vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5)); bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb; }
   vec3 beamCol=bc*beam*0.5;                            // dim: the spiral sits BEHIND the glass, subtle
   float sd=length((gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y));
-  float beamBound=1.0-smoothstep(u_bound, u_bound+0.16, sd); // BOUNDING BOX: spiral contained to inner ~half, slight bleed
+  float beamBound=1.0-smoothstep(u_bound, u_bound+0.05, sd); // BOUNDING BOX: spiral held to the centre core, tight edge (breathing space)
   beamCol*=beamBound;
 
   // ---- MOSAIC = front stained glass: own lamp light + BACKLIT by the beam shining through the tile.
   vec3 tile=base*(u_ambient + bright*u_glow);
   tile += base*bright*bright*0.35;                    // lamp bloom
-  tile += base*beam*0.10*beamBound;                   // faint bounded hint through the inner glass
+  tile += base*beam*0.05*beamBound;                   // very faint hint; keeps the spiral off the mosaic (breathing space)
   float gr=mix(hash21(floor(uv*820.0)), hash21(floor(uv*160.0)), 0.5)-0.5;
   if(u_gtexOn>0.5) gr=texture2D(u_gtex, gl_FragCoord.xy/200.0).r-0.5;
   tile*=1.0 + u_grain*gr*1.7;
@@ -238,13 +238,10 @@ function frame(now){
   if(S.running) S.beamZ += dt*ebb*2.0*S.dir;                     // beam scroll = velocity integral (crawls at ebb->0)
 
   // SCREENSAVER: cycle idle-bob -> spin-up -> suck into vortex -> void -> reform (drives cat + zoom)
-  if(S.auto){
-    const CY=18, tp=(t)%CY, sm=u=>u*u*(3-2*u);
-    if(tp<6){ cfg.suck=0; cfg.catspin=0.12; cfg.zoom=1.0; }
-    else if(tp<9){ const u=(tp-6)/3; cfg.suck=0; cfg.catspin=0.12+u*3.2; cfg.zoom=1.0+u*0.15; }
-    else if(tp<12){ const u=sm((tp-9)/3); cfg.suck=u; cfg.catspin=3.3; cfg.zoom=1.15+u*0.65; }
-    else if(tp<14){ cfg.suck=1; cfg.catspin=3.3; cfg.zoom=1.8; }
-    else { const u=sm((tp-14)/4); cfg.suck=1-u; cfg.catspin=3.3-u*3.18; cfg.zoom=1.8-u*0.8; }
+  if(S.auto){                                          // gentle idle: cat gently sucked+spiralling, mosaic zoom breathes
+    cfg.suck    = 0.32 + 0.24*Math.sin(t*0.22);
+    cfg.catspin = -0.6;
+    cfg.zoom    = 1.12 + 0.16*Math.sin(t*0.16);
   }
   if(S.ready){
     // per-tile brightness -> LUT
@@ -276,7 +273,10 @@ function frame(now){
     gl.uniform1f(U.u_zoom,cfg.zoom); gl.uniform1f(U.u_dive,cfg.dive);
     gl.uniform1f(U.u_ebb,ebb); gl.uniform1f(U.u_lutw,LUT_W); gl.uniform1f(U.u_cov,cfg.cov);
     gl.uniform1f(U.u_grain, S.grainOn?cfg.grain:0); gl.uniform1f(U.u_beamZ,S.beamZ);
-    const effBeams=1.0+(cfg.beams-1.0)*0.5*(1.0+Math.sin(t*0.35));            // beams sweep 1..cfg.beams
+    const _seg=Math.floor(t*0.6), _r=Math.sin(_seg*127.1+11.3)*43758.5, _rr=_r-Math.floor(_r);
+    const _bt=1.0+Math.round(_rr*Math.max(0.0,cfg.beams-1.0));                 // RANDOM 1..cfg.beams (~every 1.7s)
+    S.beamCur=(S.beamCur||1)+(_bt-(S.beamCur||1))*Math.min(1,dt*4);            // smooth toward the random target
+    const effBeams=S.beamCur;
     const effRings=cfg.rings + cfg.suck*1.5 + Math.max(0.0,cfg.zoom-1.2)*1.5; // detail deepens gently when sucked/zoomed in
     gl.uniform1f(U.u_beams,effBeams); gl.uniform1f(U.u_sweep,cfg.sweep); gl.uniform1f(U.u_rings,effRings);
     gl.uniform1f(U.u_bound,cfg.bound);
@@ -364,13 +364,14 @@ if(gl && location.protocol!=='file:'){
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
   if(_set==='glass'){   // K.'s tuned defaults (2026-09-15) — the cat2 landing look
-    Object.assign(cfg,{ ambient:0.45, glow:1.0, grain:0.45, ebbper:8, speed:0.4,
+    Object.assign(cfg,{ ambient:0.45, glow:1.0, grain:0.45, ebbper:8, speed:0.25,
       len:64, reach:95, bias:92, spin:0, zoom:1.12, dive:0, bob:0.86, catspin:-0.50, suck:0 });
     if(!QP.has('cov'))   cfg.cov=0.79;
-    if(!QP.has('beams')) cfg.beams=5;      // beams sweep 1..5
+    if(!QP.has('beams')) cfg.beams=5;      // beams randomly vary 1..5
     if(!QP.has('rings')) cfg.rings=4;
     if(!QP.has('sweep')) cfg.sweep=0.53;
-    S.radarOn=true;                        // radar on; screensaver OFF on landing (calm) — toggle Auto for the dive
+    if(!QP.has('bound')) cfg.bound=0.20;   // tight centre core, breathing space before the mosaic
+    S.radarOn=true; setAuto(true);         // radar + gentle idle (cat sucked/spiralling, mosaic zoom breathes)
     ['ambient','glow','grain','ebbper','speed','len','reach','bias','spin','zoom','dive','bob','catspin','suck','cov','beams','rings','sweep','bound']
       .forEach(k=>{const e=$(k); if(e)e.value=cfg[k];});
     { const r=document.querySelector('.sw[data-t="radar"]'); if(r) r.classList.add('on'); }
