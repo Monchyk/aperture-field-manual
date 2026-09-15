@@ -81,7 +81,7 @@
   <div class="row"><label>Sweep</label><input id="sweep" type="range" min="0" max="1" step="0.01" value="0.15"><span class="val" id="vsweep"></span></div>
   <div class="row"><label>Detail</label><input id="rings" type="range" min="2" max="12" step="0.5" value="5"><span class="val" id="vrings"></span></div>
   <div class="row"><label>Spin</label><input id="spin" type="range" min="-0.4" max="0.4" step="0.005" value="0"><span class="val" id="vspin"></span></div>
-  <div class="row"><label>Zoom</label><input id="zoom" type="range" min="0.4" max="2.2" step="0.01" value="1.00"><span class="val" id="vzoom"></span></div>
+  <div class="row"><label>Zoom</label><input id="zoom" type="range" min="1.1" max="2.6" step="0.01" value="1.2"><span class="val" id="vzoom"></span></div>
   <div class="row"><label>Cam dive</label><input id="dive" type="range" min="0" max="1.2" step="0.01" value="0"><span class="val" id="vdive"></span></div>
   <div class="grp">Cat (centre)</div>
   <div class="row"><label>Bob</label><input id="bob" type="range" min="0" max="1" step="0.02" value="0.4"><span class="val" id="vbob"></span></div>
@@ -103,7 +103,7 @@
    tile), pink lights pink / green lights green, dark tiles stay dark. Serve over http. No deps. */
 const cv=document.getElementById('stage');
 const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
-const _set=(location.search.match(/[?&]set=(\w+)/)||[])[1] || 'glass';  // deployed: default glass
+const _set=(location.search.match(/[?&]set=(\w+)/)||[])[1] || 'glass';
 const BASE="assets/spiral/"+(_set==='glass'?'generated_glass':'generated')+"/";  // ?set=glass
 const TAU=Math.PI*2, LUT_W=256;
 const $=id=>document.getElementById(id);
@@ -111,7 +111,7 @@ function fail(m){ const e=$('err'); e.style.display='grid'; e.innerHTML=m; }
 if(!gl) fail('WebGL not available.');
 if(location.protocol==='file:') fail('Open over <b>http</b>, not file://.<br>Run <code>python -m http.server 8000</code> then <code>http://localhost:8000/spiral-tiles.html</code>.');
 
-const cfg={ len:14, reach:95, bias:85, ebbper:8, glow:1.5, ambient:0.16, spin:0, zoom:1.00, dive:0, cov:1, grain:0.35,
+const cfg={ len:14, reach:95, bias:85, ebbper:8, glow:1.5, ambient:0.16, spin:0, zoom:1.2, dive:0, cov:1, grain:0.35,
             bob:0.4, catspin:0.12, suck:0, beams:1, sweep:0.15, rings:5 };
 const S={ running:true, last:performance.now(), t:0, dir:1, hud:false, ready:false, auto:false, catrot:0, beamZ:0, btexOn:false, gtexOn:false, snakeOn:true, radarOn:false, grainOn:true,
           tiles:null, ord:null, isDark:null, maxOrd:1, lut:new Uint8Array(LUT_W*4) };
@@ -126,11 +126,11 @@ float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return 
 void main(){
   vec2 p=(gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y);
   float sp=u_spin*u_spinT; float cs=cos(sp),sn=sin(sp); p=mat2(cs,-sn,sn,cs)*p;
-  float zoom=u_zoom*pow(2.0, u_dive*u_ebb*0.5);
+  float zoom=max(u_zoom*pow(2.0, u_dive*u_ebb*0.5), 1.12);   // floor: never zoom out past mosaic fill (kills the square)
   vec2 uv=p/max(zoom,0.05)+0.5;
-  if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){ gl_FragColor=vec4(0.024,0.066,0.047,1.0); return; }
-  vec3 base=texture2D(u_flat, uv).rgb;
-  vec4 idc=texture2D(u_id, uv);
+  vec2 cuv=clamp(uv,0.0,1.0);                                // sample clamped -> corners = bg, no hard square edge
+  vec3 base=texture2D(u_flat, cuv).rgb;
+  vec4 idc=texture2D(u_id, cuv);
   float bright=0.0;
   if(idc.b>0.19){                                   // not the white 'none' sentinel
     float id=floor(idc.r*255.0+0.5)+floor(idc.g*255.0+0.5)*256.0;
