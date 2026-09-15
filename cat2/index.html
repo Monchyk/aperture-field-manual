@@ -83,7 +83,7 @@
   <div class="row"><label>Detail</label><input id="rings" type="range" min="2" max="12" step="0.5" value="5"><span class="val" id="vrings"></span></div>
   <div class="row"><label>Spiral bound</label><input id="bound" type="range" min="0.02" max="0.55" step="0.01" value="0.26"><span class="val" id="vbound"></span></div>
   <div class="row"><label>Spin</label><input id="spin" type="range" min="-0.4" max="0.4" step="0.005" value="0"><span class="val" id="vspin"></span></div>
-  <div class="row"><label>Zoom</label><input id="zoom" type="range" min="1.1" max="2.6" step="0.01" value="1.2"><span class="val" id="vzoom"></span></div>
+  <div class="row"><label>Zoom</label><input id="zoom" type="range" min="0.9" max="2.6" step="0.01" value="1.0"><span class="val" id="vzoom"></span></div>
   <div class="row"><label>Cam dive</label><input id="dive" type="range" min="0" max="1.2" step="0.01" value="0"><span class="val" id="vdive"></span></div>
   <div class="grp">Cat (centre)</div>
   <div class="row"><label>Bob</label><input id="bob" type="range" min="0" max="1" step="0.02" value="0.4"><span class="val" id="vbob"></span></div>
@@ -105,7 +105,7 @@
    tile), pink lights pink / green lights green, dark tiles stay dark. Serve over http. No deps. */
 const cv=document.getElementById('stage');
 const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
-const _set=(location.search.match(/[?&]set=(\w+)/)||[])[1] || 'glass';
+const _set=(location.search.match(/[?&]set=(\w+)/)||[])[1];
 const BASE="assets/spiral/"+(_set==='glass'?'generated_glass':'generated')+"/";  // ?set=glass
 const TAU=Math.PI*2, LUT_W=256;
 const $=id=>document.getElementById(id);
@@ -128,7 +128,7 @@ float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return 
 void main(){
   vec2 p=(gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y);
   float sp=u_spin*u_spinT; float cs=cos(sp),sn=sin(sp); p=mat2(cs,-sn,sn,cs)*p;
-  float zoom=max(u_zoom*pow(2.0, u_dive*u_ebb*0.5), 1.12);   // floor: never zoom out past mosaic fill (kills the square)
+  float zoom=max(u_zoom*pow(2.0, u_dive*u_ebb*0.9), 1.12);   // cam-dive zooms IN hard; floor keeps the fill (no square)
   vec2 uv=p/max(zoom,0.05)+0.5;
   vec2 cuv=clamp(uv,0.0,1.0);                                // sample clamped -> corners = bg, no hard square edge
   vec3 base=texture2D(u_flat, cuv).rgb;
@@ -238,10 +238,9 @@ function frame(now){
   if(S.running) S.beamZ += dt*ebb*2.0*S.dir;                     // beam scroll = velocity integral (crawls at ebb->0)
 
   // SCREENSAVER: cycle idle-bob -> spin-up -> suck into vortex -> void -> reform (drives cat + zoom)
-  if(S.auto){                                          // gentle idle: cat gently sucked+spiralling, mosaic zoom breathes
-    cfg.suck    = 0.32 + 0.24*Math.sin(t*0.22);
-    cfg.catspin = -0.6;
-    cfg.zoom    = 1.12 + 0.16*Math.sin(t*0.16);
+  if(S.auto){                                          // gentle idle: cat sucked + spiralling (zoom handled by Cam dive)
+    cfg.suck    = 0.45 + 0.20*Math.sin(t*0.22);
+    cfg.catspin = -0.60;
   }
   if(S.ready){
     // per-tile brightness -> LUT
@@ -363,20 +362,19 @@ if(gl && location.protocol!=='file:'){
     fetch('assets/spiral/textures/manifest.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(fill)
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
-  if(_set==='glass'){   // K.'s tuned defaults (2026-09-15) — the cat2 landing look
-    Object.assign(cfg,{ ambient:0.45, glow:1.0, grain:0.45, ebbper:8, speed:0.25,
-      len:64, reach:95, bias:92, spin:0, zoom:1.12, dive:0, bob:0.86, catspin:-0.50, suck:0 });
-    if(!QP.has('cov'))   cfg.cov=0.79;
-    if(!QP.has('beams')) cfg.beams=5;      // beams randomly vary 1..5
-    if(!QP.has('rings')) cfg.rings=4;
-    if(!QP.has('sweep')) cfg.sweep=0.53;
-    if(!QP.has('bound')) cfg.bound=0.20;   // tight centre core, breathing space before the mosaic
-    S.radarOn=true; setAuto(true);         // radar + gentle idle (cat sucked/spiralling, mosaic zoom breathes)
+  {   // K.'s EXACT tuned defaults (D8bWZffm2X.png) — applied to BOTH presets; radar off, procedural, mosaic auto-spins
+    Object.assign(cfg,{ ambient:0.16, glow:1.50, grain:0.35, ebbper:8, speed:0.45,
+      len:14, reach:95, bias:85, spin:-0.18, zoom:1.0, dive:0.5, bob:0.40, catspin:-0.60, suck:0.48 });
+    if(!QP.has('cov'))   cfg.cov=0.67;
+    if(!QP.has('beams')) cfg.beams=2;
+    if(!QP.has('rings')) cfg.rings=2.5;
+    if(!QP.has('sweep')) cfg.sweep=0.12;
+    if(!QP.has('bound')) cfg.bound=0.11;
+    S.radarOn=false; S.btexOn=false; S.gtexOn=false;   // radar off, procedural beam/grain
+    setAuto(true);
     ['ambient','glow','grain','ebbper','speed','len','reach','bias','spin','zoom','dive','bob','catspin','suck','cov','beams','rings','sweep','bound']
       .forEach(k=>{const e=$(k); if(e)e.value=cfg[k];});
-    { const r=document.querySelector('.sw[data-t="radar"]'); if(r) r.classList.add('on'); }
-    S.pendBtex='tex_frost_lav_s555.png'; S.pendGtex='tex_frost_peach_s999.png';   // K.'s textures
-    loadBeamTex(S.pendBtex); loadGrainTex(S.pendGtex);
+    { const r=document.querySelector('.sw[data-t="radar"]'); if(r) r.classList.remove('on'); }
   }
   if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
              catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
