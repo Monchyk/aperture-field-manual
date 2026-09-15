@@ -136,45 +136,40 @@ void main(){
     float id=floor(idc.r*255.0+0.5)+floor(idc.g*255.0+0.5)*256.0;
     bright=texture2D(u_lut, vec2((id+0.5)/u_lutw, 0.5)).r;
   }
-  vec3 col=base*(u_ambient + bright*u_glow);
-  col += base*bright*bright*0.35;                    // bloom on the hot tiles
-  // FROSTED GRAIN: per-pixel imperfection so tiles aren't flat (2 octaves, locked to the glass)
-  float gr=mix(hash21(floor(uv*820.0)), hash21(floor(uv*160.0)), 0.5)-0.5;
-  if(u_gtexOn>0.5) gr=texture2D(u_gtex, gl_FragCoord.xy/200.0).r-0.5;  // real grain overlay, screen-space (consistent px scale)
-  col*=1.0 + u_grain*gr*1.7;
-  // COVERAGE: mosaic only outside a radius; centre stays smooth (cat/spiral layer goes there).
-  // u_cov 0 -> just the outer row is mosaic; 1 -> mosaic fills to the hole.
-  float d=length(uv-0.5);
-  float rInner=mix(0.44,0.05,u_cov);
-  float m=smoothstep(rInner-0.03, rInner+0.03, d);
-  // CENTRE = BEAM-SPIRAL (the klaasm.be/cat mechanic): concentric arcs diving inward, each with a
-  // wandering angular GAP that ALIGNS into one focused beam at the swing's calm (chaos->0) and
-  // SPLITS/churns as chaos rises. chaos = |ebb|. Outer ring = mosaic; Mosaic-amount zooms between.
+  // ---- BEAM = full-frame BACKGROUND. The mosaic is the FRONT glass; the spiral shines THROUGH it.
   vec2 pc=uv-0.5;
-  pc += u_ebb*0.012;                                  // (d) lateral sway rides the signed swing
+  pc += u_ebb*0.012;                                  // lateral sway rides the signed swing
   float rr=max(length(pc),1e-4); float aa=atan(pc.y,pc.x);
   float chaos=abs(u_ebb);                             // 0 at the crawl (aligned), 1 mid-swing (split)
   float rad=log(rr);
-  float f=rad*u_rings - u_beamZ;                       // (a) scroll integral; u_rings = bar count (fewer=bigger/simpler)
+  float f=rad*u_rings - u_beamZ;                       // scroll integral; u_rings = bar count (fewer=simpler)
   float k=floor(f);
-  float rnd=hash21(vec2(k,3.7));                      // (b) stable per-ring identity
-  float rw=1.0 + chaos*0.14*sin(u_spinT*1.9 + k*1.3 + rnd*6.2831);   // radial wobble
+  float rnd=hash21(vec2(k,3.7));                      // stable per-ring identity
+  float rw=1.0 + chaos*0.14*sin(u_spinT*1.9 + k*1.3 + rnd*6.2831);
   float band=abs(fract(f*rw)-0.5)*2.0;
-  float ringMask=1.0-smoothstep(0.5, mix(0.86,0.96,rnd), band);      // per-ring width
-  float jit=chaos*1.4*sin(u_spinT*1.25 + k*2.7 + rnd*6.2831);        // angular jitter = the churn
-  float wander=0.35 + k*0.06 + jit + u_sweep*u_spinT;               // RADAR: gap sweeps around (+helix +churn)
-  float ga=(aa*0.1591549 - wander)*max(u_beams,1.0);                // MULTIPLY the single gap into u_beams beams
+  float ringMask=1.0-smoothstep(0.5, mix(0.86,0.96,rnd), band);
+  float jit=chaos*1.4*sin(u_spinT*1.25 + k*2.7 + rnd*6.2831);
+  float wander=0.35 + k*0.06 + jit + u_sweep*u_spinT;               // RADAR: gap sweeps around
+  float ga=(aa*0.1591549 - wander)*max(u_beams,1.0);               // MULTIPLY into u_beams beams
   float seam=smoothstep(0.0,0.10+0.28*chaos, abs(fract(ga)-0.5));
   float beam=ringMask*mix(0.06,1.0,seam);
   vec3 hot=vec3(0.62,0.95,0.86), alt=vec3(0.95,0.62,0.86);
-  float cf=0.5+0.5*sin(f*0.5 + u_spinT*0.3);                        // smooth pink<->cyan fade (cat1 colours)
+  float cf=0.5+0.5*sin(f*0.5 + u_spinT*0.3);                        // smooth pink<->cyan fade (cat1)
   vec3 bc=mix(hot, alt, cf);
-  if(u_btexOn>0.5){                                    // P2: skin the beam bars with a chosen texture
-    vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5));
-    bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb;
-  }
-  vec3 beamCol=bc*beam*(0.9+0.7*(1.0-chaos));         // brighter & cleaner at the crawl
-  col=mix(beamCol, col, m);                           // inner = beam-spiral, outer = mosaic
+  if(u_btexOn>0.5){ vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5)); bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb; }
+  vec3 beamCol=bc*beam*(0.9+0.7*(1.0-chaos));
+
+  // ---- MOSAIC = front stained glass: own lamp light + BACKLIT by the beam shining through the tile.
+  vec3 tile=base*(u_ambient + bright*u_glow);
+  tile += base*bright*bright*0.35;                    // lamp bloom
+  tile += base*beam*0.85;                             // the spiral glows THROUGH the coloured glass
+  float gr=mix(hash21(floor(uv*820.0)), hash21(floor(uv*160.0)), 0.5)-0.5;
+  if(u_gtexOn>0.5) gr=texture2D(u_gtex, gl_FragCoord.xy/200.0).r-0.5;
+  tile*=1.0 + u_grain*gr*1.7;
+  float lum=max(max(base.r,base.g),base.b);
+  float tileMask=smoothstep(0.06,0.20,lum);           // bright tile vs dark grout/void
+  vec3 mosaic=mix(beamCol, tile, tileMask);           // grout & centre void reveal the spiral behind the glass
+  vec3 col=mix(beamCol, mosaic, u_cov);               // Mosaic amount = how present the glass is over the spiral
   gl_FragColor=vec4(col,1.0);
 }`;
 function sh(t,src){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s);
@@ -360,8 +355,8 @@ if(gl && location.protocol!=='file:'){
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
   if(_set==='glass'){ cfg.ambient=0.55; cfg.glow=1.2; cfg.grain=0.45;   // glass rests visible, snake enhances
-    if(!QP.has('cov')) cfg.cov=0.5; if(!QP.has('rings')) cfg.rings=4;
-    ['ambient','glow','grain','cov','rings'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
+    if(!QP.has('rings')) cfg.rings=4;
+    ['ambient','glow','grain','rings'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
   if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
              catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
   sync();
