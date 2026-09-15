@@ -75,6 +75,10 @@
   <div class="row"><label>Grain</label><input id="grain" type="range" min="0" max="1" step="0.02" value="0.35"><span class="val" id="vgrain"></span></div>
   <div class="row"><label>Beam tex</label><select id="btexsel" style="flex:1;background:rgba(6,17,12,.9);color:var(--cream);border:1px solid rgba(143,230,214,.3);border-radius:6px;font:inherit;font-size:10px;padding:3px"><option value="">none (procedural)</option></select></div>
   <div class="row"><label>Grain tex</label><select id="gtexsel" style="flex:1;background:rgba(6,17,12,.9);color:var(--cream);border:1px solid rgba(143,230,214,.3);border-radius:6px;font:inherit;font-size:10px;padding:3px"><option value="">procedural</option></select></div>
+  <div class="grp">Beam</div>
+  <div class="row"><label>Beams</label><input id="beams" type="range" min="1" max="8" step="1" value="1"><span class="val" id="vbeams"></span></div>
+  <div class="row"><label>Sweep</label><input id="sweep" type="range" min="0" max="1" step="0.01" value="0.15"><span class="val" id="vsweep"></span></div>
+  <div class="row"><label>Detail</label><input id="rings" type="range" min="2" max="12" step="0.5" value="5"><span class="val" id="vrings"></span></div>
   <div class="row"><label>Spin</label><input id="spin" type="range" min="-0.4" max="0.4" step="0.005" value="0"><span class="val" id="vspin"></span></div>
   <div class="row"><label>Zoom</label><input id="zoom" type="range" min="0.4" max="2.2" step="0.01" value="1.00"><span class="val" id="vzoom"></span></div>
   <div class="row"><label>Cam dive</label><input id="dive" type="range" min="0" max="1.2" step="0.01" value="0"><span class="val" id="vdive"></span></div>
@@ -107,7 +111,7 @@ if(!gl) fail('WebGL not available.');
 if(location.protocol==='file:') fail('Open over <b>http</b>, not file://.<br>Run <code>python -m http.server 8000</code> then <code>http://localhost:8000/spiral-tiles.html</code>.');
 
 const cfg={ len:14, reach:95, bias:85, ebbper:8, glow:1.5, ambient:0.16, spin:0, zoom:1.00, dive:0, cov:1, grain:0.35,
-            bob:0.4, catspin:0.12, suck:0 };
+            bob:0.4, catspin:0.12, suck:0, beams:1, sweep:0.15, rings:5 };
 const S={ running:true, last:performance.now(), t:0, dir:1, hud:false, ready:false, auto:false, catrot:0, beamZ:0, btexOn:false, gtexOn:false, snakeOn:true, grainOn:true,
           tiles:null, ord:null, isDark:null, maxOrd:1, lut:new Uint8Array(LUT_W*4) };
 const catEl=document.getElementById('cat');
@@ -116,7 +120,7 @@ const catEl=document.getElementById('cat');
 const VS=`attribute vec2 a; void main(){ gl_Position=vec4(a,0.0,1.0); }`;
 const FS=`precision highp float;
 uniform vec2 u_res; uniform sampler2D u_flat, u_id, u_lut, u_btex, u_gtex; uniform float u_btexOn, u_gtexOn;
-uniform float u_ambient,u_glow,u_spin,u_spinT,u_zoom,u_dive,u_ebb,u_lutw,u_cov,u_grain,u_beamZ;
+uniform float u_ambient,u_glow,u_spin,u_spinT,u_zoom,u_dive,u_ebb,u_lutw,u_cov,u_grain,u_beamZ,u_beams,u_sweep,u_rings;
 float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
 void main(){
   vec2 p=(gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y);
@@ -150,18 +154,20 @@ void main(){
   float rr=max(length(pc),1e-4); float aa=atan(pc.y,pc.x);
   float chaos=abs(u_ebb);                             // 0 at the crawl (aligned), 1 mid-swing (split)
   float rad=log(rr);
-  float f=rad*6.0 - u_beamZ;                          // (a) scroll = accumulated osc integral -> CRAWLS at |osc|->0
+  float f=rad*u_rings - u_beamZ;                       // (a) scroll integral; u_rings = bar count (fewer=bigger/simpler)
   float k=floor(f);
   float rnd=hash21(vec2(k,3.7));                      // (b) stable per-ring identity
   float rw=1.0 + chaos*0.14*sin(u_spinT*1.9 + k*1.3 + rnd*6.2831);   // radial wobble
   float band=abs(fract(f*rw)-0.5)*2.0;
   float ringMask=1.0-smoothstep(0.5, mix(0.86,0.96,rnd), band);      // per-ring width
   float jit=chaos*1.4*sin(u_spinT*1.25 + k*2.7 + rnd*6.2831);        // angular jitter = the churn
-  float wander=0.35 + k*0.06 + jit;                  // (c) helical seam (+k*twist), coherent beam at chaos=0
-  float seam=smoothstep(0.0,0.10+0.28*chaos, abs(fract(aa*0.1591549 - wander)-0.5));
+  float wander=0.35 + k*0.06 + jit + u_sweep*u_spinT;               // RADAR: gap sweeps around (+helix +churn)
+  float ga=(aa*0.1591549 - wander)*max(u_beams,1.0);                // MULTIPLY the single gap into u_beams beams
+  float seam=smoothstep(0.0,0.10+0.28*chaos, abs(fract(ga)-0.5));
   float beam=ringMask*mix(0.06,1.0,seam);
   vec3 hot=vec3(0.62,0.95,0.86), alt=vec3(0.95,0.62,0.86);
-  vec3 bc=mix(hot, alt, mod(k,2.0));                  // even/odd colour alternation per ring
+  float cf=0.5+0.5*sin(f*0.5 + u_spinT*0.3);                        // smooth pink<->cyan fade (cat1 colours)
+  vec3 bc=mix(hot, alt, cf);
   if(u_btexOn>0.5){                                    // P2: skin the beam bars with a chosen texture
     vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5));
     bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb;
@@ -181,7 +187,7 @@ function initGL(){
   const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
   const a=gl.getAttribLocation(prog,'a'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
-  ['u_res','u_flat','u_id','u_lut','u_ambient','u_glow','u_spin','u_spinT','u_zoom','u_dive','u_ebb','u_lutw','u_cov','u_grain','u_beamZ','u_btex','u_btexOn','u_gtex','u_gtexOn']
+  ['u_res','u_flat','u_id','u_lut','u_ambient','u_glow','u_spin','u_spinT','u_zoom','u_dive','u_ebb','u_lutw','u_cov','u_grain','u_beamZ','u_beams','u_sweep','u_rings','u_btex','u_btexOn','u_gtex','u_gtexOn']
     .forEach(n=>U[n]=gl.getUniformLocation(prog,n));
 }
 function tex(unit,img,nearest){
@@ -260,6 +266,7 @@ function frame(now){
     gl.uniform1f(U.u_zoom,cfg.zoom); gl.uniform1f(U.u_dive,cfg.dive);
     gl.uniform1f(U.u_ebb,ebb); gl.uniform1f(U.u_lutw,LUT_W); gl.uniform1f(U.u_cov,cfg.cov);
     gl.uniform1f(U.u_grain, S.grainOn?cfg.grain:0); gl.uniform1f(U.u_beamZ,S.beamZ);
+    gl.uniform1f(U.u_beams,cfg.beams); gl.uniform1f(U.u_sweep,cfg.sweep); gl.uniform1f(U.u_rings,cfg.rings);
     gl.uniform1i(U.u_btex,3); gl.uniform1f(U.u_btexOn, S.btexOn?1:0);
     gl.uniform1i(U.u_gtex,4); gl.uniform1f(U.u_gtexOn, S.gtexOn?1:0);
     gl.drawArrays(gl.TRIANGLES,0,3);
@@ -279,11 +286,12 @@ function frame(now){
 function sync(){ [['vlen',cfg.len],['vreach',cfg.reach],['vbias',cfg.bias],['vebbper',cfg.ebbper+'s'],['vcov',Math.round(cfg.cov*100)+'%'],
   ['vglow',cfg.glow.toFixed(2)],['vambient',cfg.ambient.toFixed(2)],['vgrain',Math.round(cfg.grain*100)+'%'],['vspin',cfg.spin.toFixed(2)],
   ['vzoom',cfg.zoom.toFixed(2)],['vdive',cfg.dive.toFixed(2)],['vbob',Math.round(cfg.bob*100)+'%'],
-  ['vcatspin',cfg.catspin.toFixed(2)],['vsuck',Math.round(cfg.suck*100)+'%'],['vauto',S.auto?'on':'off']
+  ['vcatspin',cfg.catspin.toFixed(2)],['vsuck',Math.round(cfg.suck*100)+'%'],['vauto',S.auto?'on':'off'],
+  ['vbeams',cfg.beams],['vsweep',cfg.sweep.toFixed(2)],['vrings',cfg.rings]
   ].forEach(([k,v])=>{const e=$(k);if(e)e.textContent=v;}); }
 const bind=(id,key)=>{ const el=$(id); if(el) el.oninput=e=>{ cfg[key]=+e.target.value; sync(); }; };
 [['len','len'],['reach','reach'],['bias','bias'],['ebbper','ebbper'],['cov','cov'],['glow','glow'],['ambient','ambient'],['grain','grain'],
- ['spin','spin'],['zoom','zoom'],['dive','dive'],['bob','bob'],['catspin','catspin'],['suck','suck']].forEach(([i,k])=>bind(i,k));
+ ['spin','spin'],['zoom','zoom'],['dive','dive'],['bob','bob'],['catspin','catspin'],['suck','suck'],['beams','beams'],['sweep','sweep'],['rings','rings']].forEach(([i,k])=>bind(i,k));
 function setAuto(on){ S.auto=on; const e=$('auto'); if(e)e.checked=on;
   const sw=document.querySelector('.sw[data-t="auto"]'); if(sw) sw.classList.toggle('on',on); sync(); }
 { const e=$('auto'); if(e) e.onchange=ev=>setAuto(ev.target.checked); }
@@ -320,6 +328,8 @@ const QP=new URLSearchParams(location.search);
 if(QP.has('still')){ $('toggle').style.display='none'; $('tag').hidden=true; }
 if(QP.has('tt')){ S.t=parseFloat(QP.get('tt'))||0; S.running=false; }
 if(QP.has('cov')){ cfg.cov=+QP.get('cov'); }
+if(QP.has('beams')){ cfg.beams=+QP.get('beams'); } if(QP.has('sweep')){ cfg.sweep=+QP.get('sweep'); }
+if(QP.has('rings')){ cfg.rings=+QP.get('rings'); }
 function load(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(src); i.src=src; }); }
 // base layer: prefer the SD-skinned render, fall back to the flat authored one (?flat forces flat)
 function loadBase(){ const names = QP.has('flat') ? ['mosaic_flat.png'] : ['mosaic_sd.png','mosaic_flat.png'];
@@ -338,8 +348,8 @@ if(gl && location.protocol!=='file:'){
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
   if(_set==='glass'){ cfg.ambient=0.55; cfg.glow=1.2; cfg.grain=0.45;   // glass rests visible, snake enhances
-    if(!QP.has('cov')) cfg.cov=0.5;                                     // deployed: open SHOWING the beam centre
-    ['ambient','glow','grain','cov'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
+    if(!QP.has('cov')) cfg.cov=0.5; if(!QP.has('rings')) cfg.rings=4;    // deployed: show the beam, keep detail low
+    ['ambient','glow','grain','cov','rings'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
   if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
              catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
   sync();
