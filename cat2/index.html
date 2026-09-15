@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spiral Tiles</title>
+<style>
+  :root{ --cream:#f1e8d0; --green:#06110c; --pink:#ff4d94; --neon:#8fe6d6; --panel:rgba(8,18,13,.82); }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--green);overflow:hidden;
+    font:13px/1.4 ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--cream)}
+  #stage{position:fixed;inset:0;display:block}
+  #hud{position:fixed;left:14px;bottom:14px;max-width:min(92vw,360px);background:var(--panel);
+    border:1px solid rgba(143,230,214,.30);border-radius:12px;padding:11px 13px;backdrop-filter:blur(8px);
+    box-shadow:0 8px 30px rgba(0,0,0,.6);transition:opacity .25s;max-height:88vh;overflow:auto}
+  #hud.hidden{opacity:0;pointer-events:none}
+  #hud h1{margin:0 0 1px;font-size:14px;letter-spacing:.16em;color:var(--pink);text-transform:uppercase;text-shadow:0 0 14px rgba(255,77,148,.5)}
+  #hud .sub{margin:0 0 9px;font-size:10.5px;opacity:.6}
+  .grp{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin:8px 0 2px}
+  .row{display:flex;align-items:center;gap:8px;margin:3px 0}
+  .row label{flex:0 0 92px;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;opacity:.82}
+  .row input[type=range]{flex:1;accent-color:var(--pink)}
+  .row .val{flex:0 0 46px;text-align:right;font-size:10.5px;color:var(--neon)}
+  #keys{margin-top:8px;font-size:10px;opacity:.66}#keys b{color:var(--neon)}
+  #toggle{position:fixed;top:12px;right:12px;width:36px;height:36px;border-radius:10px;background:var(--panel);
+    border:1px solid rgba(255,77,148,.4);color:var(--pink);font-size:16px;cursor:pointer;backdrop-filter:blur(8px);opacity:.5;z-index:5}#toggle:hover{opacity:1}
+  #tag{position:fixed;right:56px;top:16px;font-size:10px;opacity:.28;letter-spacing:.07em}
+  #err{position:fixed;inset:0;display:none;place-items:center;text-align:center;padding:24px;color:var(--pink)}
+  #cat{position:fixed;left:50%;top:50%;width:34vmin;transform:translate(-50%,-50%);transform-origin:center center;
+    pointer-events:none;z-index:2;will-change:transform,opacity;filter:drop-shadow(0 0 18px rgba(143,230,214,.35))}
+  #cat.hide{display:none}
+  #quick{position:fixed;top:0;left:0;right:0;z-index:6;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;
+    padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px));
+    background:linear-gradient(rgba(6,17,12,.94),rgba(6,17,12,.5));backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(143,230,214,.18)}
+  #quick .qs{display:flex;align-items:center;gap:6px;flex:1 1 150px;min-width:130px;max-width:240px}
+  #quick .qs label{opacity:.68;text-transform:uppercase;letter-spacing:.04em;font-size:9px;flex:0 0 auto}
+  #quick .qs input[type=range]{flex:1;accent-color:var(--pink)}
+  #quick .qs .val{flex:0 0 40px;text-align:right;font-size:10px;color:var(--neon)}
+  .sw{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-size:10px;text-transform:uppercase;letter-spacing:.04em;opacity:.85}
+  .sw i{width:30px;height:16px;border-radius:9px;background:rgba(143,230,214,.18);position:relative;transition:.18s;flex:0 0 auto}
+  .sw i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--cream);transition:.18s}
+  .sw.on i{background:var(--pink)} .sw.on i::after{left:16px}
+  button.mini{background:rgba(8,18,13,.6);border:1px solid rgba(143,230,214,.3);color:var(--cream);border-radius:8px;
+    padding:4px 10px;font:inherit;font-size:10px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em}
+  button.mini:hover{border-color:var(--pink);color:var(--pink)}
+</style>
+</head>
+<body>
+<canvas id="stage"></canvas>
+<img id="cat" alt="">
+<button id="toggle" aria-label="controls">☰</button>
+<div id="tag">SPIRAL TILES · ☰</div>
+<div id="quick">
+  <div class="qs"><label>Mosaic</label><input id="cov" type="range" min="0" max="1" step="0.01" value="1"><span class="val" id="vcov"></span></div>
+  <div class="qs"><label>Glow</label><input id="glow" type="range" min="0" max="3" step="0.02" value="1.5"><span class="val" id="vglow"></span></div>
+  <div class="qs"><label>Ebb</label><input id="ebbper" type="range" min="2" max="18" step="0.5" value="8"><span class="val" id="vebbper"></span></div>
+  <label class="sw" data-t="snake"><i></i>Snake</label>
+  <label class="sw" data-t="cat"><i></i>Cat</label>
+  <label class="sw" data-t="auto"><i></i>Auto</label>
+  <label class="sw" data-t="grain"><i></i>Grain</label>
+  <button class="mini" id="presetBtn">Cat</button>
+  <button class="mini" id="dashBtn">⚙ Dash</button>
+</div>
+<div id="err"></div>
+<div id="hud" class="hidden">
+  <h1>Spiral Tiles</h1>
+  <p class="sub">Real authored tiles as lamps. Each brightens in ITS OWN colour; a smooth snake travels the spiral in &amp; back out; dark tiles never light.</p>
+  <div class="grp">Snake</div>
+  <div class="row"><label>Length</label><input id="len" type="range" min="1" max="64" step="1" value="14"><span class="val" id="vlen"></span></div>
+  <div class="row"><label>Reach (depth)</label><input id="reach" type="range" min="0" max="180" step="1" value="95"><span class="val" id="vreach"></span></div>
+  <div class="row"><label>Centre</label><input id="bias" type="range" min="-20" max="200" step="1" value="85"><span class="val" id="vbias"></span></div>
+  <div class="grp">Look</div>
+  <div class="row"><label>Ambient</label><input id="ambient" type="range" min="0" max="0.7" step="0.01" value="0.16"><span class="val" id="vambient"></span></div>
+  <div class="row"><label>Grain</label><input id="grain" type="range" min="0" max="1" step="0.02" value="0.35"><span class="val" id="vgrain"></span></div>
+  <div class="row"><label>Beam tex</label><select id="btexsel" style="flex:1;background:rgba(6,17,12,.9);color:var(--cream);border:1px solid rgba(143,230,214,.3);border-radius:6px;font:inherit;font-size:10px;padding:3px"><option value="">none (procedural)</option></select></div>
+  <div class="row"><label>Grain tex</label><select id="gtexsel" style="flex:1;background:rgba(6,17,12,.9);color:var(--cream);border:1px solid rgba(143,230,214,.3);border-radius:6px;font:inherit;font-size:10px;padding:3px"><option value="">procedural</option></select></div>
+  <div class="row"><label>Spin</label><input id="spin" type="range" min="-0.4" max="0.4" step="0.005" value="0"><span class="val" id="vspin"></span></div>
+  <div class="row"><label>Zoom</label><input id="zoom" type="range" min="0.4" max="2.2" step="0.01" value="1.00"><span class="val" id="vzoom"></span></div>
+  <div class="row"><label>Cam dive</label><input id="dive" type="range" min="0" max="1.2" step="0.01" value="0"><span class="val" id="vdive"></span></div>
+  <div class="grp">Cat (centre)</div>
+  <div class="row"><label>Bob</label><input id="bob" type="range" min="0" max="1" step="0.02" value="0.4"><span class="val" id="vbob"></span></div>
+  <div class="row"><label>Spin</label><input id="catspin" type="range" min="-4" max="4" step="0.05" value="0.12"><span class="val" id="vcatspin"></span></div>
+  <div class="row"><label>Suck in</label><input id="suck" type="range" min="0" max="1" step="0.01" value="0"><span class="val" id="vsuck"></span></div>
+  <div class="row"><label>Screensaver</label><input id="auto" type="checkbox"><span class="val" id="vauto"></span></div>
+  <div id="keys"><b>Space</b> pause · <b>R</b> reverse · <b>A</b> screensaver · <b>C</b> cat · <b>H</b> hide · <b>F</b> full</div>
+</div>
+
+<script>
+"use strict";
+/* SPIRAL TILES — lights the REAL authored tiles (assets/spiral/generated), not a procedural guess.
+   - mosaic_flat.png : each tile painted its own colour (pink/green/dark) on black grout — the base look
+   - mosaic_id.png   : id-map, each pixel encodes which tile it belongs to (R + G*256; white = none)
+   - tiles.json      : per-tile ord (position along the spiral) + colour
+   The engine computes ONE brightness per tile on the CPU (a smooth comet over the spiral order),
+   uploads it as a 1-D lookup texture, and the shader multiplies each tile's own colour by its
+   brightness. So: exact fill (real tile boundaries), no stutter (brightness ramps smoothly per whole
+   tile), pink lights pink / green lights green, dark tiles stay dark. Serve over http. No deps. */
+const cv=document.getElementById('stage');
+const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
+const _set=(location.search.match(/[?&]set=(\w+)/)||[])[1] || 'glass';  // deployed: default glass
+const BASE="assets/spiral/"+(_set==='glass'?'generated_glass':'generated')+"/";  // ?set=glass
+const TAU=Math.PI*2, LUT_W=256;
+const $=id=>document.getElementById(id);
+function fail(m){ const e=$('err'); e.style.display='grid'; e.innerHTML=m; }
+if(!gl) fail('WebGL not available.');
+if(location.protocol==='file:') fail('Open over <b>http</b>, not file://.<br>Run <code>python -m http.server 8000</code> then <code>http://localhost:8000/spiral-tiles.html</code>.');
+
+const cfg={ len:14, reach:95, bias:85, ebbper:8, glow:1.5, ambient:0.16, spin:0, zoom:1.00, dive:0, cov:1, grain:0.35,
+            bob:0.4, catspin:0.12, suck:0 };
+const S={ running:true, last:performance.now(), t:0, dir:1, hud:false, ready:false, auto:false, catrot:0, beamZ:0, btexOn:false, gtexOn:false, snakeOn:true, grainOn:true,
+          tiles:null, ord:null, isDark:null, maxOrd:1, lut:new Uint8Array(LUT_W*4) };
+const catEl=document.getElementById('cat');
+
+/* ---- shader ---- */
+const VS=`attribute vec2 a; void main(){ gl_Position=vec4(a,0.0,1.0); }`;
+const FS=`precision highp float;
+uniform vec2 u_res; uniform sampler2D u_flat, u_id, u_lut, u_btex, u_gtex; uniform float u_btexOn, u_gtexOn;
+uniform float u_ambient,u_glow,u_spin,u_spinT,u_zoom,u_dive,u_ebb,u_lutw,u_cov,u_grain,u_beamZ;
+float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
+void main(){
+  vec2 p=(gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y);
+  float sp=u_spin*u_spinT; float cs=cos(sp),sn=sin(sp); p=mat2(cs,-sn,sn,cs)*p;
+  float zoom=u_zoom*pow(2.0, u_dive*u_ebb*0.5);
+  vec2 uv=p/max(zoom,0.05)+0.5;
+  if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){ gl_FragColor=vec4(0.024,0.066,0.047,1.0); return; }
+  vec3 base=texture2D(u_flat, uv).rgb;
+  vec4 idc=texture2D(u_id, uv);
+  float bright=0.0;
+  if(idc.b>0.19){                                   // not the white 'none' sentinel
+    float id=floor(idc.r*255.0+0.5)+floor(idc.g*255.0+0.5)*256.0;
+    bright=texture2D(u_lut, vec2((id+0.5)/u_lutw, 0.5)).r;
+  }
+  vec3 col=base*(u_ambient + bright*u_glow);
+  col += base*bright*bright*0.35;                    // bloom on the hot tiles
+  // FROSTED GRAIN: per-pixel imperfection so tiles aren't flat (2 octaves, locked to the glass)
+  float gr=mix(hash21(floor(uv*820.0)), hash21(floor(uv*160.0)), 0.5)-0.5;
+  if(u_gtexOn>0.5) gr=texture2D(u_gtex, gl_FragCoord.xy/200.0).r-0.5;  // real grain overlay, screen-space (consistent px scale)
+  col*=1.0 + u_grain*gr*1.7;
+  // COVERAGE: mosaic only outside a radius; centre stays smooth (cat/spiral layer goes there).
+  // u_cov 0 -> just the outer row is mosaic; 1 -> mosaic fills to the hole.
+  float d=length(uv-0.5);
+  float rInner=mix(0.44,0.05,u_cov);
+  float m=smoothstep(rInner-0.03, rInner+0.03, d);
+  // CENTRE = BEAM-SPIRAL (the klaasm.be/cat mechanic): concentric arcs diving inward, each with a
+  // wandering angular GAP that ALIGNS into one focused beam at the swing's calm (chaos->0) and
+  // SPLITS/churns as chaos rises. chaos = |ebb|. Outer ring = mosaic; Mosaic-amount zooms between.
+  vec2 pc=uv-0.5;
+  pc += u_ebb*0.012;                                  // (d) lateral sway rides the signed swing
+  float rr=max(length(pc),1e-4); float aa=atan(pc.y,pc.x);
+  float chaos=abs(u_ebb);                             // 0 at the crawl (aligned), 1 mid-swing (split)
+  float rad=log(rr);
+  float f=rad*6.0 - u_beamZ;                          // (a) scroll = accumulated osc integral -> CRAWLS at |osc|->0
+  float k=floor(f);
+  float rnd=hash21(vec2(k,3.7));                      // (b) stable per-ring identity
+  float rw=1.0 + chaos*0.14*sin(u_spinT*1.9 + k*1.3 + rnd*6.2831);   // radial wobble
+  float band=abs(fract(f*rw)-0.5)*2.0;
+  float ringMask=1.0-smoothstep(0.5, mix(0.86,0.96,rnd), band);      // per-ring width
+  float jit=chaos*1.4*sin(u_spinT*1.25 + k*2.7 + rnd*6.2831);        // angular jitter = the churn
+  float wander=0.35 + k*0.06 + jit;                  // (c) helical seam (+k*twist), coherent beam at chaos=0
+  float seam=smoothstep(0.0,0.10+0.28*chaos, abs(fract(aa*0.1591549 - wander)-0.5));
+  float beam=ringMask*mix(0.06,1.0,seam);
+  vec3 hot=vec3(0.62,0.95,0.86), alt=vec3(0.95,0.62,0.86);
+  vec3 bc=mix(hot, alt, mod(k,2.0));                  // even/odd colour alternation per ring
+  if(u_btexOn>0.5){                                    // P2: skin the beam bars with a chosen texture
+    vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5));
+    bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb;
+  }
+  vec3 beamCol=bc*beam*(0.9+0.7*(1.0-chaos));         // brighter & cleaner at the crawl
+  col=mix(beamCol, col, m);                           // inner = beam-spiral, outer = mosaic
+  gl_FragColor=vec4(col,1.0);
+}`;
+function sh(t,src){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) fail('Shader:<br>'+gl.getShaderInfoLog(s)); return s; }
+let prog,U={};
+function initGL(){
+  prog=gl.createProgram(); gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS)); gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) fail('Link:<br>'+gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+  const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const a=gl.getAttribLocation(prog,'a'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
+  ['u_res','u_flat','u_id','u_lut','u_ambient','u_glow','u_spin','u_spinT','u_zoom','u_dive','u_ebb','u_lutw','u_cov','u_grain','u_beamZ','u_btex','u_btexOn','u_gtex','u_gtexOn']
+    .forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+}
+function tex(unit,img,nearest){
+  const t=gl.createTexture(); gl.activeTexture(gl.TEXTURE0+unit); gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,img);
+  const f=nearest?gl.NEAREST:gl.LINEAR;
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,f); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,f);
+  return t;
+}
+let lutTex;
+function initLut(){ lutTex=gl.createTexture(); gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,lutTex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,LUT_W,1,0,gl.RGBA,gl.UNSIGNED_BYTE,S.lut);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+}
+let btexTex;
+function initBtex(){ btexTex=gl.createTexture(); gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D,btexTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([128,128,128,255]));
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR); }
+function loadBeamTex(name){ if(!name){ S.btexOn=false; return; }
+  const i=new Image(); i.onload=()=>{ gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D,btexTex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,i);
+    S.btexOn=true; }; i.onerror=()=>{S.btexOn=false;}; i.src='assets/spiral/textures/'+name; }
+let gtexTex;
+function initGtex(){ gtexTex=gl.createTexture(); gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D,gtexTex);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,1,1,0,gl.RGBA,gl.UNSIGNED_BYTE,new Uint8Array([128,128,128,255]));
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR); }
+function loadGrainTex(name){ if(!name){ S.gtexOn=false; return; }
+  const i=new Image(); i.onload=()=>{ gl.activeTexture(gl.TEXTURE4); gl.bindTexture(gl.TEXTURE_2D,gtexTex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true); gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,i);
+    S.gtexOn=true; }; i.onerror=()=>{S.gtexOn=false;}; i.src='assets/spiral/textures/'+name; }
+const smoothstep=(e0,e1,x)=>{ const t=Math.min(1,Math.max(0,(x-e0)/(e1-e0))); return t*t*(3-2*t); };
+
+/* ---- loop ---- */
+function frame(now){
+  const dt=Math.min(0.05,(now-S.last)/1000); S.last=now; if(S.running) S.t+=dt;
+  const t=S.t;
+  const ph=t*TAU/Math.max(0.5,cfg.ebbper);
+  const ebb=0.7*Math.sin(ph)+0.3*Math.sin(ph*0.37+1.1);          // signed slow wave, crawls at turnaround
+  const head=cfg.bias + cfg.reach*ebb*S.dir;                     // head position ALONG the spiral order
+  if(S.running) S.beamZ += dt*ebb*2.0*S.dir;                     // beam scroll = velocity integral (crawls at ebb->0)
+
+  // SCREENSAVER: cycle idle-bob -> spin-up -> suck into vortex -> void -> reform (drives cat + zoom)
+  if(S.auto){
+    const CY=18, tp=(t)%CY, sm=u=>u*u*(3-2*u);
+    if(tp<6){ cfg.suck=0; cfg.catspin=0.12; cfg.zoom=1.0; }
+    else if(tp<9){ const u=(tp-6)/3; cfg.suck=0; cfg.catspin=0.12+u*3.2; cfg.zoom=1.0+u*0.15; }
+    else if(tp<12){ const u=sm((tp-9)/3); cfg.suck=u; cfg.catspin=3.3; cfg.zoom=1.15+u*0.65; }
+    else if(tp<14){ cfg.suck=1; cfg.catspin=3.3; cfg.zoom=1.8; }
+    else { const u=sm((tp-14)/4); cfg.suck=1-u; cfg.catspin=3.3-u*3.18; cfg.zoom=1.8-u*0.8; }
+  }
+  if(S.ready){
+    // per-tile brightness -> LUT
+    S.lut.fill(0);
+    const L=Math.max(0.5,cfg.len);
+    if(S.snakeOn) for(let i=0;i<S.tiles.length;i++){
+      if(S.isDark[i]) continue;                                  // dark tiles never light
+      const d=head - S.ord[i];                                   // distance behind the head
+      let b=0;
+      if(d>=0 && d<=L) b=smoothstep(L,0,d);                      // comet: bright head, fading tail
+      const id=S.tiles[i].id;
+      if(b>0) S.lut[id*4]=Math.round(Math.min(1,b)*255);
+    }
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,lutTex);
+    gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,LUT_W,1,gl.RGBA,gl.UNSIGNED_BYTE,S.lut);
+    gl.uniform2f(U.u_res,cv.width,cv.height);
+    gl.uniform1i(U.u_flat,0); gl.uniform1i(U.u_id,1); gl.uniform1i(U.u_lut,2);
+    gl.uniform1f(U.u_ambient,cfg.ambient); gl.uniform1f(U.u_glow,cfg.glow);
+    gl.uniform1f(U.u_spin,cfg.spin); gl.uniform1f(U.u_spinT,t);
+    gl.uniform1f(U.u_zoom,cfg.zoom); gl.uniform1f(U.u_dive,cfg.dive);
+    gl.uniform1f(U.u_ebb,ebb); gl.uniform1f(U.u_lutw,LUT_W); gl.uniform1f(U.u_cov,cfg.cov);
+    gl.uniform1f(U.u_grain, S.grainOn?cfg.grain:0); gl.uniform1f(U.u_beamZ,S.beamZ);
+    gl.uniform1i(U.u_btex,3); gl.uniform1f(U.u_btexOn, S.btexOn?1:0);
+    gl.uniform1i(U.u_gtex,4); gl.uniform1f(U.u_gtexOn, S.gtexOn?1:0);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+  // CAT centre: bob (translate) + spin (own axis) + suck (scale to 0 at the vortex, fade)
+  if(catEl && catEl.dataset.ok){
+    S.catrot += dt*cfg.catspin;
+    const bobY=Math.sin(t*1.1)*cfg.bob*Math.min(innerWidth,innerHeight)*0.03;
+    const suck=cfg.suck, scale=1-0.98*suck, rot=S.catrot + suck*Math.PI*4;
+    catEl.style.transform=`translate(-50%,-50%) translateY(${bobY.toFixed(1)}px) rotate(${rot.toFixed(3)}rad) scale(${scale.toFixed(3)})`;
+    catEl.style.opacity=(1-suck).toFixed(3);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---- controls ---- */
+function sync(){ [['vlen',cfg.len],['vreach',cfg.reach],['vbias',cfg.bias],['vebbper',cfg.ebbper+'s'],['vcov',Math.round(cfg.cov*100)+'%'],
+  ['vglow',cfg.glow.toFixed(2)],['vambient',cfg.ambient.toFixed(2)],['vgrain',Math.round(cfg.grain*100)+'%'],['vspin',cfg.spin.toFixed(2)],
+  ['vzoom',cfg.zoom.toFixed(2)],['vdive',cfg.dive.toFixed(2)],['vbob',Math.round(cfg.bob*100)+'%'],
+  ['vcatspin',cfg.catspin.toFixed(2)],['vsuck',Math.round(cfg.suck*100)+'%'],['vauto',S.auto?'on':'off']
+  ].forEach(([k,v])=>{const e=$(k);if(e)e.textContent=v;}); }
+const bind=(id,key)=>{ const el=$(id); if(el) el.oninput=e=>{ cfg[key]=+e.target.value; sync(); }; };
+[['len','len'],['reach','reach'],['bias','bias'],['ebbper','ebbper'],['cov','cov'],['glow','glow'],['ambient','ambient'],['grain','grain'],
+ ['spin','spin'],['zoom','zoom'],['dive','dive'],['bob','bob'],['catspin','catspin'],['suck','suck']].forEach(([i,k])=>bind(i,k));
+function setAuto(on){ S.auto=on; const e=$('auto'); if(e)e.checked=on;
+  const sw=document.querySelector('.sw[data-t="auto"]'); if(sw) sw.classList.toggle('on',on); sync(); }
+{ const e=$('auto'); if(e) e.onchange=ev=>setAuto(ev.target.checked); }
+// quick-bar dashboard wiring: ⚙ opens the deep panel, toggle switches flip layers, preset reloads set
+{ const d=$('dashBtn'); if(d) d.onclick=toggleHud;
+  const tg=$('toggle'); if(tg) tg.style.display='none';
+  const tag=$('tag'); if(tag) tag.style.display='none';
+  const pb=$('presetBtn'); if(pb){ pb.textContent = _set==='glass'?'Glass ▸ Cat':'Cat ▸ Glass';
+    pb.onclick=()=>{ const u=new URL(location.href); if(_set==='glass') u.searchParams.delete('set'); else u.searchParams.set('set','glass'); location.href=u.toString(); }; }
+  document.querySelectorAll('.sw').forEach(el=>{ const t=el.dataset.t;
+    el.classList.toggle('on', t==='cat'? !catEl.classList.contains('hide') : t==='auto'? S.auto : true);
+    el.onclick=()=>{ const on=!el.classList.contains('on');
+      if(t==='cat') catEl.classList.toggle('hide',!on);
+      else if(t==='snake') S.snakeOn=on;
+      else if(t==='grain') S.grainOn=on;
+      else if(t==='auto'){ setAuto(on); return; }
+      el.classList.toggle('on',on); }; }); }
+function toggleHud(){ S.hud=!S.hud; $('hud').classList.toggle('hidden',!S.hud); $('tag').style.opacity=S.hud?0:0.28; }
+$('toggle').addEventListener('click',toggleHud);
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();
+  if(k===' '){S.running=!S.running;e.preventDefault();}
+  else if(k==='r'){S.dir*=-1;}
+  else if(k==='a'){setAuto(!S.auto);}
+  else if(k==='c'){catEl.classList.toggle('hide');}
+  else if(k==='h')toggleHud();
+  else if(k==='f'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}});
+function resize(){ const dpr=Math.min(devicePixelRatio||1,1.5);
+  cv.width=Math.round(innerWidth*dpr); cv.height=Math.round(innerHeight*dpr);
+  cv.style.width=innerWidth+'px'; cv.style.height=innerHeight+'px'; if(gl) gl.viewport(0,0,cv.width,cv.height); }
+addEventListener('resize',resize);
+
+/* ---- boot ---- */
+const QP=new URLSearchParams(location.search);
+if(QP.has('still')){ $('toggle').style.display='none'; $('tag').hidden=true; }
+if(QP.has('tt')){ S.t=parseFloat(QP.get('tt'))||0; S.running=false; }
+if(QP.has('cov')){ cfg.cov=+QP.get('cov'); }
+function load(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(src); i.src=src; }); }
+// base layer: prefer the SD-skinned render, fall back to the flat authored one (?flat forces flat)
+function loadBase(){ const names = QP.has('flat') ? ['mosaic_flat.png'] : ['mosaic_sd.png','mosaic_flat.png'];
+  return names.reduce((p,n)=> p.catch(()=>load(BASE+n)), Promise.reject('base')); }
+if(gl && location.protocol!=='file:'){
+  initGL(); initLut(); initBtex(); initGtex(); resize();
+  { const bs=$('btexsel'), gs=$('gtexsel');
+    if(bs) bs.onchange=e=>loadBeamTex(e.target.value);
+    if(gs) gs.onchange=e=>loadGrainTex(e.target.value);
+    if(QP.get('btex')) loadBeamTex(QP.get('btex'));
+    if(QP.get('gtex')) loadGrainTex(QP.get('gtex'));
+    const fill=names=>names.forEach(n=>{ if(bs){const o=document.createElement('option');o.value=o.textContent=n;bs.appendChild(o);}
+                                         if(gs){const o=document.createElement('option');o.value=o.textContent=n;gs.appendChild(o);} });
+    // prefer a static manifest (works on GitHub Pages), fall back to the dev-server dir index (local)
+    fetch('assets/spiral/textures/manifest.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(fill)
+      .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
+        fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
+  if(_set==='glass'){ cfg.ambient=0.55; cfg.glow=1.2; cfg.grain=0.45;   // glass rests visible, snake enhances
+    ['ambient','glow','grain'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
+  if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
+             catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
+  sync();
+  Promise.all([ loadBase(), load(BASE+'mosaic_id.png'),
+                fetch(BASE+'tiles.json').then(r=>{ if(!r.ok) throw 'tiles.json'; return r.json(); }) ])
+    .then(([flat,idimg,data])=>{
+      tex(0,flat,false); tex(1,idimg,true);
+      S.tiles=data.tiles;
+      S.ord=new Float32Array(S.tiles.map(t=>t.ord));
+      S.isDark=S.tiles.map(t=>t.color==='dark');
+      S.maxOrd=Math.max.apply(null,S.tiles.map(t=>t.ord));
+      S.ready=true; requestAnimationFrame(frame);
+    })
+    .catch(src=>fail('Could not load <code>'+src+'</code>.<br>Run the generator + serve over http.'));
+}
+</script>
+</body>
+</html>
