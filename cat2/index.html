@@ -81,6 +81,7 @@
   <div class="row"><label>Beams</label><input id="beams" type="range" min="1" max="8" step="1" value="1"><span class="val" id="vbeams"></span></div>
   <div class="row"><label>Sweep</label><input id="sweep" type="range" min="0" max="1" step="0.01" value="0.15"><span class="val" id="vsweep"></span></div>
   <div class="row"><label>Detail</label><input id="rings" type="range" min="2" max="12" step="0.5" value="5"><span class="val" id="vrings"></span></div>
+  <div class="row"><label>Spiral bound</label><input id="bound" type="range" min="0.1" max="0.55" step="0.01" value="0.26"><span class="val" id="vbound"></span></div>
   <div class="row"><label>Spin</label><input id="spin" type="range" min="-0.4" max="0.4" step="0.005" value="0"><span class="val" id="vspin"></span></div>
   <div class="row"><label>Zoom</label><input id="zoom" type="range" min="1.1" max="2.6" step="0.01" value="1.2"><span class="val" id="vzoom"></span></div>
   <div class="row"><label>Cam dive</label><input id="dive" type="range" min="0" max="1.2" step="0.01" value="0"><span class="val" id="vdive"></span></div>
@@ -113,7 +114,7 @@ if(!gl) fail('WebGL not available.');
 if(location.protocol==='file:') fail('Open over <b>http</b>, not file://.<br>Run <code>python -m http.server 8000</code> then <code>http://localhost:8000/spiral-tiles.html</code>.');
 
 const cfg={ len:14, reach:95, bias:85, ebbper:8, glow:1.5, ambient:0.16, spin:0, zoom:1.2, dive:0, cov:1, grain:0.35,
-            bob:0.4, catspin:0.12, suck:0, beams:1, sweep:0.15, rings:5, speed:1 };
+            bob:0.4, catspin:0.12, suck:0, beams:1, sweep:0.15, rings:5, speed:1, bound:0.26 };
 const S={ running:true, last:performance.now(), t:0, dir:1, hud:false, ready:false, auto:false, catrot:0, beamZ:0, btexOn:false, gtexOn:false, snakeOn:true, radarOn:false, grainOn:true,
           tiles:null, ord:null, isDark:null, maxOrd:1, lut:new Uint8Array(LUT_W*4) };
 const catEl=document.getElementById('cat');
@@ -122,7 +123,7 @@ const catEl=document.getElementById('cat');
 const VS=`attribute vec2 a; void main(){ gl_Position=vec4(a,0.0,1.0); }`;
 const FS=`precision highp float;
 uniform vec2 u_res; uniform sampler2D u_flat, u_id, u_lut, u_btex, u_gtex; uniform float u_btexOn, u_gtexOn;
-uniform float u_ambient,u_glow,u_spin,u_spinT,u_zoom,u_dive,u_ebb,u_lutw,u_cov,u_grain,u_beamZ,u_beams,u_sweep,u_rings;
+uniform float u_ambient,u_glow,u_spin,u_spinT,u_zoom,u_dive,u_ebb,u_lutw,u_cov,u_grain,u_beamZ,u_beams,u_sweep,u_rings,u_bound;
 float hash21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
 void main(){
   vec2 p=(gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y);
@@ -159,18 +160,21 @@ void main(){
   vec3 bc=mix(hot, alt, cf);
   if(u_btexOn>0.5){ vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5)); bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb; }
   vec3 beamCol=bc*beam*0.5;                            // dim: the spiral sits BEHIND the glass, subtle
+  float sd=length((gl_FragCoord.xy-0.5*u_res)/min(u_res.x,u_res.y));
+  float beamBound=1.0-smoothstep(u_bound, u_bound+0.16, sd); // BOUNDING BOX: spiral contained to inner ~half, slight bleed
+  beamCol*=beamBound;
 
   // ---- MOSAIC = front stained glass: own lamp light + BACKLIT by the beam shining through the tile.
   vec3 tile=base*(u_ambient + bright*u_glow);
   tile += base*bright*bright*0.35;                    // lamp bloom
-  tile += base*beam*0.28;                             // the spiral gently glows THROUGH the glass (subtle)
+  tile += base*beam*0.10*beamBound;                   // faint bounded hint through the inner glass
   float gr=mix(hash21(floor(uv*820.0)), hash21(floor(uv*160.0)), 0.5)-0.5;
   if(u_gtexOn>0.5) gr=texture2D(u_gtex, gl_FragCoord.xy/200.0).r-0.5;
   tile*=1.0 + u_grain*gr*1.7;
   float lum=max(max(base.r,base.g),base.b);
   float tileMask=smoothstep(0.06,0.20,lum);           // bright tile vs dark grout/void
-  vec3 mosaic=mix(beamCol, tile, tileMask);           // grout & centre void reveal the spiral behind the glass
-  vec3 col=mix(beamCol, mosaic, u_cov);               // Mosaic amount = how present the glass is over the spiral
+  float tm=tileMask*u_cov;                            // tiles OPAQUE on top; spiral CONTAINED to grout + centre void
+  vec3 col=mix(beamCol, tile, tm);                    // Mosaic amount = tile opacity over the contained spiral
   gl_FragColor=vec4(col,1.0);
 }`;
 function sh(t,src){ const s=gl.createShader(t); gl.shaderSource(s,src); gl.compileShader(s);
@@ -184,7 +188,7 @@ function initGL(){
   const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
   gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
   const a=gl.getAttribLocation(prog,'a'); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
-  ['u_res','u_flat','u_id','u_lut','u_ambient','u_glow','u_spin','u_spinT','u_zoom','u_dive','u_ebb','u_lutw','u_cov','u_grain','u_beamZ','u_beams','u_sweep','u_rings','u_btex','u_btexOn','u_gtex','u_gtexOn']
+  ['u_res','u_flat','u_id','u_lut','u_ambient','u_glow','u_spin','u_spinT','u_zoom','u_dive','u_ebb','u_lutw','u_cov','u_grain','u_beamZ','u_beams','u_sweep','u_rings','u_bound','u_btex','u_btexOn','u_gtex','u_gtexOn']
     .forEach(n=>U[n]=gl.getUniformLocation(prog,n));
 }
 function tex(unit,img,nearest){
@@ -275,6 +279,7 @@ function frame(now){
     const effBeams=1.0+(cfg.beams-1.0)*0.5*(1.0+Math.sin(t*0.35));            // beams sweep 1..cfg.beams
     const effRings=cfg.rings + cfg.suck*1.5 + Math.max(0.0,cfg.zoom-1.2)*1.5; // detail deepens gently when sucked/zoomed in
     gl.uniform1f(U.u_beams,effBeams); gl.uniform1f(U.u_sweep,cfg.sweep); gl.uniform1f(U.u_rings,effRings);
+    gl.uniform1f(U.u_bound,cfg.bound);
     gl.uniform1i(U.u_btex,3); gl.uniform1f(U.u_btexOn, S.btexOn?1:0);
     gl.uniform1i(U.u_gtex,4); gl.uniform1f(U.u_gtexOn, S.gtexOn?1:0);
     gl.drawArrays(gl.TRIANGLES,0,3);
@@ -295,11 +300,11 @@ function sync(){ [['vlen',cfg.len],['vreach',cfg.reach],['vbias',cfg.bias],['veb
   ['vglow',cfg.glow.toFixed(2)],['vambient',cfg.ambient.toFixed(2)],['vgrain',Math.round(cfg.grain*100)+'%'],['vspin',cfg.spin.toFixed(2)],
   ['vzoom',cfg.zoom.toFixed(2)],['vdive',cfg.dive.toFixed(2)],['vbob',Math.round(cfg.bob*100)+'%'],
   ['vcatspin',cfg.catspin.toFixed(2)],['vsuck',Math.round(cfg.suck*100)+'%'],['vauto',S.auto?'on':'off'],
-  ['vbeams',cfg.beams],['vsweep',cfg.sweep.toFixed(2)],['vrings',cfg.rings],['vspeed',cfg.speed.toFixed(2)]
+  ['vbeams',cfg.beams],['vsweep',cfg.sweep.toFixed(2)],['vrings',cfg.rings],['vspeed',cfg.speed.toFixed(2)],['vbound',cfg.bound.toFixed(2)]
   ].forEach(([k,v])=>{const e=$(k);if(e)e.textContent=v;}); }
 const bind=(id,key)=>{ const el=$(id); if(el) el.oninput=e=>{ cfg[key]=+e.target.value; sync(); }; };
 [['len','len'],['reach','reach'],['bias','bias'],['ebbper','ebbper'],['cov','cov'],['glow','glow'],['ambient','ambient'],['grain','grain'],
- ['spin','spin'],['zoom','zoom'],['dive','dive'],['bob','bob'],['catspin','catspin'],['suck','suck'],['beams','beams'],['sweep','sweep'],['rings','rings'],['speed','speed']].forEach(([i,k])=>bind(i,k));
+ ['spin','spin'],['zoom','zoom'],['dive','dive'],['bob','bob'],['catspin','catspin'],['suck','suck'],['beams','beams'],['sweep','sweep'],['rings','rings'],['speed','speed'],['bound','bound']].forEach(([i,k])=>bind(i,k));
 function setAuto(on){ S.auto=on; const e=$('auto'); if(e)e.checked=on;
   const sw=document.querySelector('.sw[data-t="auto"]'); if(sw) sw.classList.toggle('on',on); sync(); }
 { const e=$('auto'); if(e) e.onchange=ev=>setAuto(ev.target.checked); }
@@ -351,8 +356,9 @@ if(gl && location.protocol!=='file:'){
     if(gs) gs.onchange=e=>loadGrainTex(e.target.value);
     if(QP.get('btex')) loadBeamTex(QP.get('btex'));
     if(QP.get('gtex')) loadGrainTex(QP.get('gtex'));
-    const fill=names=>names.forEach(n=>{ if(bs){const o=document.createElement('option');o.value=o.textContent=n;bs.appendChild(o);}
-                                         if(gs){const o=document.createElement('option');o.value=o.textContent=n;gs.appendChild(o);} });
+    const fill=names=>{ names.forEach(n=>{ if(bs){const o=document.createElement('option');o.value=o.textContent=n;bs.appendChild(o);}
+                                            if(gs){const o=document.createElement('option');o.value=o.textContent=n;gs.appendChild(o);} });
+      if(S.pendBtex&&bs)bs.value=S.pendBtex; if(S.pendGtex&&gs)gs.value=S.pendGtex; };  // reflect the default selection
     // prefer a static manifest (works on GitHub Pages), fall back to the dev-server dir index (local)
     fetch('assets/spiral/textures/manifest.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(fill)
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
@@ -365,12 +371,11 @@ if(gl && location.protocol!=='file:'){
     if(!QP.has('rings')) cfg.rings=4;
     if(!QP.has('sweep')) cfg.sweep=0.53;
     S.radarOn=true;                        // radar on; screensaver OFF on landing (calm) — toggle Auto for the dive
-    ['ambient','glow','grain','ebbper','speed','len','reach','bias','spin','zoom','dive','bob','catspin','suck','cov','beams','rings','sweep']
+    ['ambient','glow','grain','ebbper','speed','len','reach','bias','spin','zoom','dive','bob','catspin','suck','cov','beams','rings','sweep','bound']
       .forEach(k=>{const e=$(k); if(e)e.value=cfg[k];});
     { const r=document.querySelector('.sw[data-t="radar"]'); if(r) r.classList.add('on'); }
-    loadBeamTex('tex_frost_mint_s314.png'); loadGrainTex('tex_frost_lav_s555.png');
-    if($('btexsel')) $('btexsel').value='tex_frost_mint_s314.png';
-    if($('gtexsel')) $('gtexsel').value='tex_frost_lav_s555.png';
+    S.pendBtex='tex_frost_lav_s555.png'; S.pendGtex='tex_frost_peach_s999.png';   // K.'s textures
+    loadBeamTex(S.pendBtex); loadGrainTex(S.pendGtex);
   }
   if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
              catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
