@@ -158,12 +158,12 @@ void main(){
   float cf=0.5+0.5*sin(f*0.5 + u_spinT*0.3);                        // smooth pink<->cyan fade (cat1)
   vec3 bc=mix(hot, alt, cf);
   if(u_btexOn>0.5){ vec2 bt=vec2(fract(aa*0.3183099 + f*0.13), fract(f*0.5)); bc*=0.35 + 1.5*texture2D(u_btex, bt).rgb; }
-  vec3 beamCol=bc*beam*(0.9+0.7*(1.0-chaos));
+  vec3 beamCol=bc*beam*0.5;                            // dim: the spiral sits BEHIND the glass, subtle
 
   // ---- MOSAIC = front stained glass: own lamp light + BACKLIT by the beam shining through the tile.
   vec3 tile=base*(u_ambient + bright*u_glow);
   tile += base*bright*bright*0.35;                    // lamp bloom
-  tile += base*beam*0.85;                             // the spiral glows THROUGH the coloured glass
+  tile += base*beam*0.28;                             // the spiral gently glows THROUGH the glass (subtle)
   float gr=mix(hash21(floor(uv*820.0)), hash21(floor(uv*160.0)), 0.5)-0.5;
   if(u_gtexOn>0.5) gr=texture2D(u_gtex, gl_FragCoord.xy/200.0).r-0.5;
   tile*=1.0 + u_grain*gr*1.7;
@@ -273,7 +273,7 @@ function frame(now){
     gl.uniform1f(U.u_ebb,ebb); gl.uniform1f(U.u_lutw,LUT_W); gl.uniform1f(U.u_cov,cfg.cov);
     gl.uniform1f(U.u_grain, S.grainOn?cfg.grain:0); gl.uniform1f(U.u_beamZ,S.beamZ);
     const effBeams=1.0+(cfg.beams-1.0)*0.5*(1.0+Math.sin(t*0.35));            // beams sweep 1..cfg.beams
-    const effRings=cfg.rings + cfg.suck*3.0 + Math.max(0.0,cfg.zoom-1.15)*3.0; // detail deepens when sucked/zoomed in
+    const effRings=cfg.rings + cfg.suck*1.5 + Math.max(0.0,cfg.zoom-1.2)*1.5; // detail deepens gently when sucked/zoomed in
     gl.uniform1f(U.u_beams,effBeams); gl.uniform1f(U.u_sweep,cfg.sweep); gl.uniform1f(U.u_rings,effRings);
     gl.uniform1i(U.u_btex,3); gl.uniform1f(U.u_btexOn, S.btexOn?1:0);
     gl.uniform1i(U.u_gtex,4); gl.uniform1f(U.u_gtexOn, S.gtexOn?1:0);
@@ -358,13 +358,13 @@ if(gl && location.protocol!=='file:'){
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
   if(_set==='glass'){   // K.'s tuned defaults (2026-09-15) — the cat2 landing look
-    Object.assign(cfg,{ ambient:0.45, glow:1.20, grain:0.45, ebbper:8, speed:0.4,
+    Object.assign(cfg,{ ambient:0.45, glow:1.0, grain:0.45, ebbper:8, speed:0.4,
       len:64, reach:95, bias:92, spin:0, zoom:1.12, dive:0, bob:0.86, catspin:-0.50, suck:0 });
     if(!QP.has('cov'))   cfg.cov=0.79;
     if(!QP.has('beams')) cfg.beams=5;      // beams sweep 1..5
     if(!QP.has('rings')) cfg.rings=4;
     if(!QP.has('sweep')) cfg.sweep=0.53;
-    S.radarOn=true; setAuto(true);         // radar + screensaver on
+    S.radarOn=true;                        // radar on; screensaver OFF on landing (calm) — toggle Auto for the dive
     ['ambient','glow','grain','ebbper','speed','len','reach','bias','spin','zoom','dive','bob','catspin','suck','cov','beams','rings','sweep']
       .forEach(k=>{const e=$(k); if(e)e.value=cfg[k];});
     { const r=document.querySelector('.sw[data-t="radar"]'); if(r) r.classList.add('on'); }
