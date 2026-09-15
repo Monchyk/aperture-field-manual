@@ -56,6 +56,7 @@
   <div class="qs"><label>Glow</label><input id="glow" type="range" min="0" max="3" step="0.02" value="1.5"><span class="val" id="vglow"></span></div>
   <div class="qs"><label>Ebb</label><input id="ebbper" type="range" min="2" max="18" step="0.5" value="8"><span class="val" id="vebbper"></span></div>
   <label class="sw" data-t="snake"><i></i>Snake</label>
+  <label class="sw" data-t="radar"><i></i>Radar</label>
   <label class="sw" data-t="cat"><i></i>Cat</label>
   <label class="sw" data-t="auto"><i></i>Auto</label>
   <label class="sw" data-t="grain"><i></i>Grain</label>
@@ -112,7 +113,7 @@ if(location.protocol==='file:') fail('Open over <b>http</b>, not file://.<br>Run
 
 const cfg={ len:14, reach:95, bias:85, ebbper:8, glow:1.5, ambient:0.16, spin:0, zoom:1.00, dive:0, cov:1, grain:0.35,
             bob:0.4, catspin:0.12, suck:0, beams:1, sweep:0.15, rings:5 };
-const S={ running:true, last:performance.now(), t:0, dir:1, hud:false, ready:false, auto:false, catrot:0, beamZ:0, btexOn:false, gtexOn:false, snakeOn:true, grainOn:true,
+const S={ running:true, last:performance.now(), t:0, dir:1, hud:false, ready:false, auto:false, catrot:0, beamZ:0, btexOn:false, gtexOn:false, snakeOn:true, radarOn:false, grainOn:true,
           tiles:null, ord:null, isDark:null, maxOrd:1, lut:new Uint8Array(LUT_W*4) };
 const catEl=document.getElementById('cat');
 
@@ -257,6 +258,15 @@ function frame(now){
       const id=S.tiles[i].id;
       if(b>0) S.lut[id*4]=Math.round(Math.min(1,b)*255);
     }
+    if(S.radarOn){                                                 // RADAR: N beams sweep the mosaic ring (shares Beams+Sweep)
+      const rph=t*(0.4+cfg.sweep*2.0)*S.dir, N=Math.max(1,cfg.beams), bw=0.16;
+      for(let i=0;i<S.tiles.length;i++){
+        if(S.isDark[i]) continue;
+        const a=S.tiles[i].theta/TAU+0.5, v=a*N-rph, f=v-Math.floor(v), tri=Math.min(f,1-f);
+        const b=1-smoothstep(0,bw,tri);
+        if(b>0){ const id=S.tiles[i].id; S.lut[id*4]=Math.max(S.lut[id*4], Math.round(Math.min(1,b)*255)); }
+      }
+    }
     gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D,lutTex);
     gl.texSubImage2D(gl.TEXTURE_2D,0,0,0,LUT_W,1,gl.RGBA,gl.UNSIGNED_BYTE,S.lut);
     gl.uniform2f(U.u_res,cv.width,cv.height);
@@ -302,10 +312,11 @@ function setAuto(on){ S.auto=on; const e=$('auto'); if(e)e.checked=on;
   const pb=$('presetBtn'); if(pb){ pb.textContent = _set==='glass'?'Glass ▸ Cat':'Cat ▸ Glass';
     pb.onclick=()=>{ const u=new URL(location.href); if(_set==='glass') u.searchParams.delete('set'); else u.searchParams.set('set','glass'); location.href=u.toString(); }; }
   document.querySelectorAll('.sw').forEach(el=>{ const t=el.dataset.t;
-    el.classList.toggle('on', t==='cat'? !catEl.classList.contains('hide') : t==='auto'? S.auto : true);
+    el.classList.toggle('on', t==='cat'? !catEl.classList.contains('hide') : t==='auto'? S.auto : t==='radar'? S.radarOn : true);
     el.onclick=()=>{ const on=!el.classList.contains('on');
       if(t==='cat') catEl.classList.toggle('hide',!on);
       else if(t==='snake') S.snakeOn=on;
+      else if(t==='radar') S.radarOn=on;
       else if(t==='grain') S.grainOn=on;
       else if(t==='auto'){ setAuto(on); return; }
       el.classList.toggle('on',on); }; }); }
@@ -330,6 +341,7 @@ if(QP.has('tt')){ S.t=parseFloat(QP.get('tt'))||0; S.running=false; }
 if(QP.has('cov')){ cfg.cov=+QP.get('cov'); }
 if(QP.has('beams')){ cfg.beams=+QP.get('beams'); } if(QP.has('sweep')){ cfg.sweep=+QP.get('sweep'); }
 if(QP.has('rings')){ cfg.rings=+QP.get('rings'); }
+if(QP.has('radar')){ S.radarOn=QP.get('radar')!=='0'; }
 function load(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(src); i.src=src; }); }
 // base layer: prefer the SD-skinned render, fall back to the flat authored one (?flat forces flat)
 function loadBase(){ const names = QP.has('flat') ? ['mosaic_flat.png'] : ['mosaic_sd.png','mosaic_flat.png'];
@@ -348,7 +360,7 @@ if(gl && location.protocol!=='file:'){
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
   if(_set==='glass'){ cfg.ambient=0.55; cfg.glow=1.2; cfg.grain=0.45;   // glass rests visible, snake enhances
-    if(!QP.has('cov')) cfg.cov=0.5; if(!QP.has('rings')) cfg.rings=4;    // deployed: show the beam, keep detail low
+    if(!QP.has('cov')) cfg.cov=0.5; if(!QP.has('rings')) cfg.rings=4;
     ['ambient','glow','grain','cov','rings'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
   if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
              catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
