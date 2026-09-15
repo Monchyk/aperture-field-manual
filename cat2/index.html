@@ -338,7 +338,8 @@ if(gl && location.protocol!=='file:'){
       .catch(()=>fetch('assets/spiral/textures/').then(r=>r.text()).then(html=>
         fill([...html.matchAll(/href="([^"?\/]+\.(?:png|jpg|jpeg|webp))"/gi)].map(m=>decodeURIComponent(m[1])))).catch(()=>{})); }
   if(_set==='glass'){ cfg.ambient=0.55; cfg.glow=1.2; cfg.grain=0.45;   // glass rests visible, snake enhances
-    ['ambient','glow','grain'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
+    if(!QP.has('cov')) cfg.cov=0.5;                                     // deployed: open SHOWING the beam centre
+    ['ambient','glow','grain','cov'].forEach(k=>{const e=$(k); if(e)e.value=cfg[k];}); }
   if(catEl){ catEl.onload=()=>{catEl.dataset.ok='1';}; catEl.onerror=()=>{catEl.classList.add('hide');};
              catEl.src='assets/Gemini%20assets/CatOnScootBG.png'; }   // swap for clean line-art when ready
   sync();
