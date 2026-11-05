@@ -1,0 +1,25 @@
+name: Remove /sgd after expiry
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  expire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check date
+        id: due
+        run: |
+          if [ "$(date -u +%F)" \> "2026-11-11" ]; then echo "go=1" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.due.outputs.go == '1'
+      - name: Delete /sgd and this workflow
+        if: steps.due.outputs.go == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git rm -r --quiet sgd .github/workflows/sgd-expire.yml
+          git commit -m "Remove /sgd (expired 2026-11-12)"
+          git push
